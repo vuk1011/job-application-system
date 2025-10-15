@@ -7,4 +7,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class LoginSuccessResponse {
     String jwt;
+    String firstName;
 }

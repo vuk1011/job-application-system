@@ -1,0 +1,67 @@
+<script setup>
+import JobPosting from '@/components/JobPosting.vue';
+import { submitJobApplication } from '@/services/jobApplicationService';
+import { getJobPostings } from '@/services/jobPostingService';
+import { onMounted, ref } from 'vue';
+
+const jobPostings = ref([])
+const successMessage = ref('')
+const errorMessage = ref('')
+
+onMounted(async () => {
+  try {
+    const response = await getJobPostings()
+    jobPostings.value = response.data.data.map(jobDto => ({
+      id: jobDto.id,
+      title: jobDto.title,
+      description: jobDto.description,
+      expires: jobDto.dateOfExpiration,
+    }))
+  } catch (error) {
+    const message = error.response?.data?.message || error.message || 'Failed loading job postings'
+    setErrorMessage(message)
+  }
+})
+
+const submitApplication = async (jobId) => {
+  window.scroll({ top: 0, behavior: 'smooth' })
+  const request = { jobPostingId: jobId }
+  try {
+    const response = await submitJobApplication(request)
+    setSuccessMessage(response.data.message)
+  } catch (error) {
+    const message = error.response?.data?.message || error.message || 'Failed submitting application'
+    setErrorMessage(message)
+  }
+}
+
+const setErrorMessage = (message) => {
+  successMessage.value = ''
+  errorMessage.value = message
+}
+
+const setSuccessMessage = (message) => {
+  errorMessage.value = ''
+  successMessage.value = message
+}
+</script>
+
+<template>
+  <h1>Published Job Postings</h1>
+  <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
+  <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+  <JobPosting v-for="job in jobPostings" :key="job.id" :id="job.id" :title="job.title" :description="job.description"
+    :expires="new Date(job.expires)" @apply="id => submitApplication(id)" />
+</template>
+
+<style scoped>
+.success-message {
+  color: green;
+  font-weight: bold;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+}
+</style>

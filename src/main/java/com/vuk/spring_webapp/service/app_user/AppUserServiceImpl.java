@@ -34,6 +34,8 @@ public class AppUserServiceImpl implements AppUserService {
         );
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         AppUser user = userRepository.findByEmail(email);
-        return new LoginSuccessResponse(jwtUtil.generateToken(user.getId(), userDetails.getUsername(), role));
+        return new LoginSuccessResponse(jwtUtil.generateToken(user.getId(), userDetails.getUsername(), role),
+                user.getFirstName()
+        );
     }
 }

@@ -1,8 +1,65 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from "@/views/HomeView.vue";
+import JobApplicationsView from "@/views/JobApplicationsView.vue";
+import JobApplicationView from "@/views/JobApplicationView.vue";
+import JobPostingsView from "@/views/JobPostingsView.vue";
+import LoginView from "@/views/LoginView.vue";
+import ProfileView from "@/views/ProfileView.vue";
+import RegisterView from "@/views/RegisterView.vue";
+import ResumeView from "@/views/ResumeView.vue";
+import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [],
-})
+  routes: [
+    {
+      path: "/",
+      component: HomeView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/login",
+      component: LoginView,
+    },
+    {
+      path: "/register",
+      component: RegisterView,
+    },
+    {
+      path: "/profile",
+      component: ProfileView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/profile/resume",
+      component: ResumeView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/job-postings",
+      component: JobPostingsView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/job-applications",
+      component: JobApplicationsView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/job-applications/:id",
+      component: JobApplicationView,
+      meta: { requiresAuth: true },
+    },
+  ],
+});
 
-export default router
+router.beforeEach((to, from, next) => {
+  const jwt = localStorage.getItem("jwt");
+
+  if (to.meta.requiresAuth && !jwt) {
+    next("/login");
+  } else {
+    next();
+  }
+});
+
+export default router;
