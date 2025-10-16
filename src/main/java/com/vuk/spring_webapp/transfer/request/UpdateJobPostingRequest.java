@@ -10,5 +10,4 @@ public class UpdateJobPostingRequest {
     private String title;
     private String description;
     private Date dateOfExpiration;
-    private JobPostingStatus status;
 }

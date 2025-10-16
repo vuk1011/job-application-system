@@ -9,5 +9,4 @@ public class CreateJobPostingRequest {
     private String title;
     private String description;
     private Date dateOfExpiration;
-    private Long positionId;
 }

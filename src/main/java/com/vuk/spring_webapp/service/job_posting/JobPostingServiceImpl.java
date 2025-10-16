@@ -2,7 +2,7 @@ package com.vuk.spring_webapp.service.job_posting;
 
 import com.vuk.spring_webapp.domain.job_posting.JobPosting;
 import com.vuk.spring_webapp.domain.job_posting.JobPostingStatus;
-import com.vuk.spring_webapp.domain.position.Position;
+import com.vuk.spring_webapp.exception.ConflictException;
 import com.vuk.spring_webapp.exception.ResourceNotFoundException;
 import com.vuk.spring_webapp.repository.JobPostingRepository;
 import com.vuk.spring_webapp.transfer.dto.JobPostingDto;
@@ -49,15 +49,17 @@ public class JobPostingServiceImpl implements JobPostingService {
 
     @Override
     public JobPostingDto create(CreateJobPostingRequest request) {
+        if (request.getDateOfExpiration().before(new Date())) {
+            throw new ConflictException("Invalid date of expiration");
+        }
+
         JobPosting jobPosting = new JobPosting(
                 request.getTitle(),
                 request.getDescription(),
                 new Date(),
                 request.getDateOfExpiration(),
-                JobPostingStatus.PUBLISHED,
-                new Position()
+                JobPostingStatus.PUBLISHED
         );
-        jobPosting.getPosition().setId(request.getPositionId());
         jobPosting = jobPostingRepository.save(jobPosting);
         return modelMapper.map(jobPosting, JobPostingDto.class);
     }
@@ -71,12 +73,15 @@ public class JobPostingServiceImpl implements JobPostingService {
     }
 
     @Override
-    public JobPostingDto updateById(Long id, UpdateJobPostingRequest request) {
-        return jobPostingRepository.findById(id).map(jobPosting -> {
+    public void updateById(Long id, UpdateJobPostingRequest request) {
+        if (request.getDateOfExpiration().before(new Date())) {
+            throw new ConflictException("Expiration date cannot be set before current time");
+        }
+
+        jobPostingRepository.findById(id).map(jobPosting -> {
             jobPosting.setTitle(request.getTitle());
             jobPosting.setDescription(request.getDescription());
             jobPosting.setDateOfExpiration(request.getDateOfExpiration());
-            jobPosting.setStatus(request.getStatus());
             JobPosting updatedJobPosting = jobPostingRepository.save(jobPosting);
             return modelMapper.map(updatedJobPosting, JobPostingDto.class);
         }).orElseThrow(() -> new ResourceNotFoundException("Job posting not found with id " + id));

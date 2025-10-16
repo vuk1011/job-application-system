@@ -3,7 +3,6 @@ import HomeView from "@/views/HomeView.vue";
 import ManagedJobApplsView from "@/views/job-appl/ManagedJobApplsView.vue";
 import ManagedJobApplView from "@/views/job-appl/ManagedJobApplView.vue";
 import UnmanagedJobApplsView from "@/views/job-appl/UnmanagedJobApplsView.vue";
-import UnmanagedJobApplView from "@/views/job-appl/UnmanagedJobApplView.vue";
 import CreateJobPostingView from "@/views/job-posting/CreateJobPostingView.vue";
 import JobPostingsView from "@/views/job-posting/JobPostingsView.vue";
 import JobPostingView from "@/views/job-posting/JobPostingView.vue";
@@ -23,42 +22,37 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: "/path",
+      path: "/job-applications",
       component: UnmanagedJobApplsView,
       meta: { requiresAuth: true },
     },
     {
-      path: "/path",
-      component: UnmanagedJobApplView,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: "/path",
+      path: "/managed",
       component: ManagedJobApplsView,
       meta: { requiresAuth: true },
     },
     {
-      path: "/path",
+      path: "/managed/:id",
       component: ManagedJobApplView,
       meta: { requiresAuth: true },
     },
     {
-      path: "/path",
+      path: "/managed/:id/candidate",
       component: CandidateView,
       meta: { requiresAuth: true },
     },
     {
-      path: "/path",
+      path: "/job-postings",
       component: JobPostingsView,
       meta: { requiresAuth: true },
     },
     {
-      path: "/path",
+      path: "/job-postings/:id",
       component: JobPostingView,
       meta: { requiresAuth: true },
     },
     {
-      path: "/path",
+      path: "/job-postings/create",
       component: CreateJobPostingView,
       meta: { requiresAuth: true },
     },

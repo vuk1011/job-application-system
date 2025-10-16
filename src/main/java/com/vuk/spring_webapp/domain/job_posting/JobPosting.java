@@ -1,6 +1,5 @@
 package com.vuk.spring_webapp.domain.job_posting;
 
-import com.vuk.spring_webapp.domain.position.Position;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,16 +35,11 @@ public class JobPosting {
     @Enumerated(EnumType.STRING)
     private JobPostingStatus status;
 
-    @OneToOne
-    @JoinColumn(name = "position_id", referencedColumnName = "id", nullable = false)
-    private Position position;
-
-    public JobPosting(String title, String description, Date dateOfPublishing, Date dateOfExpiration, JobPostingStatus status, Position position) {
+    public JobPosting(String title, String description, Date dateOfPublishing, Date dateOfExpiration, JobPostingStatus status) {
         this.title = title;
         this.description = description;
         this.dateOfPublishing = dateOfPublishing;
         this.dateOfExpiration = dateOfExpiration;
         this.status = status;
-        this.position = position;
     }
 }

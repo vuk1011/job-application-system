@@ -1,5 +1,6 @@
 package com.vuk.spring_webapp.controller.employee;
 
+import com.vuk.spring_webapp.exception.ConflictException;
 import com.vuk.spring_webapp.exception.ResourceNotFoundException;
 import com.vuk.spring_webapp.service.job_posting.JobPostingService;
 import com.vuk.spring_webapp.transfer.request.CreateJobPostingRequest;
@@ -9,8 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -31,10 +31,11 @@ public class EmployeeJobPostingController {
 
     @PostMapping
     public ResponseEntity<ApiResponse> create(@RequestBody CreateJobPostingRequest request) {
-
         try {
             var response = jobPostingService.create(request);
             return ResponseEntity.ok(new ApiResponse("Job posting created", response));
+        } catch (ConflictException e) {
+            return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
         } catch (Exception e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
         }
@@ -55,10 +56,12 @@ public class EmployeeJobPostingController {
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse> update(@PathVariable Long id, @RequestBody UpdateJobPostingRequest request) {
         try {
-            var response = jobPostingService.updateById(id, request);
-            return ResponseEntity.ok(new ApiResponse("Job posting updated", response));
+            jobPostingService.updateById(id, request);
+            return ResponseEntity.ok(new ApiResponse("Job posting updated", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        } catch (ConflictException e) {
+            return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
         } catch (Exception e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
         }

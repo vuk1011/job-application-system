@@ -19,5 +19,5 @@ public interface JobPostingService {
 
     void deleteById(Long id);
 
-    JobPostingDto updateById(Long id, UpdateJobPostingRequest request);
+    void updateById(Long id, UpdateJobPostingRequest request);
 }

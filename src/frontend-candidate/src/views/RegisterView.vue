@@ -90,7 +90,7 @@ const setSuccessMessage = (message) => {
   <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
   <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
-  <RouterLink id="login-link" to="/login">Login</RouterLink>
+  <RouterLink to="/login">Login</RouterLink>
 </template>
 
 <style scoped>
