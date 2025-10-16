@@ -1,6 +1,6 @@
 <script setup>
 import JobPosting from '@/components/JobPosting.vue';
-import { submitJobApplication } from '@/services/jobApplicationService';
+import { submitJobAppl } from '@/services/jobApplService';
 import { getJobPostings } from '@/services/jobPostingService';
 import { onMounted, ref } from 'vue';
 
@@ -27,7 +27,7 @@ const submitApplication = async (jobId) => {
   window.scroll({ top: 0, behavior: 'smooth' })
   const request = { jobPostingId: jobId }
   try {
-    const response = await submitJobApplication(request)
+    const response = await submitJobAppl(request)
     setSuccessMessage(response.data.message)
   } catch (error) {
     const message = error.response?.data?.message || error.message || 'Failed submitting application'

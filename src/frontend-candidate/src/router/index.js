@@ -1,6 +1,6 @@
 import HomeView from "@/views/HomeView.vue";
-import JobApplicationsView from "@/views/JobApplicationsView.vue";
-import JobApplicationView from "@/views/JobApplicationView.vue";
+import JobApplsView from "@/views/JobApplsView.vue";
+import JobApplView from "@/views/JobApplView.vue";
 import JobPostingsView from "@/views/JobPostingsView.vue";
 import LoginView from "@/views/LoginView.vue";
 import ProfileView from "@/views/ProfileView.vue";
@@ -41,12 +41,12 @@ const router = createRouter({
     },
     {
       path: "/job-applications",
-      component: JobApplicationsView,
+      component: JobApplsView,
       meta: { requiresAuth: true },
     },
     {
       path: "/job-applications/:id",
-      component: JobApplicationView,
+      component: JobApplView,
       meta: { requiresAuth: true },
     },
   ],

@@ -1,5 +1,5 @@
 <script setup>
-import { getJobApplicationById, withdrawJobApplication } from '@/services/jobApplicationService';
+import { getJobApplById, withdrawJobAppl } from '@/services/jobApplService';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
@@ -9,7 +9,7 @@ const ableToWithdraw = ref(true)
 const successMessage = ref('')
 const errorMessage = ref('')
 
-const jobApplication = ref({
+const jobAppl = ref({
 	title: '-',
 	description: '-',
 	submitted: new Date(),
@@ -18,12 +18,12 @@ const jobApplication = ref({
 
 onMounted(async () => {
 	try {
-		const response = await getJobApplicationById(id)
+		const response = await getJobApplById(id)
 		const data = response.data.data
-		jobApplication.value.title = data.jobPosting.title
-		jobApplication.value.description = data.jobPosting.description
-		jobApplication.value.submited = new Date(data.dateOfSubmission)
-		jobApplication.value.status = data.status
+		jobAppl.value.title = data.jobPosting.title
+		jobAppl.value.description = data.jobPosting.description
+		jobAppl.value.submited = new Date(data.dateOfSubmission)
+		jobAppl.value.status = data.status
 
 		if (data.status === 'OFFERED' || data.status === 'ACCEPTED' || data.status === 'REJECTED') {
 			ableToWithdraw.value = false
@@ -37,7 +37,7 @@ onMounted(async () => {
 const withdraw = async () => {
 	window.scroll({ top: 0, behavior: 'smooth' })
 	try {
-		const response = await withdrawJobApplication(id)
+		const response = await withdrawJobAppl(id)
 		setSuccessMessage(response.data.message)
 		ableToWithdraw.value = false
 	} catch (error) {
@@ -58,13 +58,13 @@ const setSuccessMessage = (message) => {
 </script>
 
 <template>
-	<h1>{{ jobApplication.title }}</h1>
+	<h1>{{ jobAppl.title }}</h1>
 	<p v-if="successMessage" class="success-message">{{ successMessage }}</p>
 	<p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 	<hr>
-	<p>{{ jobApplication.description }}</p>
-	<p><i>Submitted: {{ jobApplication.submitted.toLocaleDateString() }}</i></p>
-	<p>Status: {{ jobApplication.status }}</p>
+	<p>{{ jobAppl.description }}</p>
+	<p><i>Submitted: {{ jobAppl.submitted.toLocaleDateString() }}</i></p>
+	<p>Status: {{ jobAppl.status }}</p>
 	<button v-show="ableToWithdraw" type="button" @click="withdraw">Withdraw</button>
 </template>
 

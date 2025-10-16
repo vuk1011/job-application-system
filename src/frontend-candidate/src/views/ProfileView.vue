@@ -107,7 +107,7 @@ const setSuccessMessage = (message) => {
   <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
   <br>
-  <router-link to="/profile/resume">Resume</router-link>
+  <RouterLink to="/profile/resume">Resume</RouterLink>
 </template>
 
 <style scoped>

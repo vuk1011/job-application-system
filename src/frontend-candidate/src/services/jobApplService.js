@@ -1,22 +1,22 @@
 import axios from "@/utils/axios";
 import { getJwt } from "@/utils/jwtUtil";
 
-export const getJobApplications = () =>
+export const getJobAppls = () =>
   axios.get("/job-applications", {
     headers: { Authorization: `Bearer ${getJwt()}` },
   });
 
-export const getJobApplicationById = (id) =>
+export const getJobApplById = (id) =>
   axios.get(`/job-applications/${id}`, {
     headers: { Authorization: `Bearer ${getJwt()}` },
   });
 
-export const submitJobApplication = (request) =>
+export const submitJobAppl = (request) =>
   axios.post("/job-applications", request, {
     headers: { Authorization: `Bearer ${getJwt()}` },
   });
 
-export const withdrawJobApplication = (id) =>
+export const withdrawJobAppl = (id) =>
   axios.delete(`/job-applications/${id}`, {
     headers: { Authorization: `Bearer ${getJwt()}` },
   });
