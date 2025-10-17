@@ -22,6 +22,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -54,12 +55,12 @@ public class JobApplicationServiceImpl implements JobApplicationService {
             throw new ApplicationExistsException("You already applied for this job posting");
         }
 
-        if (jobPostingRepository.existsByIdAndStatus(jobPostingId, JobPostingStatus.CLOSED)) {
+        if (jobPosting.getStatus().equals(JobPostingStatus.CLOSED)) {
             throw new JobPostingClosedException("Job posting closed");
         }
 
         JobApplication jobApplication = new JobApplication(
-                new Date(),
+                LocalDate.now(),
                 JobApplicationStatus.SUBMITTED,
                 jobPosting,
                 null,

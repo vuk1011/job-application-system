@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 import static com.vuk.spring_webapp.domain.job_application.JobApplicationStatus.ACCEPTED;
@@ -26,8 +26,7 @@ public class JobApplication {
     private Long id;
 
     @Column(name = "date_of_submission", nullable = false)
-    @Temporal(TemporalType.DATE)
-    private Date dateOfSubmission;
+    private LocalDate dateOfSubmission;
 
     @Enumerated(EnumType.STRING)
     private JobApplicationStatus status;
@@ -44,7 +43,7 @@ public class JobApplication {
     @JoinColumn(name = "candidate_id", referencedColumnName = "id", nullable = false)
     private Candidate candidate;
 
-    public JobApplication(Date dateOfSubmission, JobApplicationStatus status, JobPosting jobPosting, Employee employee, Candidate candidate) {
+    public JobApplication(LocalDate dateOfSubmission, JobApplicationStatus status, JobPosting jobPosting, Employee employee, Candidate candidate) {
         this.dateOfSubmission = dateOfSubmission;
         this.status = status;
         this.jobPosting = jobPosting;

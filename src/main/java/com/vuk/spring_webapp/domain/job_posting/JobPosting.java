@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "job_postings")
@@ -25,21 +25,20 @@ public class JobPosting {
     private String description;
 
     @Column(name = "date_of_publishing", nullable = false)
-    @Temporal(TemporalType.DATE)
-    private Date dateOfPublishing;
+    private LocalDate dateOfPublishing;
 
     @Column(name = "date_of_expiration", nullable = false)
-    @Temporal(TemporalType.DATE)
-    private Date dateOfExpiration;
+    private LocalDate dateOfExpiration;
 
-    @Enumerated(EnumType.STRING)
-    private JobPostingStatus status;
+    @Transient
+    public JobPostingStatus getStatus() {
+        return this.dateOfExpiration.isBefore(LocalDate.now()) ? JobPostingStatus.CLOSED : JobPostingStatus.PUBLISHED;
+    }
 
-    public JobPosting(String title, String description, Date dateOfPublishing, Date dateOfExpiration, JobPostingStatus status) {
+    public JobPosting(String title, String description, LocalDate dateOfPublishing, LocalDate dateOfExpiration) {
         this.title = title;
         this.description = description;
         this.dateOfPublishing = dateOfPublishing;
         this.dateOfExpiration = dateOfExpiration;
-        this.status = status;
     }
 }

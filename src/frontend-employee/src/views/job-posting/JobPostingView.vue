@@ -18,6 +18,7 @@ onMounted(async () => {
   try {
     const response = await getJobPostingById(job.value.id)
     const data = response.data.data
+    console.log(data)
     job.value.title = data.title
     job.value.desc = data.description
     job.value.published = data.dateOfPublishing

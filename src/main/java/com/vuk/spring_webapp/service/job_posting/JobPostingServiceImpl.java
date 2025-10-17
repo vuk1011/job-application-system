@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -39,26 +39,26 @@ public class JobPostingServiceImpl implements JobPostingService {
     }
 
     @Override
-    public List<JobPostingDto> findAllByStatus(JobPostingStatus status) {
+    public List<JobPostingDto> findAllPublished() {
         return jobPostingRepository
-                .findAllByStatus(status)
+                .findAll()
                 .stream()
+                .filter(posting -> posting.getStatus().equals(JobPostingStatus.PUBLISHED))
                 .map(posting -> modelMapper.map(posting, JobPostingDto.class))
                 .toList();
     }
 
     @Override
     public JobPostingDto create(CreateJobPostingRequest request) {
-        if (request.getDateOfExpiration().before(new Date())) {
+        if (request.getDateOfExpiration().isBefore(LocalDate.now())) {
             throw new ConflictException("Invalid date of expiration");
         }
 
         JobPosting jobPosting = new JobPosting(
                 request.getTitle(),
                 request.getDescription(),
-                new Date(),
-                request.getDateOfExpiration(),
-                JobPostingStatus.PUBLISHED
+                LocalDate.now(),
+                request.getDateOfExpiration()
         );
         jobPosting = jobPostingRepository.save(jobPosting);
         return modelMapper.map(jobPosting, JobPostingDto.class);
@@ -74,7 +74,7 @@ public class JobPostingServiceImpl implements JobPostingService {
 
     @Override
     public void updateById(Long id, UpdateJobPostingRequest request) {
-        if (request.getDateOfExpiration().before(new Date())) {
+        if (request.getDateOfExpiration().isBefore(LocalDate.now())) {
             throw new ConflictException("Expiration date cannot be set before current time");
         }
 

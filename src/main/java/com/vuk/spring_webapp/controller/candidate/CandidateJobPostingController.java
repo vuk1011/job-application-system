@@ -21,7 +21,7 @@ public class CandidateJobPostingController {
     @GetMapping
     public ResponseEntity<ApiResponse> getAllPublished() {
         try {
-            var response = jobPostingService.findAllByStatus(JobPostingStatus.PUBLISHED);
+            var response = jobPostingService.findAllPublished();
             return ResponseEntity.ok(new ApiResponse("Job postings", response));
         } catch (Exception e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));

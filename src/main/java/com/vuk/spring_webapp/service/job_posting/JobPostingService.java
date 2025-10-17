@@ -13,7 +13,7 @@ public interface JobPostingService {
 
     List<JobPostingDto> findAll();
 
-    List<JobPostingDto> findAllByStatus(JobPostingStatus status);
+    List<JobPostingDto> findAllPublished();
 
     JobPostingDto create(CreateJobPostingRequest request);
 

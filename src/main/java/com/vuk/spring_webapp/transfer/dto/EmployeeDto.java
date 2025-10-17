@@ -3,7 +3,7 @@ package com.vuk.spring_webapp.transfer.dto;
 import com.vuk.spring_webapp.domain.user.Sex;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 public class EmployeeDto {
@@ -15,6 +15,6 @@ public class EmployeeDto {
     private String address;
     private String email;
     private String nationalId;
-    private Date dateOfBirth;
-    private Date dateOfHire;
+    private LocalDate dateOfBirth;
+    private LocalDate dateOfHire;
 }

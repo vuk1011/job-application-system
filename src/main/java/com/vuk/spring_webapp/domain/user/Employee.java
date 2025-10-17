@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -21,17 +21,16 @@ public class Employee extends AppUser {
     private String nationalId;
 
     @Column(name = "date_of_birth")
-    @Temporal(TemporalType.DATE)
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @Column(name = "date_of_hire")
-    @Temporal(TemporalType.DATE)
-    private Date dateOfHire;
+    private LocalDate dateOfHire;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     private List<JobApplication> managedJobApplications = new ArrayList<>();
 
-    public Employee(String firstName, String lastName, Sex sex, String phone, String address, String email, String password, String nationalId, Date dateOfBirth, Date dateOfHire) {
+    public Employee(String firstName, String lastName, Sex sex, String phone, String address, String email,
+                    String password, String nationalId, LocalDate dateOfBirth, LocalDate dateOfHire) {
         super(Role.EMPLOYEE, firstName, lastName, sex, phone, address, email, password);
         this.nationalId = nationalId;
         this.dateOfBirth = dateOfBirth;
