@@ -59,8 +59,10 @@ const setSuccessMessage = (message) => {
 
 <template>
 	<h1>{{ jobAppl.title }}</h1>
-	<p v-if="successMessage" class="success-message">{{ successMessage }}</p>
-	<p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+	<div class="error-container">
+		<p v-if="successMessage" class="success-message">{{ successMessage }}</p>
+		<p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+	</div>
 	<hr>
 	<p>{{ jobAppl.description }}</p>
 	<p><i>Submitted: {{ jobAppl.submitted.toLocaleDateString() }}</i></p>
@@ -69,6 +71,12 @@ const setSuccessMessage = (message) => {
 </template>
 
 <style scoped>
+h1,
+p,
+button {
+	margin-left: 20px;
+}
+
 .success-message {
 	color: green;
 	font-weight: bold;

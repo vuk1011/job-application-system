@@ -1,6 +1,7 @@
 <script setup>
 import { register } from '@/services/authService';
 import { ref } from 'vue';
+import { RouterLink } from 'vue-router';
 
 const successMessage = ref('')
 const errorMessage = ref('')
@@ -51,46 +52,59 @@ const setSuccessMessage = (message) => {
 </script>
 
 <template>
-  <h1>Register as a Candidate</h1>
-  <form @submit.prevent="handleRegister">
-    <label for="firstName">First name</label>
-    <input type="text" id="firstName" v-model="formData.firstName" maxlength="30">
-    <br>
+  <div class="form-box">
+    <h1>Register as a Candidate</h1>
+    <form @submit.prevent="handleRegister">
+      <div class="form-row">
+        <label for="firstName">First name</label>
+        <input type="text" id="firstName" v-model="formData.firstName" maxlength="30">
+      </div>
 
-    <label for="lastName">Last name</label>
-    <input type="text" id="lastName" v-model="formData.lastName" maxlength="30">
-    <br>
+      <div class="form-row">
+        <label for="lastName">Last name</label>
+        <input type="text" id="lastName" v-model="formData.lastName" maxlength="30">
+      </div>
 
-    <label for="phone">Phone</label>
-    <input type="text" id="phone" v-model="formData.phone" maxlength="16">
-    <br>
+      <div class="form-row">
+        <label for="phone">Phone</label>
+        <input type="text" id="phone" v-model="formData.phone" maxlength="16">
+      </div>
 
-    <label for="address">Address</label>
-    <input type="text" id="address" v-model="formData.address" maxlength="50">
-    <br>
+      <div class="form-row">
+        <label for="address">Address</label>
+        <input type="text" id="address" v-model="formData.address" maxlength="50">
+      </div>
 
-    <label>Sex</label>
-    <input type="radio" name="sex" id="male" value="MALE" v-model="formData.sex">
-    <label for="male">M</label>
-    <input type="radio" name="sex" id="female" value="FEMALE" v-model="formData.sex">
-    <label for="female">F</label>
-    <br>
+      <div class="form-row">
+        <label>Sex</label>
+        <input type="radio" name="sex" id="male" value="MALE" v-model="formData.sex">
+        <label for="male">M</label>
+        <input type="radio" name="sex" id="female" value="FEMALE" v-model="formData.sex">
+        <label for="female">F</label>
+      </div>
 
-    <label for="email">Email</label>
-    <input type="text" id="email" v-model="formData.email" maxlength="50">
-    <br>
+      <div class="form-row">
+        <label for="email">Email</label>
+        <input type="text" id="email" v-model="formData.email" maxlength="50">
+      </div>
 
-    <label for="password">Password</label>
-    <input type="password" id="password" v-model="formData.password" maxlength="30">
-    <br>
+      <div class="form-row">
+        <label for="password">Password</label>
+        <input type="password" id="password" v-model="formData.password" maxlength="30">
+      </div>
 
-    <button type="submit">Register</button>
-  </form>
+      <button type="submit">Register</button>
+    </form>
 
-  <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
-  <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+    <div>
+      <RouterLink to="/login" class="link">Login</RouterLink>
+    </div>
 
-  <RouterLink to="/login">Login</RouterLink>
+    <div class="error-container">
+      <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -102,5 +116,14 @@ const setSuccessMessage = (message) => {
 .error-message {
   color: red;
   font-weight: bold;
+}
+
+button {
+  margin-top: 15px;
+  width: 50%;
+}
+
+input {
+  width: 60%;
 }
 </style>

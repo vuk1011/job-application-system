@@ -48,13 +48,23 @@ const setSuccessMessage = (message) => {
 
 <template>
   <h1>Published Job Postings</h1>
-  <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
-  <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+  <div class="error-container">
+    <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
+    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+  </div>
   <JobPosting v-for="job in jobPostings" :key="job.id" :id="job.id" :title="job.title" :description="job.description"
     :expires="new Date(job.expires)" @apply="id => submitApplication(id)" />
 </template>
 
 <style scoped>
+h1 {
+  margin-left: 20px;
+}
+
+.error-container {
+  margin-left: 20px;
+}
+
 .success-message {
   color: green;
   font-weight: bold;

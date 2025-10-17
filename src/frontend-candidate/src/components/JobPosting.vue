@@ -18,8 +18,9 @@ defineProps({
 
 <style scoped>
 div {
-  border: 2px solid black;
-  margin: 5px 10px;
+  margin: 5px 15px;
   padding: 8px;
+  border-radius: 5px;
+  border: 2px solid #4FB180;
 }
 </style>

@@ -65,7 +65,7 @@ const setErrorMessage = (message) => {
   <hr>
 
   <h2>Resume</h2>
-  <iframe v-if="resumeUrl" :src="resumeUrl" width="80%" height="700px"></iframe>
+  <iframe v-if="resumeUrl" :src="resumeUrl" width="800px" height="1000px"></iframe>
 </template>
 
 <style scoped>

@@ -65,28 +65,47 @@ const setSuccessMessage = (message) => {
 </script>
 
 <template>
-  <h2>Your Resume</h2>
-  <input type="file" accept=".pdf" @change="e => selectedFile = e.target.files[0]" />
+  <div class="resume-container">
+    <div>
+      <h1>Your Resume</h1>
+    </div>
 
-  <div>
-    <button @click="handleUpload" :disabled="!selectedFile || isLoading">
-      Upload
-    </button>
+    <input type="file" accept=".pdf" @change="e => selectedFile = e.target.files[0]" />
 
-    <button @click="handleDownload" :disabled="isLoading">
-      Download
-    </button>
+    <div>
+      <button @click="handleUpload" :disabled="!selectedFile || isLoading">
+        Upload
+      </button>
 
-    <button @click="handleDelete" :disabled="isLoading">
-      Delete
-    </button>
+      <button @click="handleDownload" :disabled="isLoading">
+        Download
+      </button>
+
+      <button @click="handleDelete" :disabled="isLoading">
+        Delete
+      </button>
+    </div>
+
+    <div class="error-container">
+      <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+    </div>
   </div>
-
-  <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
-  <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 </template>
 
 <style scoped>
+.resume-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+button {
+  margin-bottom: 5px;
+  margin-left: 5px;
+}
+
 .success-message {
   color: green;
   font-weight: bold;

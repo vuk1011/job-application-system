@@ -21,8 +21,4 @@ div {
   border-radius: 5px;
   border: 2px solid #4FB180;
 }
-
-h2 {
-  font-weight: 500;
-}
 </style>

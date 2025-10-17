@@ -72,42 +72,53 @@ const setSuccessMessage = (message) => {
 </script>
 
 <template>
-  <h1>Your Profile</h1>
+  <div class="form-box">
+    <h1>Your Profile</h1>
 
-  <label for="firstName">First name</label>
-  <input type="text" id="firstName" v-model="profileInfo.firstName" maxlength="30">
-  <br>
+    <form>
+      <div class="form-row">
+        <label for="firstName">First name</label>
+        <input type="text" id="firstName" v-model="profileInfo.firstName" maxlength="30">
+      </div>
 
-  <label for="lastName">Last name</label>
-  <input type="text" id="lastName" v-model="profileInfo.lastName" maxlength="30">
-  <br>
+      <div class="form-row">
+        <label for="lastName">Last name</label>
+        <input type="text" id="lastName" v-model="profileInfo.lastName" maxlength="30">
+      </div>
 
-  <label for="phone">Phone</label>
-  <input type="text" id="phone" v-model="profileInfo.phone" maxlength="16">
-  <br>
+      <div class="form-row">
+        <label for="phone">Phone</label>
+        <input type="text" id="phone" v-model="profileInfo.phone" maxlength="16">
+      </div>
 
-  <label for="address">Address</label>
-  <input type="text" id="address" v-model="profileInfo.address" maxlength="50">
-  <br>
+      <div class="form-row">
+        <label for="address">Address</label>
+        <input type="text" id="address" v-model="profileInfo.address" maxlength="50">
+      </div>
 
-  <label>Sex</label>
-  <input type="radio" name="sex" id="male" value="MALE" v-model="profileInfo.sex">
-  <label for="male">M</label>
-  <input type="radio" name="sex" id="female" value="FEMALE" v-model="profileInfo.sex">
-  <label for="female">F</label>
-  <br>
+      <div class="form-row">
+        <label>Sex</label>
+        <input type="radio" name="sex" id="male" value="MALE" v-model="profileInfo.sex">
+        <label for="male">M</label>
+        <input type="radio" name="sex" id="female" value="FEMALE" v-model="profileInfo.sex">
+        <label for="female">F</label>
+      </div>
 
-  <label for="email">Email</label>
-  <input type="text" id="email" v-model="profileInfo.email" readonly>
-  <br>
+      <div class="form-row">
+        <label for="email">Email</label>
+        <input type="text" id="email" v-model="profileInfo.email" readonly>
+      </div>
 
-  <button type="button" @click="handleUpdate">Update Profile</button>
+      <button type="button" @click="handleUpdate">Update Profile</button>
+    </form>
 
-  <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
-  <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+    <RouterLink to="/profile/resume" class="link">Resume</RouterLink>
 
-  <br>
-  <RouterLink to="/profile/resume">Resume</RouterLink>
+    <div class="error-container">
+      <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+    </div>
+  </div>
 </template>
 
 <style scoped>

@@ -1,25 +1,27 @@
 <script setup>
-import router from '@/router';
-import { RouterLink, useRoute } from 'vue-router';
+import { RouterLink } from 'vue-router';
 
-const name = useRoute().query.name
-
-const handleSignOut = () => {
-  localStorage.removeItem('jwt')
-  router.push('/login')
-}
+const name = localStorage.getItem('firstName')
 </script>
 
 <template>
-  <h1>Hello, {{ name }}</h1>
-  <RouterLink to="/profile">My Profile</RouterLink>
-  <br>
-  <RouterLink to="/job-postings">See Published Job Postings</RouterLink>
-  <br>
-  <RouterLink to="/job-applications">My Job Applications</RouterLink>
-  <br>
-  <button type="button" @click="handleSignOut">Sign Out</button>
-  <br>
+  <div class="center-box">
+    <h1>Hello, {{ name }}</h1>
+    <RouterLink to="/profile" class="link">My Profile</RouterLink>
+    <RouterLink to="/job-postings" class="link">See Published Job Postings</RouterLink>
+    <RouterLink to="/job-applications" class="link">My Job Applications</RouterLink>
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.center-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.link {
+  margin-bottom: 15px;
+}
+</style>

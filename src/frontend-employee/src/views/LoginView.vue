@@ -43,7 +43,6 @@ const setErrorMessage = (message) => {
 <template>
   <div class="form-box">
     <h1>Login as an Employee</h1>
-    <br>
     <form @submit.prevent="handleLogin">
       <div class="form-row">
         <label for="email">Email</label>
@@ -68,13 +67,6 @@ const setErrorMessage = (message) => {
 .error-message {
   color: red;
   font-weight: bold;
-}
-
-.form-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  width: 100%;
 }
 
 button {

@@ -30,6 +30,7 @@ const showHeader = computed(() => {
 
 .content {
   flex: 1;
+  width: auto;
 }
 
 * {
