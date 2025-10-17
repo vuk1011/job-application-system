@@ -48,22 +48,25 @@ const setSuccessMessage = (message) => {
   <h1>Create a New Job Posting</h1>
   <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
   <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-  <hr>
 
   <form @submit.prevent="handleCreate">
-    <label for="title"><b>Title:</b></label>
-    <input id="title" type="text" v-model="job.title" maxlength="50">
-    <br>
+    <div class="form-row">
+      <label for="title"><b>Title:</b></label>
+      <input id="title" type="text" v-model="job.title" maxlength="50">
+    </div>
 
-    <label for="desc"><b>Description:</b></label>
-    <textarea id="desc" name="description" rows="6" cols="50" maxlength="3000" v-model="job.desc"></textarea>
-    <br>
+    <div class="form-row">
+      <label for="desc"><b>Description:</b></label>
+      <textarea id="desc" name="description" rows="6" cols="50" maxlength="3000" v-model="job.desc"></textarea>
+    </div>
 
-    <label for="expires"><b>Expires:</b></label>
-    <input id="expires" type="date" v-model="job.expires">
-    <br>
+    <div class="form-row">
+      <label for="expires"><b>Expires:</b></label>
+      <input id="expires" type="date" v-model="job.expires">
+    </div>
 
-    <button type="submit">Create</button>
+      <button type="submit">Create</button>
+    
   </form>
 </template>
 
@@ -76,5 +79,10 @@ const setSuccessMessage = (message) => {
 .error-message {
   color: red;
   font-weight: bold;
+}
+button {
+  margin-top: 20px;
+  font-size: 16px;
+  padding: 5px;
 }
 </style>

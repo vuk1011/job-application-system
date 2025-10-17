@@ -91,4 +91,8 @@ const setErrorMessage = (message) => {
   color: red;
   font-weight: bold;
 }
+
+button {
+  margin-left: 15px;
+}
 </style>

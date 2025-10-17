@@ -69,7 +69,7 @@ const setSuccessMessage = (message) => {
   <p><b>Description: </b>{{ jobApplication.jobDesc }}</p>
   <hr>
 
-  <RouterLink :to="`/managed/${jobApplication.id}/candidate`">Candidate Profile</RouterLink>
+  <RouterLink :to="`/managed/${jobApplication.id}/candidate`" class="link">Candidate Profile</RouterLink>
   <hr>
 
   <p><b>Application status: </b>{{ jobApplication.status }}</p>
@@ -91,5 +91,21 @@ const setSuccessMessage = (message) => {
 .error-message {
   color: red;
   font-weight: bold;
+}
+
+button {
+  margin-left: 15px;
+}
+
+h1,
+h2,
+p,
+select {
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.link {
+  margin: 15px;
 }
 </style>

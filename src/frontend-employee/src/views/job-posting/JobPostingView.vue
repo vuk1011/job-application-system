@@ -74,34 +74,43 @@ const setSuccessMessage = (message) => {
 </script>
 
 <template>
+
   <h1>Job Posting Details</h1>
   <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
   <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-  <hr>
 
-  <label for="title"><b>Title:</b></label>
-  <input id="title" type="text" v-model="job.title" maxlength="50">
-  <br>
+  <form>
+    <div class="form-row">
+      <label for="title"><b>Title:</b></label>
+      <input id="title" type="text" v-model="job.title" maxlength="50">
+    </div>
 
-  <div>
-    <label for="desc"><b>Description:</b></label>
-    <textarea id="desc" name="description" rows="6" cols="50" maxlength="3000" v-model="job.desc"></textarea>
-  </div>
 
-  <label for="published"><b>Published:</b></label>
-  <input id="published" type="date" v-model="job.published" disabled="true">
-  <br>
+    <div class="form-row">
+      <label for="desc"><b>Description:</b></label>
+      <textarea id="desc" name="description" rows="6" cols="50" maxlength="3000" v-model="job.desc"></textarea>
+    </div>
 
-  <label for="expires"><b>Expires:</b></label>
-  <input id="expires" type="date" v-model="job.expires" :disabled="job.status === 'CLOSED'">
-  <br>
+    <div class="form-row">
+      <label for="published"><b>Published:</b></label>
+      <input id="published" type="date" v-model="job.published" disabled="true">
+    </div>
 
-  <label for="status"><b>Status:</b></label>
-  <span>{{ job.status }}</span>
-  <br>
+    <div class="form-row">
+      <label for="expires"><b>Expires:</b></label>
+      <input id="expires" type="date" v-model="job.expires" :disabled="job.status === 'CLOSED'">
+    </div>
 
-  <button type="button" @click="updateJob">Update</button>
-  <button type="button" @click="deleteJob">Delete</button>
+    <div class="form-row">
+      <label for="status"><b>Status:</b></label>
+      <span>{{ job.status }}</span>
+    </div>
+
+    <div class="form-row">
+      <button type="button" @click="updateJob">Update</button>
+      <button type="button" @click="deleteJob">Delete</button>
+    </div>
+  </form>
 </template>
 
 <style scoped>
@@ -113,5 +122,10 @@ const setSuccessMessage = (message) => {
 .error-message {
   color: red;
   font-weight: bold;
+}
+
+button {
+  margin-top: 20px;
+  width: 20%;
 }
 </style>

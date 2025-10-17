@@ -19,6 +19,10 @@ div {
   margin: 5px 10px;
   padding: 8px;
   border-radius: 5px;
-  background-color: bisque;
+  border: 2px solid #4FB180;
+}
+
+h2 {
+  font-weight: 500;
 }
 </style>

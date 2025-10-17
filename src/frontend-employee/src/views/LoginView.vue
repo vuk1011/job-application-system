@@ -20,8 +20,9 @@ const handleLogin = async () => {
     let jwt = response.data.data.jwt
     let firstName = response.data.data.firstName
 
-    router.push({ path: '/', query: { name: firstName } })
+    router.push('/')
     localStorage.setItem('jwt', jwt)
+    localStorage.setItem('firstName', firstName)
   } catch (error) {
     let message = error.response?.data?.message || error.message || 'Login failed'
     setErrorMessage(message)
@@ -40,23 +41,48 @@ const setErrorMessage = (message) => {
 </script>
 
 <template>
-  <h1>Login as an Employee</h1>
-  <form @submit.prevent="handleLogin">
-    <label for="email">Email</label>
-    <input type="text" id="email" v-model="formData.email" maxlength="50">
+  <div class="form-box">
+    <h1>Login as an Employee</h1>
     <br>
-    <label for="password">Password</label>
-    <input type="password" id="password" v-model="formData.password" maxlength="30">
-    <br>
-    <button type="submit">Login</button>
-  </form>
+    <form @submit.prevent="handleLogin">
+      <div class="form-row">
+        <label for="email">Email</label>
+        <input type="text" id="email" v-model="formData.email" maxlength="50">
+      </div>
 
-  <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+      <div class="form-row">
+        <label for="password">Password</label>
+        <input type="password" id="password" v-model="formData.password" maxlength="30">
+      </div>
+
+      <button type="submit">Login</button>
+    </form>
+
+    <div class="error-container">
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+    </div>
+  </div>
 </template>
 
 <style scoped>
 .error-message {
   color: red;
   font-weight: bold;
+}
+
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+button {
+  margin-top: 15px;
+  width: 50%;
+}
+
+input {
+  width: 60%;
 }
 </style>
