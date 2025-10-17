@@ -64,21 +64,25 @@ const setErrorMessage = (message) => {
 </script>
 
 <template>
-  <h1>Search job applications by job posting</h1>
+  <div>
+    <h1>Search job applications by job posting</h1>
 
-  <select v-model="selectedJobId">
-    <option v-for="job in jobPostings" :key="job.id" :value="job.id">
-      {{ `${job.title} (${job.status})` }}
-    </option>
-  </select>
-  <button type="button" @click="searchApplications">Search</button>
+    <select v-model="selectedJobId">
+      <option v-for="job in jobPostings" :key="job.id" :value="job.id">
+        {{ `${job.title} (${job.status})` }}
+      </option>
+    </select>
+    <button type="button" @click="searchApplications">Search</button>
 
-  <hr>
-  <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
-  <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+    <hr>
+    <div class="error-container">
+      <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+    </div>
 
-  <UnmanagedJobAppl v-for="appl in jobApplications" :key="appl.id" :id="appl.id" :submitted="new Date(appl.submitted)"
-    @manage-application="id => addToManaged(id)" />
+    <UnmanagedJobAppl v-for="appl in jobApplications" :key="appl.id" :id="appl.id" :submitted="new Date(appl.submitted)"
+      @manage-application="id => addToManaged(id)" />
+  </div>
 </template>
 
 <style scoped>

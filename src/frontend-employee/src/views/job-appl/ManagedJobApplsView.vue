@@ -1,11 +1,20 @@
 <script setup>
 import ManagedJobAppl from '@/components/ManagedJobAppl.vue';
-import { getManagedJobAppls } from '@/services/jobApplService';
-import { onMounted, ref } from 'vue';
 import router from '@/router';
+import { getManagedJobAppls } from '@/services/jobApplService';
+import { computed, onMounted, ref } from 'vue';
+
+const statusFilterOptions = ['ALL', 'INTERVIEW_SCHEDULED', 'OFFERED', 'ACCEPTED', 'REJECTED']
 
 const jobApplications = ref([])
+const statusFilterSelection = ref('ALL')
 const errorMessage = ref('')
+
+const filteredApplications = computed(() =>
+  statusFilterSelection.value === 'ALL'
+    ? jobApplications.value
+    : jobApplications.value.filter(appl => appl.status === statusFilterSelection.value)
+)
 
 onMounted(async () => {
   try {
@@ -33,13 +42,33 @@ const setErrorMessage = (message) => {
 </script>
 
 <template>
-  <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+  <div class="container">
+    <div class="error-container">
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+    </div>
 
-  <ManagedJobAppl v-for="appl in jobApplications" :key="appl.id" :id="appl.id" :submitted="new Date(appl.submitted)"
-    :status="appl.status" :job="appl.job" @open-application="id => openApplication(id)" />
+    <div>
+      <label for="status-filter">Filter by status: </label>
+      <select v-model="statusFilterSelection">
+        <option v-for="status in statusFilterOptions" :value="status">
+          {{ status }}
+        </option>
+      </select>
+    </div>
+
+    <ManagedJobAppl v-for="appl in filteredApplications" :key="appl.id" :id="appl.id"
+      :submitted="new Date(appl.submitted)" :status="appl.status" :job="appl.job"
+      @open-application="id => openApplication(id)" />
+  </div>
 </template>
 
 <style scoped>
+.container {
+  width: 1000px;
+  display: flex;
+  flex-direction: column;
+}
+
 .error-message {
   color: red;
   font-weight: bold;

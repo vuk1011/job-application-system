@@ -2,10 +2,19 @@
 import JobPosting from '@/components/JobPosting.vue';
 import router from '@/router';
 import { getJobPostings } from '@/services/jobPostingService';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
+
+const statusFilterOptions = ['ALL', 'PUBLISHED', 'CLOSED']
 
 const jobs = ref([])
+const statusFilterSelection = ref('ALL')
 const errorMessage = ref('')
+
+const filteredJobs = computed(() =>
+  statusFilterSelection.value === 'ALL'
+    ? jobs.value
+    : jobs.value.filter(job => job.status === statusFilterSelection.value)
+)
 
 onMounted(async () => {
   try {
@@ -32,18 +41,35 @@ const setErrorMessage = (message) => {
 </script>
 
 <template>
-  <div class="list-header">
-    <h1>Job Postings</h1>
-    <button type="button" @click="router.push('/job-postings/create')">Create New</button>
-  </div>
-  
-  <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+  <div class="container">
+    <div class="list-header">
+      <h1>Job Postings</h1>
+      <button type="button" @click="router.push('/job-postings/create')">Create New</button>
+    </div>
 
-  <JobPosting v-for="job in jobs" :key="job.id" :id="job.id" :title="job.title" :published="job.published"
-    :status="job.status" @open-job-posting="id => openJobPosting(id)" />
+    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+
+    <div>
+      <label for="status-filter">Filter by status: </label>
+      <select v-model="statusFilterSelection">
+        <option v-for="status in statusFilterOptions" :value="status">
+          {{ status }}
+        </option>
+      </select>
+    </div>
+
+    <JobPosting v-for="job in filteredJobs" :key="job.id" :id="job.id" :title="job.title" :published="job.published"
+      :status="job.status" @open-job-posting="id => openJobPosting(id)" />
+  </div>
 </template>
 
 <style scoped>
+.container {
+  width: 800px;
+  display: flex;
+  flex-direction: column;
+}
+
 .error-message {
   color: red;
   font-weight: bold;
