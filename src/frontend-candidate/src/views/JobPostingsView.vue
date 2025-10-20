@@ -17,9 +17,8 @@ onMounted(async () => {
       description: jobDto.description,
       expires: jobDto.dateOfExpiration,
     }))
-  } catch (error) {
-    const message = error.response?.data?.message || error.message || 'Failed loading job postings'
-    setErrorMessage(message)
+  } catch (_) {
+    setErrorMessage('Failed loading job postings')
   }
 })
 
@@ -29,9 +28,8 @@ const submitApplication = async (jobId) => {
   try {
     const response = await submitJobAppl(request)
     setSuccessMessage(response.data.message)
-  } catch (error) {
-    const message = error.response?.data?.message || error.message || 'Failed submitting application'
-    setErrorMessage(message)
+  } catch (_) {
+    setErrorMessage('Failed submitting application')
   }
 }
 

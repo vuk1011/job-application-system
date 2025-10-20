@@ -28,9 +28,8 @@ onMounted(async () => {
 		if (data.status === 'OFFERED' || data.status === 'ACCEPTED' || data.status === 'REJECTED') {
 			ableToWithdraw.value = false
 		}
-	} catch (error) {
-		const message = error.response?.data?.message || error.message || 'Failed loading job application'
-		setErrorMessage(message)
+	} catch (_) {
+		setErrorMessage('Failed loading job application')
 	}
 })
 
@@ -40,9 +39,8 @@ const withdraw = async () => {
 		const response = await withdrawJobAppl(id)
 		setSuccessMessage(response.data.message)
 		ableToWithdraw.value = false
-	} catch (error) {
-		const message = error.response?.data?.message || error.message || 'Failed withdrawing job application'
-		setErrorMessage(message)
+	} catch (_) {
+		setErrorMessage('Failed to withdraw job application')
 	}
 }
 

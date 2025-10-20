@@ -25,9 +25,8 @@ onMounted(async () => {
       published: new Date(dto.dateOfPublishing),
       status: dto.status,
     }))
-  } catch (error) {
-    const message = error.response?.data?.message || error.message || 'Failed updating application\'s status'
-    setErrorMessage(message)
+  } catch (_) {
+    setErrorMessage('Failed updating application\'s status')
   }
 })
 

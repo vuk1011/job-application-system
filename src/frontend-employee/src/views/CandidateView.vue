@@ -26,10 +26,9 @@ onMounted(async () => {
     personalInfo.value.phone = data.phone
     personalInfo.value.address = data.address
     personalInfo.value.email = data.email
-  } catch (error) {
-    const message = error.response?.data?.message || error.message || 'Failed loading candidate\'s information'
+  } catch (_) {
     window.scroll({ top: 0, behavior: 'smooth' })
-    setErrorMessage(message)
+    setErrorMessage('Failed to load candidate\'s information and/or resume')
   }
 
   try {
@@ -37,12 +36,10 @@ onMounted(async () => {
     const blob = new Blob([response.data], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
     resumeUrl.value = url;
-  } catch (error) {
-    const message = error.response?.data?.message || error.message || 'Failed loading candidate\'s resume'
+  } catch (_) {
     window.scroll({ top: 0, behavior: 'smooth' })
-    setErrorMessage(message)
+    setErrorMessage('Failed to load candidate\'s information and/or resume')
   }
-
 })
 
 const setErrorMessage = (message) => {

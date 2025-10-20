@@ -25,9 +25,8 @@ onMounted(async () => {
       status: appl.status,
       job: appl.jobPosting.title,
     }))
-  } catch (error) {
-    const message = error.response?.data?.message || error.message || 'Failed getting the list of applications you manage'
-    setErrorMessage(message)
+  } catch (_) {
+    setErrorMessage('Failed to load job applications you manage')
   }
 })
 

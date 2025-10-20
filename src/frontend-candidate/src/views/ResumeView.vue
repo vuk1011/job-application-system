@@ -13,9 +13,8 @@ const handleUpload = async () => {
   try {
     const response = await uploadResume(selectedFile.value)
     setSuccessMessage(response.data.message)
-  } catch (error) {
-    let message = error.response?.data?.message || error.message || 'Resume upload failed'
-    setErrorMessage(message)
+  } catch (_) {
+    setErrorMessage('Failed to upload resume')
   } finally {
     isLoading.value = false
   }
@@ -32,9 +31,8 @@ const handleDownload = async () => {
     link.download = 'resume.pdf'
     link.click()
     window.URL.revokeObjectURL(url)
-  } catch (error) {
-    let message = error.response?.data?.message || error.message || 'Resume download failed'
-    setErrorMessage(message)
+  } catch (_) {
+    setErrorMessage('Failed to download resume')
   } finally {
     isLoading.value = false
   }
@@ -45,9 +43,8 @@ const handleDelete = async () => {
   try {
     const response = await deleteResume()
     setSuccessMessage(response.data.message)
-  } catch (error) {
-    let message = error.response?.data?.message || error.message || 'Resume deletion failed'
-    setErrorMessage(message)
+  } catch (_) {
+    setErrorMessage('Failed to delete resume')
   } finally {
     isLoading.value = false
   }

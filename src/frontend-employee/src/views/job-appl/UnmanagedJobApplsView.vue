@@ -18,9 +18,8 @@ onMounted(async () => {
       title: job.title,
       status: job.status,
     }))
-  } catch (error) {
-    const message = error.response?.data?.message || error.message || 'Failed loading job postings'
-    setErrorMessage(message)
+  } catch (_) {
+    setErrorMessage('Failed to load job postings')
   }
 })
 
@@ -33,9 +32,8 @@ const searchApplications = async () => {
       id: appl.id,
       submitted: appl.dateOfSubmission,
     }))
-  } catch (error) {
-    const message = error.response?.data?.message || error.message || 'Failed loading job applications for selected job posting'
-    setErrorMessage(message)
+  } catch (_) {
+    setErrorMessage('Failed loading job applications for selected job posting')
   }
 }
 
@@ -46,9 +44,8 @@ const addToManaged = async (id) => {
     const response = await addJobApplToManaged(request)
     jobApplications.value = jobApplications.value.filter(appl => appl.id !== id)
     setSuccessMessage(response.data.message)
-  } catch (error) {
-    const message = error.response?.data?.message || error.message || 'Failed adding job application to the managed list'
-    setErrorMessage(message)
+  } catch (_) {
+    setErrorMessage('Failed adding job application to the managed list')
   }
 }
 

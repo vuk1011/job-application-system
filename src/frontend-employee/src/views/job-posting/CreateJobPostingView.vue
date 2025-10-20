@@ -27,9 +27,8 @@ const handleCreate = async () => {
     const request = { title: job.value.title, description: job.value.desc, dateOfExpiration: job.value.expires }
     const response = await createJobPosting(request)
     setSuccessMessage(response.data.message)
-  } catch (error) {
-    const message = error.response?.data?.message || error.message || 'Failed to create job posting'
-    setErrorMessage(message)
+  } catch (_) {
+    setErrorMessage('Failed to create job posting')
   }
 }
 

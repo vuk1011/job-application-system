@@ -15,9 +15,8 @@ onMounted(async () => {
       title: appl.jobPosting.title,
       submitted: appl.dateOfSubmission,
     }))
-  } catch (error) {
-    const message = error.response?.data?.message || error.message || 'Failed loading job applications'
-    setErrorMessage(message)
+  } catch (_) {
+    setErrorMessage('Failed to load job applications')
   }
 })
 

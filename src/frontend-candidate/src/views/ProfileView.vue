@@ -25,9 +25,8 @@ onMounted(async () => {
     profileInfo.value.phone = response.data.data.phone
     profileInfo.value.address = response.data.data.address
     profileInfo.value.email = response.data.data.email
-  } catch (error) {
-    let message = error.response?.data?.message || error.message || 'Registration failed'
-    setErrorMessage(message)
+  } catch (_) {
+    setErrorMessage('Failed to load profile information')
   }
 })
 
@@ -46,9 +45,8 @@ const handleUpdate = async () => {
     }
     const response = await updateProfile(request)
     setSuccessMessage(response.data.message)
-  } catch (error) {
-    let message = error.response?.data?.message || error.message || 'Profile update failed'
-    setErrorMessage(message)
+  } catch (_) {
+    setErrorMessage('Failed to update profile')
   }
 }
 

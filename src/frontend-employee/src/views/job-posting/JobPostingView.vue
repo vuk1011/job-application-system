@@ -24,9 +24,8 @@ onMounted(async () => {
     job.value.published = data.dateOfPublishing
     job.value.expires = data.dateOfExpiration
     job.value.status = data.status
-  } catch (error) {
-    const message = error.response?.data?.message || error.message || 'Failed getting the list of applications you manage'
-    setErrorMessage(message)
+  } catch (_) {
+    setErrorMessage('Failed getting the list of applications you manage')
   }
 })
 
@@ -39,9 +38,8 @@ const updateJob = async () => {
     const request = { title: job.value.title, description: job.value.desc, dateOfExpiration: job.value.expires }
     const response = await updateJobPosting(job.value.id, request)
     setSuccessMessage(response.data.message)
-  } catch (error) {
-    const message = error.response?.data?.message || error.message || 'Failed updating job posting'
-    setErrorMessage(message)
+  } catch (_) {
+    setErrorMessage('Failed to update job posting')
   }
 }
 
@@ -49,7 +47,7 @@ const deleteJob = async () => {
   try {
     const response = await deleteJobPosting(job.value.id)
     setSuccessMessage(response.data.message)
-  } catch (error) {
+  } catch (_) {
     setErrorMessage('Failed deleting job posting. There could be applications associated with it.')
   }
 }
