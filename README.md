@@ -2,7 +2,7 @@
 ## Description
 This project was developed while taking a course on Advanced Java Technologies at my university. We were tasked with creating a fullstack web app for any kind of system. Spring was mandatory for backend, while the frontend could be implemented in any technology. 
 
-I decided to model a job application system, represented by [this](https://github.com/vuk1011/job-application-system/blob/main/UML-ClassDiagram.png) UML class diagram.
+I decided to model a job application system, represented by [this](https://github.com/vuk1011/job-application-system/blob/main/UML_Class_Diagram.png) UML class diagram.
 A user of the platform is either a candidate or an employee.
 
 A candidate can:
