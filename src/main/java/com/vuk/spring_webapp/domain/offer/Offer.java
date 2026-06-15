@@ -1,5 +1,6 @@
 package com.vuk.spring_webapp.domain.offer;
 
+import com.vuk.spring_webapp.domain.job_application.JobApplication;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,9 @@ public class Offer {
     @Column(length = 50, nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private boolean accepted;
+    private Boolean accepted;
+
+    @ManyToOne
+    @JoinColumn(name = "job_application_id", referencedColumnName = "id", nullable = false)
+    private JobApplication jobApplication;
 }

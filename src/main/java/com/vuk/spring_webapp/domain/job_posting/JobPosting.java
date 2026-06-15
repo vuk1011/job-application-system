@@ -1,5 +1,6 @@
 package com.vuk.spring_webapp.domain.job_posting;
 
+import com.vuk.spring_webapp.domain.company.Company;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,10 @@ public class JobPosting {
 
     @Column(name = "date_of_expiration", nullable = false)
     private LocalDate dateOfExpiration;
+
+    @ManyToOne
+    @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
+    private Company company;
 
     @Transient
     public JobPostingStatus getStatus() {

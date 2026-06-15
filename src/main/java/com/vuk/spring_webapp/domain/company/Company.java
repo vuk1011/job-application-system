@@ -1,9 +1,13 @@
 package com.vuk.spring_webapp.domain.company;
 
+import com.vuk.spring_webapp.domain.job_posting.JobPosting;
+import com.vuk.spring_webapp.domain.user.Employee;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Table(name = "companies")
@@ -24,4 +28,10 @@ public class Company {
 
     @Column(length = 50, nullable = false)
     private String address;
+
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
+    private List<Employee> employees;
+
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
+    private List<JobPosting> jobPostings;
 }
