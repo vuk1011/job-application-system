@@ -31,4 +31,11 @@ public class Interview {
     @ManyToOne
     @JoinColumn(name = "job_application_id", referencedColumnName = "id", nullable = false)
     private JobApplication jobApplication;
+
+    public Interview(String title, String description, LocalDateTime timeScheduled, JobApplication jobApplication) {
+        this.title = title;
+        this.description = description;
+        this.timeScheduled = timeScheduled;
+        this.jobApplication = jobApplication;
+    }
 }

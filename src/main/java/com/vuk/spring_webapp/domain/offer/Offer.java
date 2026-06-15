@@ -25,4 +25,9 @@ public class Offer {
     @ManyToOne
     @JoinColumn(name = "job_application_id", referencedColumnName = "id", nullable = false)
     private JobApplication jobApplication;
+
+    public Offer(String name, JobApplication jobApplication) {
+        this.name = name;
+        this.jobApplication = jobApplication;
+    }
 }
