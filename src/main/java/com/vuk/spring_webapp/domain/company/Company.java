@@ -34,4 +34,10 @@ public class Company {
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
     private List<JobPosting> jobPostings;
+
+    public Company(String name, String about, String address) {
+        this.name = name;
+        this.about = about;
+        this.address = address;
+    }
 }
