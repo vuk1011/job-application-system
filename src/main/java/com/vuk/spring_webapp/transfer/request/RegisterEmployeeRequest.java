@@ -17,4 +17,5 @@ public class RegisterEmployeeRequest {
     private String nationalId;
     private LocalDate dateOfBirth;
     private LocalDate dateOfHire;
+    private Long companyId;
 }
