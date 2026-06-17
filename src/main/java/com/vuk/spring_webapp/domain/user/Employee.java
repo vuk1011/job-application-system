@@ -31,14 +31,15 @@ public class Employee extends AppUser {
     private List<JobApplication> managedJobApplications = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "company_id", referencedColumnName = "id")
     private Company company;
 
     public Employee(String firstName, String lastName, Sex sex, String phone, String address, String email,
-                    String password, String nationalId, LocalDate dateOfBirth, LocalDate dateOfHire) {
+                    String password, String nationalId, LocalDate dateOfBirth, LocalDate dateOfHire, Company company) {
         super(Role.EMPLOYEE, firstName, lastName, sex, phone, address, email, password);
         this.nationalId = nationalId;
         this.dateOfBirth = dateOfBirth;
         this.dateOfHire = dateOfHire;
+        this.company = company;
     }
 }

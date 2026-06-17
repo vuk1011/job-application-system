@@ -1,8 +1,11 @@
 package com.vuk.spring_webapp.service.employee;
 
+import com.vuk.spring_webapp.domain.company.Company;
 import com.vuk.spring_webapp.domain.user.Employee;
 import com.vuk.spring_webapp.exception.EmailInUseException;
+import com.vuk.spring_webapp.exception.ResourceNotFoundException;
 import com.vuk.spring_webapp.repository.AppUserRepository;
+import com.vuk.spring_webapp.repository.CompanyRepository;
 import com.vuk.spring_webapp.repository.EmployeeRepository;
 import com.vuk.spring_webapp.transfer.request.RegisterEmployeeRequest;
 import lombok.RequiredArgsConstructor;
@@ -15,13 +18,21 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final AppUserRepository userRepository;
     private final EmployeeRepository employeeRepository;
+    private final CompanyRepository companyRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
     public void register(RegisterEmployeeRequest request) {
+        if (request.getCompanyId() == null) {
+            throw new IllegalArgumentException("Company ID is required");
+        }
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new EmailInUseException("Email is already in use");
         }
+
+        Company company = companyRepository.findById(request.getCompanyId())
+                .orElseThrow(() -> new ResourceNotFoundException("Company not found"));
+
         Employee employee = new Employee(
                 request.getFirstName(),
                 request.getLastName(),
@@ -32,7 +43,8 @@ public class EmployeeServiceImpl implements EmployeeService {
                 passwordEncoder.encode(request.getPassword()),
                 request.getNationalId(),
                 request.getDateOfBirth(),
-                request.getDateOfHire()
+                request.getDateOfHire(),
+                company
         );
         userRepository.save(employee);
     }
