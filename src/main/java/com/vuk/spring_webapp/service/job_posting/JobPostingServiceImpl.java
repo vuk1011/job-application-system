@@ -1,15 +1,21 @@
 package com.vuk.spring_webapp.service.job_posting;
 
+import com.vuk.spring_webapp.domain.company.Company;
 import com.vuk.spring_webapp.domain.job_posting.JobPosting;
 import com.vuk.spring_webapp.domain.job_posting.JobPostingStatus;
+import com.vuk.spring_webapp.domain.user.Employee;
 import com.vuk.spring_webapp.exception.ConflictException;
 import com.vuk.spring_webapp.exception.ResourceNotFoundException;
+import com.vuk.spring_webapp.repository.CompanyRepository;
+import com.vuk.spring_webapp.repository.EmployeeRepository;
 import com.vuk.spring_webapp.repository.JobPostingRepository;
 import com.vuk.spring_webapp.transfer.dto.JobPostingDto;
 import com.vuk.spring_webapp.transfer.request.CreateJobPostingRequest;
 import com.vuk.spring_webapp.transfer.request.UpdateJobPostingRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,7 +26,15 @@ import java.util.List;
 public class JobPostingServiceImpl implements JobPostingService {
 
     private final JobPostingRepository jobPostingRepository;
+    private final EmployeeRepository employeeRepository;
     private final ModelMapper modelMapper;
+
+    private Company getCompany() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        Employee employee = employeeRepository.findByEmail(email);
+        return employee.getCompany();
+    }
 
     @Override
     public JobPostingDto findById(Long id) {
@@ -58,7 +72,8 @@ public class JobPostingServiceImpl implements JobPostingService {
                 request.getTitle(),
                 request.getDescription(),
                 LocalDate.now(),
-                request.getDateOfExpiration()
+                request.getDateOfExpiration(),
+                getCompany()
         );
         jobPosting = jobPostingRepository.save(jobPosting);
         return modelMapper.map(jobPosting, JobPostingDto.class);

@@ -40,10 +40,12 @@ public class JobPosting {
         return this.dateOfExpiration.isBefore(LocalDate.now()) ? JobPostingStatus.CLOSED : JobPostingStatus.PUBLISHED;
     }
 
-    public JobPosting(String title, String description, LocalDate dateOfPublishing, LocalDate dateOfExpiration) {
+    public JobPosting(String title, String description, LocalDate dateOfPublishing, LocalDate dateOfExpiration,
+                      Company company) {
         this.title = title;
         this.description = description;
         this.dateOfPublishing = dateOfPublishing;
         this.dateOfExpiration = dateOfExpiration;
+        this.company = company;
     }
 }
