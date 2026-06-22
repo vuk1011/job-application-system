@@ -46,7 +46,7 @@ public class JobPostingServiceImpl implements JobPostingService {
     @Override
     public List<JobPostingDto> findAll() {
         return jobPostingRepository
-                .findAll()
+                .findAllByCompany(getCompany())
                 .stream()
                 .map(posting -> modelMapper.map(posting, JobPostingDto.class))
                 .toList();

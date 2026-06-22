@@ -13,4 +13,5 @@ public class JobPostingDto {
     private LocalDate dateOfPublishing;
     private LocalDate dateOfExpiration;
     private JobPostingStatus status;
+    private String companyName;
 }

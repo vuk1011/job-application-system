@@ -14,6 +14,7 @@ onMounted(async () => {
       id: appl.id,
       title: appl.jobPosting.title,
       submitted: appl.dateOfSubmission,
+      companyName: appl.jobPosting.companyName,
     }))
   } catch (_) {
     setErrorMessage('Failed to load job applications')
@@ -35,7 +36,7 @@ const setErrorMessage = (message) => {
   <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
   <JobAppl v-for="appl in jobAppls" :key="appl.id" :id="appl.id" :title="appl.title"
-    :submitted="new Date(appl.submitted)" @open-application="id => openApplication(id)" />
+    :submitted="new Date(appl.submitted)" :company-name="appl.companyName" @open-application="id => openApplication(id)" />
 </template>
 
 <style scoped>

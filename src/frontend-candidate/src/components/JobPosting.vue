@@ -4,12 +4,14 @@ defineProps({
   title: String,
   description: String,
   expires: Date,
+  companyName: String,
 })
 </script>
 
 <template>
   <div>
     <h2>{{ title }}</h2>
+    <h4>- {{ companyName }} -</h4>
     <p>{{ description }}</p>
     <p><i>Expires: {{ expires.toLocaleDateString() }}</i></p>
     <button type="button" @click="$emit('apply', id)">Apply</button>

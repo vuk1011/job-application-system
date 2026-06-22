@@ -16,6 +16,7 @@ onMounted(async () => {
       title: jobDto.title,
       description: jobDto.description,
       expires: jobDto.dateOfExpiration,
+      companyName: jobDto.companyName,
     }))
   } catch (_) {
     setErrorMessage('Failed loading job postings')
@@ -51,7 +52,7 @@ const setSuccessMessage = (message) => {
     <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
   </div>
   <JobPosting v-for="job in jobPostings" :key="job.id" :id="job.id" :title="job.title" :description="job.description"
-    :expires="new Date(job.expires)" @apply="id => submitApplication(id)" />
+    :expires="new Date(job.expires)" :company-name="job.companyName" @apply="id => submitApplication(id)" />
 </template>
 
 <style scoped>

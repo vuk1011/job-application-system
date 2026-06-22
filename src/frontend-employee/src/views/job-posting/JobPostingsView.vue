@@ -42,7 +42,7 @@ const setErrorMessage = (message) => {
 <template>
   <div class="container">
     <div class="list-header">
-      <h1>Job Postings</h1>
+      <h1>Job Postings in Your company</h1>
       <button type="button" @click="router.push('/job-postings/create')">Create New</button>
     </div>
 
