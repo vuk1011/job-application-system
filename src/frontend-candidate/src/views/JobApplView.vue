@@ -14,6 +14,7 @@ const jobAppl = ref({
 	description: '-',
 	submitted: new Date(),
 	status: '-',
+	companyName: '-',
 })
 
 onMounted(async () => {
@@ -24,6 +25,7 @@ onMounted(async () => {
 		jobAppl.value.description = data.jobPosting.description
 		jobAppl.value.submited = new Date(data.dateOfSubmission)
 		jobAppl.value.status = data.status
+		jobAppl.value.companyName = data.jobPosting.companyName
 
 		if (data.status === 'OFFERED' || data.status === 'ACCEPTED' || data.status === 'REJECTED') {
 			ableToWithdraw.value = false
@@ -62,6 +64,7 @@ const setSuccessMessage = (message) => {
 		<p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 	</div>
 	<hr>
+	<h4>Company: {{ jobAppl.companyName }}</h4>
 	<p>{{ jobAppl.description }}</p>
 	<p><i>Submitted: {{ jobAppl.submitted.toLocaleDateString() }}</i></p>
 	<p>Status: {{ jobAppl.status }}</p>

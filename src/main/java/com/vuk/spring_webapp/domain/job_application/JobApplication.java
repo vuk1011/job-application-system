@@ -1,6 +1,8 @@
 package com.vuk.spring_webapp.domain.job_application;
 
+import com.vuk.spring_webapp.domain.interview.Interview;
 import com.vuk.spring_webapp.domain.job_posting.JobPosting;
+import com.vuk.spring_webapp.domain.offer.Offer;
 import com.vuk.spring_webapp.domain.user.Candidate;
 import com.vuk.spring_webapp.domain.user.Employee;
 import jakarta.persistence.*;
@@ -9,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 import static com.vuk.spring_webapp.domain.job_application.JobApplicationStatus.ACCEPTED;
@@ -42,6 +45,12 @@ public class JobApplication {
     @ManyToOne
     @JoinColumn(name = "candidate_id", referencedColumnName = "id", nullable = false)
     private Candidate candidate;
+
+    @OneToMany(mappedBy = "jobApplication", cascade = CascadeType.ALL)
+    private List<Offer> offers;
+
+    @OneToMany(mappedBy = "jobApplication", cascade = CascadeType.ALL)
+    private List<Interview> interviews;
 
     public JobApplication(LocalDate dateOfSubmission, JobApplicationStatus status, JobPosting jobPosting, Employee employee, Candidate candidate) {
         this.dateOfSubmission = dateOfSubmission;

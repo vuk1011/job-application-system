@@ -2,6 +2,7 @@ package com.vuk.spring_webapp.controller.employee;
 
 import com.vuk.spring_webapp.domain.user.Role;
 import com.vuk.spring_webapp.exception.EmailInUseException;
+import com.vuk.spring_webapp.exception.ResourceNotFoundException;
 import com.vuk.spring_webapp.exception.UnauthorizedException;
 import com.vuk.spring_webapp.service.app_user.AppUserService;
 import com.vuk.spring_webapp.service.employee.EmployeeService;
@@ -16,8 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.springframework.http.HttpStatus.CONFLICT;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -42,8 +42,12 @@ public class EmployeeAuthController {
         try {
             employeeService.register(request);
             return ResponseEntity.ok(new ApiResponse("Registration successful", null));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(BAD_REQUEST).body(new ApiResponse(e.getMessage(), null));
         } catch (EmailInUseException e) {
             return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
     }
 }

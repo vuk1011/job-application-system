@@ -1,5 +1,6 @@
 package com.vuk.spring_webapp.domain.job_posting;
 
+import com.vuk.spring_webapp.domain.company.Company;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,15 +31,21 @@ public class JobPosting {
     @Column(name = "date_of_expiration", nullable = false)
     private LocalDate dateOfExpiration;
 
+    @ManyToOne
+    @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
+    private Company company;
+
     @Transient
     public JobPostingStatus getStatus() {
         return this.dateOfExpiration.isBefore(LocalDate.now()) ? JobPostingStatus.CLOSED : JobPostingStatus.PUBLISHED;
     }
 
-    public JobPosting(String title, String description, LocalDate dateOfPublishing, LocalDate dateOfExpiration) {
+    public JobPosting(String title, String description, LocalDate dateOfPublishing, LocalDate dateOfExpiration,
+                      Company company) {
         this.title = title;
         this.description = description;
         this.dateOfPublishing = dateOfPublishing;
         this.dateOfExpiration = dateOfExpiration;
+        this.company = company;
     }
 }
