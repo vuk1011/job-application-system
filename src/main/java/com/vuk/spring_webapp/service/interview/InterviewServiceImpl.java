@@ -7,11 +7,14 @@ import com.vuk.spring_webapp.exception.ResourceNotFoundException;
 import com.vuk.spring_webapp.exception.UnauthorizedException;
 import com.vuk.spring_webapp.repository.InterviewRepository;
 import com.vuk.spring_webapp.repository.JobApplicationRepository;
+import com.vuk.spring_webapp.transfer.dto.InterviewDto;
 import com.vuk.spring_webapp.transfer.request.CreateInterviewRequest;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.vuk.spring_webapp.domain.job_application.JobApplicationStatus.INTERVIEW_SCHEDULED;
 
@@ -21,6 +24,26 @@ public class InterviewServiceImpl implements InterviewService {
 
     private final InterviewRepository interviewRepository;
     private final JobApplicationRepository jobApplicationRepository;
+    private final ModelMapper modelMapper;
+
+    @Override
+    public List<InterviewDto> findAllForEmployee(Long employeeId, Long jobApplicationId) {
+        var application = jobApplicationRepository.findById(jobApplicationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Job application not found"));
+
+        if (!application.isManaged()) {
+            throw new ConflictException("This job application is not managed");
+        }
+        if (!application.getEmployee().getId().equals(employeeId)) {
+            throw new UnauthorizedException("Another employee is managing this job application");
+        }
+
+        var interviews = interviewRepository.findByJobApplicationId(jobApplicationId).stream()
+                .map(interview -> modelMapper.map(interview, InterviewDto.class))
+                .toList();
+
+        return interviews;
+    }
 
     @Override
     public void createInterview(Long employeeId, CreateInterviewRequest request) {

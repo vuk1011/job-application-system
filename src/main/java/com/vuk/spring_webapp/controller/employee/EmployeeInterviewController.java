@@ -5,7 +5,6 @@ import com.vuk.spring_webapp.exception.ResourceNotFoundException;
 import com.vuk.spring_webapp.exception.UnauthorizedException;
 import com.vuk.spring_webapp.service.employee.EmployeeService;
 import com.vuk.spring_webapp.service.interview.InterviewService;
-import com.vuk.spring_webapp.service.job_application.JobApplicationService;
 import com.vuk.spring_webapp.transfer.request.CreateInterviewRequest;
 import com.vuk.spring_webapp.transfer.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,13 +21,28 @@ import static org.springframework.http.HttpStatus.*;
 public class EmployeeInterviewController {
 
     private final InterviewService interviewService;
-    private final JobApplicationService jobApplicationService;
     private final EmployeeService employeeService;
 
     private Long getId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
         return employeeService.getIdByEmail(email);
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse> getInterviews(@RequestParam Long jobApplicationId) {
+        try {
+            var response = interviewService.findAllForEmployee(getId(), jobApplicationId);
+            return ResponseEntity.ok(new ApiResponse("Successfully retrieved interviews for job application", response));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(UNAUTHORIZED).body(new ApiResponse(e.getMessage(), null));
+        } catch (ConflictException e) {
+            return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
+        }
     }
 
     @PostMapping
