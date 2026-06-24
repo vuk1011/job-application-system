@@ -158,7 +158,6 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         if (!application.isManaged()) {
             throw new ConflictException("This job application is not managed");
         }
-
         if (!application.getEmployee().getId().equals(employeeId)) {
             throw new UnauthorizedException("Another employee is managing this job application");
         }
