@@ -1,5 +1,6 @@
 package com.vuk.spring_webapp.controller.employee;
 
+import com.vuk.spring_webapp.domain.job_application.JobApplicationStatus;
 import com.vuk.spring_webapp.exception.ConflictException;
 import com.vuk.spring_webapp.exception.ResourceNotFoundException;
 import com.vuk.spring_webapp.exception.ResumeNotUploadedException;
@@ -104,6 +105,11 @@ public class EmployeeJobApplicationController {
 
     @PutMapping("/managed/{applicationId}")
     public ResponseEntity<ApiResponse> updateApplicationStatus(@PathVariable Long applicationId, @RequestBody UpdateJobApplicationStatusRequest request) {
+        if (request.getStatus() == JobApplicationStatus.INTERVIEW_SCHEDULED) {
+            return ResponseEntity.status(CONFLICT).body(new ApiResponse(
+                    "Manually setting status to INTERVIEW_SCHEDULED is not allowed", null
+            ));
+        }
         try {
             jobApplicationService.updateApplicationStatus(getId(), applicationId, request.getStatus());
             return ResponseEntity.ok(new ApiResponse("Successfully updated application's status", null));
