@@ -54,4 +54,19 @@ public class InterviewServiceImpl implements InterviewService {
         );
         interviewRepository.save(interview);
     }
+
+    @Override
+    public void deleteInterview(Long employeeId, Long interviewId) {
+        var interview = interviewRepository.findById(interviewId)
+                .orElseThrow(() -> new ResourceNotFoundException("Interview not found"));
+
+        if (!interview.getJobApplication().getEmployee().getId().equals(employeeId)) {
+            throw new UnauthorizedException("Another employee is managing the associated job application for the interview");
+        }
+        if (interview.getTimeScheduled().isBefore(LocalDateTime.now())) {
+            throw new ConflictException("Interview cannot be deleted after it took place");
+        }
+
+        interviewRepository.delete(interview);
+    }
 }
