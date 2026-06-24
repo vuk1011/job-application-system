@@ -46,6 +46,22 @@ public class InterviewServiceImpl implements InterviewService {
     }
 
     @Override
+    public List<InterviewDto> findAllForCandidate(Long candidateId, Long jobApplicationId) {
+        var application = jobApplicationRepository.findById(jobApplicationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Job application not found"));
+
+        if (!application.getCandidate().getId().equals(candidateId)) {
+            throw new UnauthorizedException("You're unauthorized for this job application");
+        }
+
+        var interviews = interviewRepository.findByJobApplicationId(jobApplicationId).stream()
+                .map(interview -> modelMapper.map(interview, InterviewDto.class))
+                .toList();
+
+        return interviews;
+    }
+
+    @Override
     public void createInterview(Long employeeId, CreateInterviewRequest request) {
         var application = jobApplicationRepository.findById(request.getJobApplicationId())
                 .orElseThrow(() -> new ResourceNotFoundException("Job application not found"));

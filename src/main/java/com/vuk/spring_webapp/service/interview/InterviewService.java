@@ -9,6 +9,8 @@ public interface InterviewService {
 
     List<InterviewDto> findAllForEmployee(Long employeeId, Long jobApplicationId);
 
+    List<InterviewDto> findAllForCandidate(Long candidateId, Long jobApplicationId);
+
     void createInterview(Long employeeId, CreateInterviewRequest request);
 
     void deleteInterview(Long employeeId, Long interviewId);
