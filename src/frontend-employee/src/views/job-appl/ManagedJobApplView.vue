@@ -4,7 +4,11 @@ import { onMounted, ref } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 
 const id = useRoute().params.id
-const stateSelection = ref(['INTERVIEW_SCHEDULED', 'OFFERED', 'ACCEPTED', 'REJECTED'])
+const stateSelection = ref([
+  'OFFERED',
+  'ACCEPTED',
+  'REJECTED'
+])
 
 const jobApplication = ref({
   id: 0,
