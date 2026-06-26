@@ -14,6 +14,8 @@ public class JobApplicationStatusUtil {
             return true;
         } else if (before == OFFERED && (after == ACCEPTED || after == REJECTED)) {
             return true;
+        } else if (before == REJECTED && after == OFFERED) {
+            return true;
         }
         return false;
     }
