@@ -1,4 +1,6 @@
 <script setup>
+import Interview from '@/components/Interview.vue';
+import { getInterviewsByJobApplId } from '@/services/interviewService';
 import { getManagedJobApplById, updateManagedJobAppl } from '@/services/jobApplService';
 import { onMounted, ref } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
@@ -18,25 +20,42 @@ const jobApplication = ref({
   jobDesc: '',
   candidateId: 0,
 })
+const interviews = ref([])
+
 const selectedStatus = ref('')
 const successMessage = ref('')
 const errorMessage = ref('')
 
 onMounted(async () => {
   try {
-    const response = await getManagedJobApplById(id)
-    const dto = response.data.data
-    jobApplication.value.id = dto.id
-    jobApplication.value.submitted = new Date(dto.dateOfSubmission)
-    jobApplication.value.status = dto.status
-    jobApplication.value.jobTitle = dto.jobPosting.title
-    jobApplication.value.jobDesc = dto.jobPosting.description
-    jobApplication.value.candidateId = dto.candidateId
+    await loadManagedJobAppl()
+    await loadInterviews()
   } catch (error) {
     const message = error.response?.data?.message || error.message || 'Failed getting the list of applications you manage'
     setErrorMessage(message)
   }
 })
+
+const loadManagedJobAppl = async () => {
+  const response = await getManagedJobApplById(id)
+  const data = response.data.data
+  jobApplication.value.id = data.id
+  jobApplication.value.submitted = new Date(data.dateOfSubmission)
+  jobApplication.value.status = data.status
+  jobApplication.value.jobTitle = data.jobPosting.title
+  jobApplication.value.jobDesc = data.jobPosting.description
+  jobApplication.value.candidateId = data.candidateId
+}
+
+const loadInterviews = async () => {
+  const response = await getInterviewsByJobApplId(id)
+  interviews.value = response.data.data.map(interview => ({
+    id: interview.id,
+    title: interview.title,
+    description: interview.description,
+    timeScheduled: interview.timeScheduled,
+  }))
+}
 
 const updateApplicationStatus = async () => {
   window.scroll({ top: 0, behavior: 'smooth' })
@@ -84,6 +103,11 @@ const setSuccessMessage = (message) => {
   </select>
   <button type="button" @click="updateApplicationStatus"
     :disabled="selectedStatus === '' || selectedStatus === jobApplication.status">Update status</button>
+  <hr>
+
+  <h3>Interviews</h3>
+  <Interview v-for="interview in interviews" :key="interview.id" :id="interview.id" :title="interview.title"
+    :description="interview.description" :time-scheduled="new Date(interview.timeScheduled)" />
 </template>
 
 <style scoped>
