@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.vuk.spring_webapp.domain.job_application.JobApplicationStatus.ACCEPTED;
-import static com.vuk.spring_webapp.domain.job_application.JobApplicationStatus.REJECTED;
 
 @Entity
 @Table(name = "job_applications")
@@ -65,7 +64,7 @@ public class JobApplication {
     }
 
     public boolean statusIsFinal() {
-        return status == ACCEPTED || status == REJECTED;
+        return status == ACCEPTED;
     }
 
     @Override

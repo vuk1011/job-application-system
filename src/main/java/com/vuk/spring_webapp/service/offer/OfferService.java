@@ -10,7 +10,7 @@ public interface OfferService {
 
     List<OfferDto> findAllForEmployee(Long employeeId, Long jobApplicationId);
 
-    List<OfferDto> findAllForCandidate(Long employeeId, Long jobApplicationId);
+    List<OfferDto> findAllForCandidate(Long candidateId, Long jobApplicationId);
 
     void createOffer(Long employeeId, CreateOfferRequest request);
 
