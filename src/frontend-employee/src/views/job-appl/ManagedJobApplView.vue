@@ -3,14 +3,18 @@ import Interview from '@/components/Interview.vue';
 import router from '@/router';
 import { deleteInterview, getInterviewsByJobApplId } from '@/services/interviewService';
 import { getManagedJobApplById, updateManagedJobAppl } from '@/services/jobApplService';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 
 const id = useRoute().params.id
 const stateSelection = ref([
   'OFFERED',
   'ACCEPTED',
-  'REJECTED'
+  'REJECTED',
+])
+const stateForCreateInterview = ref([
+  'UNDER_REVIEW',
+  'INTERVIEW_SCHEDULED',
 ])
 
 const jobApplication = ref({
@@ -22,6 +26,8 @@ const jobApplication = ref({
   candidateId: 0,
 })
 const interviews = ref([])
+
+const createInterviewDisabled = computed(() => !stateForCreateInterview.value.includes(jobApplication.value.status))
 
 const selectedStatus = ref('')
 const successMessage = ref('')
@@ -119,7 +125,8 @@ const setSuccessMessage = (message) => {
 
   <div class="list-header">
     <h3>Interviews</h3>
-    <button type="button" @click="router.push(`/managed/${id}/create-interview`)">Create New</button>
+    <button type="button" @click="router.push(`/managed/${id}/create-interview`)" :disabled="createInterviewDisabled">
+      Create New</button>
   </div>
   <Interview v-for="interview in interviews" :key="interview.id" :id="interview.id" :title="interview.title"
     :description="interview.description" :time-scheduled="new Date(interview.timeScheduled)"
