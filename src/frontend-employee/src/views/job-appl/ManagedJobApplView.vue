@@ -1,5 +1,6 @@
 <script setup>
 import Interview from '@/components/Interview.vue';
+import router from '@/router';
 import { deleteInterview, getInterviewsByJobApplId } from '@/services/interviewService';
 import { getManagedJobApplById, updateManagedJobAppl } from '@/services/jobApplService';
 import { onMounted, ref } from 'vue';
@@ -116,7 +117,10 @@ const setSuccessMessage = (message) => {
     :disabled="selectedStatus === '' || selectedStatus === jobApplication.status">Update status</button>
   <hr>
 
-  <h3>Interviews</h3>
+  <div class="list-header">
+    <h3>Interviews</h3>
+    <button type="button" @click="router.push(`/managed/${id}/create-interview`)">Create New</button>
+  </div>
   <Interview v-for="interview in interviews" :key="interview.id" :id="interview.id" :title="interview.title"
     :description="interview.description" :time-scheduled="new Date(interview.timeScheduled)"
     @delete-interview="id => handleDeleteInterview(id)" />
@@ -147,5 +151,11 @@ select {
 
 .link {
   margin: 15px;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
 </style>

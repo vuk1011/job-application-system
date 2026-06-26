@@ -6,6 +6,11 @@ export const getInterviewsByJobApplId = (id) =>
     headers: { Authorization: `Bearer ${getJwt()}` },
   });
 
+export const createInterview = (request) =>
+  axios.post("/interviews", request, {
+    headers: { Authorization: `Bearer ${getJwt()}` },
+  });
+
 export const deleteInterview = (id) =>
   axios.delete(`/interviews/${id}`, {
     headers: { Authorization: `Bearer ${getJwt()}` },
