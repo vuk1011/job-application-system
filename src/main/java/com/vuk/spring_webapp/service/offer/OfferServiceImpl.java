@@ -40,7 +40,7 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public void updateOffer(Long candidateId, UpdateOfferRequest request) {
+    public void updateOffer(Long candidateId, Long offerId, UpdateOfferRequest request) {
 
     }
 }

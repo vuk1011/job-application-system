@@ -16,5 +16,5 @@ public interface OfferService {
 
     void deleteOffer(Long employeeId, Long offerId);
 
-    void updateOffer(Long candidateId, UpdateOfferRequest request);
+    void updateOffer(Long candidateId, Long offerId, UpdateOfferRequest request);
 }
