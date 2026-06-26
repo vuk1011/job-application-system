@@ -1,4 +1,6 @@
 <script setup>
+import Interview from '@/components/Interview.vue';
+import { getInterviewsByJobApplId } from '@/services/interviewService';
 import { getJobApplById, withdrawJobAppl } from '@/services/jobApplService';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
@@ -16,24 +18,41 @@ const jobAppl = ref({
 	status: '-',
 	companyName: '-',
 })
+const interviews = ref([])
 
 onMounted(async () => {
 	try {
-		const response = await getJobApplById(id)
-		const data = response.data.data
-		jobAppl.value.title = data.jobPosting.title
-		jobAppl.value.description = data.jobPosting.description
-		jobAppl.value.submited = new Date(data.dateOfSubmission)
-		jobAppl.value.status = data.status
-		jobAppl.value.companyName = data.jobPosting.companyName
-
-		if (data.status === 'OFFERED' || data.status === 'ACCEPTED' || data.status === 'REJECTED') {
-			ableToWithdraw.value = false
-		}
+		await loadJobAppl()
+		await loadInterviews()
+		console.log(interviews)
 	} catch (_) {
 		setErrorMessage('Failed loading job application')
 	}
 })
+
+const loadJobAppl = async () => {
+	const response = await getJobApplById(id)
+	const data = response.data.data
+	jobAppl.value.title = data.jobPosting.title
+	jobAppl.value.description = data.jobPosting.description
+	jobAppl.value.submited = new Date(data.dateOfSubmission)
+	jobAppl.value.status = data.status
+	jobAppl.value.companyName = data.jobPosting.companyName
+
+	if (data.status === 'OFFERED' || data.status === 'ACCEPTED' || data.status === 'REJECTED') {
+		ableToWithdraw.value = false
+	}
+}
+
+const loadInterviews = async () => {
+	const response = await getInterviewsByJobApplId(id)
+	interviews.value = response.data.data.map(interview => ({
+		id: interview.id,
+		title: interview.title,
+		description: interview.description,
+		timeScheduled: interview.timeScheduled,
+	}))
+}
 
 const withdraw = async () => {
 	window.scroll({ top: 0, behavior: 'smooth' })
@@ -64,11 +83,17 @@ const setSuccessMessage = (message) => {
 		<p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 	</div>
 	<hr>
+
 	<h4>Company: {{ jobAppl.companyName }}</h4>
 	<p>{{ jobAppl.description }}</p>
 	<p><i>Submitted: {{ jobAppl.submitted.toLocaleDateString() }}</i></p>
 	<p>Status: {{ jobAppl.status }}</p>
 	<button v-show="ableToWithdraw" type="button" @click="withdraw">Withdraw</button>
+	<hr>
+
+	<h3>Interviews</h3>
+	<Interview v-for="interview in interviews" :key="interview.id" :id="interview.id" :title="interview.title"
+		:description="interview.description" :time-scheduled="new Date(interview.timeScheduled)" />
 </template>
 
 <style scoped>
