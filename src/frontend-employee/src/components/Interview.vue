@@ -12,6 +12,7 @@ defineProps({
     <h4>{{ title }}</h4>
     <p>Description: {{ description }}</p>
     <p><i>Scheduled: {{ timeScheduled.toLocaleString() }}</i></p>
+    <button type="button" @click="$emit('deleteInterview', id)">Delete</button>
   </div>
 </template>
 

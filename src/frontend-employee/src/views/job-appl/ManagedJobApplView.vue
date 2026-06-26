@@ -1,6 +1,6 @@
 <script setup>
 import Interview from '@/components/Interview.vue';
-import { getInterviewsByJobApplId } from '@/services/interviewService';
+import { deleteInterview, getInterviewsByJobApplId } from '@/services/interviewService';
 import { getManagedJobApplById, updateManagedJobAppl } from '@/services/jobApplService';
 import { onMounted, ref } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
@@ -70,6 +70,17 @@ const updateApplicationStatus = async () => {
   }
 }
 
+const handleDeleteInterview = async (id) => {
+  window.scroll({ top: 0, behavior: 'smooth' })
+  try {
+    const response = await deleteInterview(id)
+    setSuccessMessage(response.data.message)
+  } catch (error) {
+    const message = error.response?.data?.message || error.message || 'Failed deleting the interview'
+    setErrorMessage(message)
+  }
+}
+
 const setErrorMessage = (message) => {
   successMessage.value = ''
   errorMessage.value = message
@@ -107,7 +118,8 @@ const setSuccessMessage = (message) => {
 
   <h3>Interviews</h3>
   <Interview v-for="interview in interviews" :key="interview.id" :id="interview.id" :title="interview.title"
-    :description="interview.description" :time-scheduled="new Date(interview.timeScheduled)" />
+    :description="interview.description" :time-scheduled="new Date(interview.timeScheduled)"
+    @delete-interview="id => handleDeleteInterview(id)" />
 </template>
 
 <style scoped>
