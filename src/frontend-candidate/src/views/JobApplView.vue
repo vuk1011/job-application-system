@@ -2,6 +2,7 @@
 import Interview from '@/components/Interview.vue';
 import { getInterviewsByJobApplId } from '@/services/interviewService';
 import { getJobApplById, withdrawJobAppl } from '@/services/jobApplService';
+import { getOffersByJobApplId } from '@/services/offerService';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
@@ -19,11 +20,13 @@ const jobAppl = ref({
 	companyName: '-',
 })
 const interviews = ref([])
+const offers = ref([])
 
 onMounted(async () => {
 	try {
 		await loadJobAppl()
 		await loadInterviews()
+		await loadOffers()
 		console.log(interviews)
 	} catch (_) {
 		setErrorMessage('Failed loading job application')
@@ -51,6 +54,15 @@ const loadInterviews = async () => {
 		title: interview.title,
 		description: interview.description,
 		timeScheduled: interview.timeScheduled,
+	}))
+}
+
+const loadOffers = async () => {
+	const response = await getOffersByJobApplId(id)
+	offers.value = response.data.data.map(offer => ({
+		id: offer.id,
+		name: offer.name,
+		accepted: offer.accepted,
 	}))
 }
 
