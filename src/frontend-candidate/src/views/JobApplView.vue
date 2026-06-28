@@ -1,8 +1,10 @@
 <script setup>
 import Interview from '@/components/Interview.vue';
+import Offer from '@/components/Offer.vue';
 import { getInterviewsByJobApplId } from '@/services/interviewService';
 import { getJobApplById, withdrawJobAppl } from '@/services/jobApplService';
-import { onMounted, ref } from 'vue';
+import { acceptOffer, getOffersByJobApplId, rejectOffer } from '@/services/offerService';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 const id = useRoute().params.id
@@ -19,11 +21,17 @@ const jobAppl = ref({
 	companyName: '-',
 })
 const interviews = ref([])
+const offers = ref([])
+
+const disableOfferButtons = computed(
+	() => jobAppl.value.status === 'ACCEPTED'
+)
 
 onMounted(async () => {
 	try {
 		await loadJobAppl()
 		await loadInterviews()
+		await loadOffers()
 		console.log(interviews)
 	} catch (_) {
 		setErrorMessage('Failed loading job application')
@@ -54,6 +62,15 @@ const loadInterviews = async () => {
 	}))
 }
 
+const loadOffers = async () => {
+	const response = await getOffersByJobApplId(id)
+	offers.value = response.data.data.map(offer => ({
+		id: offer.id,
+		name: offer.name,
+		accepted: offer.accepted,
+	}))
+}
+
 const withdraw = async () => {
 	window.scroll({ top: 0, behavior: 'smooth' })
 	try {
@@ -62,6 +79,30 @@ const withdraw = async () => {
 		ableToWithdraw.value = false
 	} catch (_) {
 		setErrorMessage('Failed to withdraw job application')
+	}
+}
+
+const handleAcceptOffer = async (id) => {
+	window.scroll({ top: 0, behavior: 'smooth' })
+	try {
+		const response = await acceptOffer(id)
+		setSuccessMessage(response.data.message)
+		setTimeout(() => window.location.reload(), 1500)
+	} catch (error) {
+		const message = error.response?.data?.message || error.message || 'Failed deleting the offer'
+		setErrorMessage(message)
+	}
+}
+
+const handleRejectOffer = async (id) => {
+	window.scroll({ top: 0, behavior: 'smooth' })
+	try {
+		const response = await rejectOffer(id)
+		setSuccessMessage(response.data.message)
+		setTimeout(() => window.location.reload(), 1500)
+	} catch (error) {
+		const message = error.response?.data?.message || error.message || 'Failed deleting the offer'
+		setErrorMessage(message)
 	}
 }
 
@@ -94,6 +135,11 @@ const setSuccessMessage = (message) => {
 	<h3>Interviews</h3>
 	<Interview v-for="interview in interviews" :key="interview.id" :id="interview.id" :title="interview.title"
 		:description="interview.description" :time-scheduled="new Date(interview.timeScheduled)" />
+
+	<h3>Offers</h3>
+	<Offer v-for="offer in offers" :key="offer.id" :id="offer.id" :name="offer.name" :accepted="offer.accepted"
+		:disable-buttons="disableOfferButtons" @accept-offer="id => handleAcceptOffer(id)"
+		@reject-offer="id => handleRejectOffer(id)" />
 </template>
 
 <style scoped>
