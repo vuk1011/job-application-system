@@ -15,7 +15,7 @@ export const acceptOffer = (id) =>
     },
   );
 
-export const desclineOffer = (id) =>
+export const rejectOffer = (id) =>
   axios.put(
     `/offers/${id}`,
     { accepted: false },
