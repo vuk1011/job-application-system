@@ -1,10 +1,26 @@
 <script setup>
+import Interview from '@/components/Interview.vue';
+import Offer from '@/components/Offer.vue';
+import router from '@/router';
+import { deleteInterview, getInterviewsByJobApplId } from '@/services/interviewService';
 import { getManagedJobApplById, updateManagedJobAppl } from '@/services/jobApplService';
-import { onMounted, ref } from 'vue';
+import { deleteOffer, getOffersByJobApplId } from '@/services/offerService';
+import { computed, onMounted, ref } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 
 const id = useRoute().params.id
-const stateSelection = ref(['INTERVIEW_SCHEDULED', 'OFFERED', 'ACCEPTED', 'REJECTED'])
+const stateSelection = ref([
+  'REJECTED',
+])
+const stateForCreateInterview = ref([
+  'UNDER_REVIEW',
+  'INTERVIEW_SCHEDULED',
+])
+const stateForCreateOffer = ref([
+  'INTERVIEW_SCHEDULED',
+  'OFFERED',
+  'REJECTED',
+])
 
 const jobApplication = ref({
   id: 0,
@@ -14,25 +30,56 @@ const jobApplication = ref({
   jobDesc: '',
   candidateId: 0,
 })
+const interviews = ref([])
+const offers = ref([])
+
+const createInterviewDisabled = computed(() => !stateForCreateInterview.value.includes(jobApplication.value.status))
+const createOfferDisabled = computed(() => !stateForCreateOffer.value.includes(jobApplication.value.status))
+
 const selectedStatus = ref('')
 const successMessage = ref('')
 const errorMessage = ref('')
 
 onMounted(async () => {
   try {
-    const response = await getManagedJobApplById(id)
-    const dto = response.data.data
-    jobApplication.value.id = dto.id
-    jobApplication.value.submitted = new Date(dto.dateOfSubmission)
-    jobApplication.value.status = dto.status
-    jobApplication.value.jobTitle = dto.jobPosting.title
-    jobApplication.value.jobDesc = dto.jobPosting.description
-    jobApplication.value.candidateId = dto.candidateId
+    await loadManagedJobAppl()
+    await loadInterviews()
+    await loadOffers()
   } catch (error) {
     const message = error.response?.data?.message || error.message || 'Failed getting the list of applications you manage'
     setErrorMessage(message)
   }
 })
+
+const loadManagedJobAppl = async () => {
+  const response = await getManagedJobApplById(id)
+  const data = response.data.data
+  jobApplication.value.id = data.id
+  jobApplication.value.submitted = new Date(data.dateOfSubmission)
+  jobApplication.value.status = data.status
+  jobApplication.value.jobTitle = data.jobPosting.title
+  jobApplication.value.jobDesc = data.jobPosting.description
+  jobApplication.value.candidateId = data.candidateId
+}
+
+const loadInterviews = async () => {
+  const response = await getInterviewsByJobApplId(id)
+  interviews.value = response.data.data.map(interview => ({
+    id: interview.id,
+    title: interview.title,
+    description: interview.description,
+    timeScheduled: interview.timeScheduled,
+  }))
+}
+
+const loadOffers = async () => {
+  const response = await getOffersByJobApplId(id)
+  offers.value = response.data.data.map(offer => ({
+    id: offer.id,
+    name: offer.name,
+    accepted: offer.accepted,
+  }))
+}
 
 const updateApplicationStatus = async () => {
   window.scroll({ top: 0, behavior: 'smooth' })
@@ -43,6 +90,28 @@ const updateApplicationStatus = async () => {
     setSuccessMessage(response.data.message)
   } catch (error) {
     const message = error.response?.data?.message || error.message || 'Failed updating application\'s status'
+    setErrorMessage(message)
+  }
+}
+
+const handleDeleteInterview = async (id) => {
+  window.scroll({ top: 0, behavior: 'smooth' })
+  try {
+    const response = await deleteInterview(id)
+    setSuccessMessage(response.data.message)
+  } catch (error) {
+    const message = error.response?.data?.message || error.message || 'Failed deleting the interview'
+    setErrorMessage(message)
+  }
+}
+
+const handleDeleteOffer = async (id) => {
+  window.scroll({ top: 0, behavior: 'smooth' })
+  try {
+    const response = await deleteOffer(id)
+    setSuccessMessage(response.data.message)
+  } catch (error) {
+    const message = error.response?.data?.message || error.message || 'Failed deleting the offer'
     setErrorMessage(message)
   }
 }
@@ -80,6 +149,26 @@ const setSuccessMessage = (message) => {
   </select>
   <button type="button" @click="updateApplicationStatus"
     :disabled="selectedStatus === '' || selectedStatus === jobApplication.status">Update status</button>
+  <hr>
+
+  <div class="list-header">
+    <h3>Interviews</h3>
+    <button type="button" @click="router.push(`/managed/${id}/create-interview`)" :disabled="createInterviewDisabled">
+      Create New</button>
+  </div>
+  <Interview v-for="interview in interviews" :key="interview.id" :id="interview.id" :title="interview.title"
+    :description="interview.description" :time-scheduled="new Date(interview.timeScheduled)"
+    @delete-interview="id => handleDeleteInterview(id)" />
+  <hr>
+
+  <div class="list-header">
+    <h3>Offers</h3>
+    <button type="button" @click="router.push(`/managed/${id}/create-offer`)" :disabled="createOfferDisabled">
+      Create New</button>
+  </div>
+  <Offer v-for="offer in offers" :key="offer.id" :id="offer.id" :name="offer.name" :accepted="offer.accepted"
+    @delete-offer="id => handleDeleteOffer(id)" />
+
 </template>
 
 <style scoped>
@@ -107,5 +196,11 @@ select {
 
 .link {
   margin: 15px;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
 </style>

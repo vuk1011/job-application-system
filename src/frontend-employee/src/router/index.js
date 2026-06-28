@@ -1,4 +1,6 @@
 import CandidateView from "@/views/CandidateView.vue";
+import CreateInterviewView from "@/views/CreateInterviewView.vue";
+import CreateOfferView from "@/views/CreateOfferView.vue";
 import HomeView from "@/views/HomeView.vue";
 import ManagedJobApplsView from "@/views/job-appl/ManagedJobApplsView.vue";
 import ManagedJobApplView from "@/views/job-appl/ManagedJobApplView.vue";
@@ -29,6 +31,16 @@ const router = createRouter({
     {
       path: "/managed",
       component: ManagedJobApplsView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/managed/:id/create-interview",
+      component: CreateInterviewView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/managed/:id/create-offer",
+      component: CreateOfferView,
       meta: { requiresAuth: true },
     },
     {
