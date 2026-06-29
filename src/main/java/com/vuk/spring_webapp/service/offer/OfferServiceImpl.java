@@ -18,6 +18,11 @@ import java.util.List;
 
 import static com.vuk.spring_webapp.domain.job_application.JobApplicationStatus.*;
 
+/**
+ * Main implementation of {@link OfferService}.
+ *
+ * @author Vuk Perovic
+ */
 @Service
 @RequiredArgsConstructor
 public class OfferServiceImpl implements OfferService {
@@ -61,6 +66,10 @@ public class OfferServiceImpl implements OfferService {
         return offers;
     }
 
+    /**
+     * @implNote Uses {@link JobApplicationStatusUtil} to check if status can be set to
+     * {@link com.vuk.spring_webapp.domain.job_application.JobApplicationStatus#OFFERED}.
+     */
     @Override
     public void createOffer(Long employeeId, CreateOfferRequest request) {
         var application = jobApplicationRepository.findById(request.getJobApplicationId())
@@ -104,6 +113,11 @@ public class OfferServiceImpl implements OfferService {
         offerRepository.delete(offer);
     }
 
+    /**
+     * @implNote Uses {@link JobApplicationStatusUtil} to check if status can be set to
+     * {@link com.vuk.spring_webapp.domain.job_application.JobApplicationStatus#ACCEPTED} or
+     * {@link com.vuk.spring_webapp.domain.job_application.JobApplicationStatus#REJECTED}.
+     */
     @Override
     public void updateOffer(Long candidateId, Long offerId, UpdateOfferRequest request) {
         var offer = offerRepository.findById(offerId)
