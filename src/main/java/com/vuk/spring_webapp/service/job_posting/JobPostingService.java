@@ -40,9 +40,30 @@ public interface JobPostingService {
      */
     List<JobPostingDto> findAllPublished();
 
+    /**
+     * Creates a new job posting.
+     *
+     * @param request as specified in {@link CreateJobPostingRequest}
+     * @return a {@link JobPostingDto}, representing the newly created job posting
+     * @throws com.vuk.spring_webapp.exception.ConflictException if the expiration date in the request is in past
+     */
     JobPostingDto create(CreateJobPostingRequest request);
 
+    /**
+     * Deletes a job posting.
+     *
+     * @param id job posting's unique identifier
+     * @throws com.vuk.spring_webapp.exception.ResourceNotFoundException if there's no job posting with specified ID
+     */
     void deleteById(Long id);
 
+    /**
+     * Updates a job posting.
+     *
+     * @param id      job posting's unique identifier
+     * @param request as specified in {@link UpdateJobPostingRequest}
+     * @throws com.vuk.spring_webapp.exception.ConflictException         if the expiration date in the request is in past
+     * @throws com.vuk.spring_webapp.exception.ResourceNotFoundException if there's no job posting with specified ID
+     */
     void updateById(Long id, UpdateJobPostingRequest request);
 }
