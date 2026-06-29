@@ -6,7 +6,6 @@ import com.vuk.spring_webapp.domain.job_posting.JobPostingStatus;
 import com.vuk.spring_webapp.domain.user.Employee;
 import com.vuk.spring_webapp.exception.ConflictException;
 import com.vuk.spring_webapp.exception.ResourceNotFoundException;
-import com.vuk.spring_webapp.repository.CompanyRepository;
 import com.vuk.spring_webapp.repository.EmployeeRepository;
 import com.vuk.spring_webapp.repository.JobPostingRepository;
 import com.vuk.spring_webapp.transfer.dto.JobPostingDto;
@@ -21,6 +20,11 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Main implementation of {@link JobPostingService}.
+ *
+ * @author Vuk Perovic
+ */
 @Service
 @RequiredArgsConstructor
 public class JobPostingServiceImpl implements JobPostingService {

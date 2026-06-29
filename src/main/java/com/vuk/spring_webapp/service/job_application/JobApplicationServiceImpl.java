@@ -23,12 +23,16 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import static com.vuk.spring_webapp.domain.job_application.JobApplicationStatus.*;
 import static com.vuk.spring_webapp.domain.job_application.JobApplicationStatusUtil.isStatusChangeAllowed;
 
+/**
+ * Main implementation of {@link JobApplicationService}.
+ *
+ * @author Vuk Perovic
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -94,6 +98,14 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         return modelMapper.map(jobApplication, JobApplicationCandidateDto.class);
     }
 
+    /**
+     * @implNote Deletion is not permitted if the job application is in any of the following statuses:
+     * <ul>
+     *     <li>{@link JobApplicationStatus#OFFERED}</li>
+     *     <li>{@link JobApplicationStatus#ACCEPTED}</li>
+     *     <li>{@link JobApplicationStatus#REJECTED}</li>
+     * </ul>
+     */
     @Override
     public void deleteById(Long candidateId, Long applicationId) {
         Candidate candidate = candidateRepository.findById(candidateId)
@@ -197,6 +209,13 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         jobApplicationRepository.save(application);
     }
 
+    /**
+     * @implNote Uses the following functionalities to check if status change is allowed:
+     * <ul>
+     *     <li>{@link JobApplication#statusIsFinal()}</li>
+     *     <li>{@link com.vuk.spring_webapp.domain.job_application.JobApplicationStatusUtil}</li>
+     * </ul>
+     */
     @Override
     public void updateApplicationStatus(Long employeeId, Long applicationId, JobApplicationStatus newStatus) {
         Employee employee = employeeRepository.findById(employeeId)
@@ -245,6 +264,9 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         return candidateService.findById(application.getCandidate().getId());
     }
 
+    /**
+     * @implNote Calls {@link CandidateService#loadResume(Long)}.
+     */
     @Override
     public Resource loadResume(Long employeeId, Long applicationId) {
         employeeRepository.findById(employeeId)

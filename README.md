@@ -47,3 +47,14 @@ To run the client app, navigate to its directory and run:
 npm i
 npm run dev
 ```
+
+## Javadoc
+Currently, the following is documented:
+- domain classes (entities)
+- services
+- most of DTOs
+
+To generate Javadoc, go to terminal and run:
+```shell
+mvn clean javadoc:javadoc -Dsubpackages="com.vuk.spring_webapp.domain:com.vuk.spring_webapp.service:com.vuk.spring_webapp.transfer"
+```
