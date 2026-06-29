@@ -13,12 +13,24 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Main implementation of Spring's {@link UserDetailsService}.
+ *
+ * @author Vuk Perovic
+ */
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final AppUserRepository userRepository;
 
+    /**
+     * Fetches user data by their email.
+     *
+     * @param email the email identifying the user whose data is required
+     * @return {@link User} from Spring Security
+     * @throws UsernameNotFoundException if there's no user with specified email
+     */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         AppUser user = userRepository.findByEmail(email);
