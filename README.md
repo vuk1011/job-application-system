@@ -1,6 +1,10 @@
 # Fullstack web app for managing job applications in a company
 ## Description
-This project was developed while taking a course on Advanced Java Technologies at my university. We were tasked with creating a fullstack web app for any kind of system. Spring was mandatory for backend, while the frontend could be implemented in any technology. 
+This project was developed while taking a course on Advanced Java Technologies at my university.
+We were tasked with creating a fullstack web app for any kind of system.
+Spring was mandatory for backend, while the frontend could be implemented in any technology.
+
+***Note: The project got expanded to enable working with interviews and offers as well.***
 
 I decided to model a job application system, represented by [this](https://github.com/vuk1011/job-application-system/blob/main/UML_Class_Diagram.png) UML class diagram.
 A user of the platform is either a candidate or an employee.
@@ -13,7 +17,9 @@ A candidate can:
 - view published job postings
 - apply for a job posting
 - view their previous applications
-- withdraw their aplication
+- withdraw their application
+- view scheduled interviews for their application 
+- view, accept and decline offers for their application
 
 An employee can:
 - log in
@@ -23,6 +29,8 @@ An employee can:
 - change the status for job applications they manage
 - view personal information and the resume for the candidate associated with an application
 - create, edit and delete job postings
+- view, create and delete interviews for job applications they manage
+- view, create and delete offers for job applications they manage
 
 The server app is powered by Spring Boot. There are two separate user interfaces, for both candidates and employees. These are Vue apps.
 
