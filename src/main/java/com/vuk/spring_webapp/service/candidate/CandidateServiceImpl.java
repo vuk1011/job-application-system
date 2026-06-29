@@ -19,6 +19,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+/**
+ * Main implementation of {@link CandidateService}.
+ *
+ * @author Vuk Perovic
+ */
 @Service
 @RequiredArgsConstructor
 public class CandidateServiceImpl implements CandidateService {
@@ -28,6 +33,9 @@ public class CandidateServiceImpl implements CandidateService {
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
 
+    /**
+     * @implNote For storing the password, Spring's {@link PasswordEncoder} is used to encode it first.
+     */
     @Override
     public void register(RegisterCandidateRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -45,6 +53,9 @@ public class CandidateServiceImpl implements CandidateService {
         userRepository.save(candidate);
     }
 
+    /**
+     * @implNote The file is returned as a {@link ByteArrayResource}.
+     */
     @Override
     public Resource loadResume(Long candidateId) {
         Candidate candidate = candidateRepository.findById(candidateId)

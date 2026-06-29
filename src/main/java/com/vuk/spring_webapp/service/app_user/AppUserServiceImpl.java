@@ -13,6 +13,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+/**
+ * Main implementation of {@link AppUserService}.
+ *
+ * @author Vuk Perovic
+ */
 @Service
 @RequiredArgsConstructor
 public class AppUserServiceImpl implements AppUserService {
@@ -21,6 +26,11 @@ public class AppUserServiceImpl implements AppUserService {
     private final AppUserRepository userRepository;
     private final JwtUtil jwtUtil;
 
+    /**
+     * @implNote Authenticates via Spring's {@link AuthenticationManager} using a
+     * {@link UsernamePasswordAuthenticationToken}. User existence in the repository is verified first, by email and
+     * role. The JWT token is built from the user's DB ID, email and role.
+     */
     @Override
     public LoginSuccessResponse authenticateUser(String email, String password, Role role) {
         if (!userRepository.existsByEmailAndRole(email, role)) {
