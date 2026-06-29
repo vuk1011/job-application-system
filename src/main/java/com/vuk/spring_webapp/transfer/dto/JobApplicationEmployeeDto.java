@@ -10,7 +10,18 @@ import java.time.LocalDate;
  *
  * <p>Intended for communication with an employee.</p>
  *
+ * <p>Contains fields:</p>
+ * <ul>
+ *     <li>{@code id (Long)}</li>
+ *     <li>{@code dateOfSubmission (LocalDate)}</li>
+ *     <li>{@code status (JobApplicationStatus)}</li>
+ *     <li>{@code jobPosting (JobPostingDto)}</li>
+ *     <li>{@code candidateId (Long)}</li>
+ * </ul>
+ *
  * @author Vuk Perovic
+ * @see JobApplicationStatus
+ * @see JobPostingDto
  */
 @Data
 public class JobApplicationEmployeeDto {

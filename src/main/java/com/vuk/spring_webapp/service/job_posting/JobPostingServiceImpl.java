@@ -9,6 +9,7 @@ import com.vuk.spring_webapp.exception.ResourceNotFoundException;
 import com.vuk.spring_webapp.repository.CompanyRepository;
 import com.vuk.spring_webapp.repository.EmployeeRepository;
 import com.vuk.spring_webapp.repository.JobPostingRepository;
+import com.vuk.spring_webapp.service.job_application.JobApplicationService;
 import com.vuk.spring_webapp.transfer.dto.JobPostingDto;
 import com.vuk.spring_webapp.transfer.request.CreateJobPostingRequest;
 import com.vuk.spring_webapp.transfer.request.UpdateJobPostingRequest;
@@ -21,6 +22,11 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Main implementation of {@link JobPostingService}.
+ *
+ * @author Vuk Perovic
+ */
 @Service
 @RequiredArgsConstructor
 public class JobPostingServiceImpl implements JobPostingService {
