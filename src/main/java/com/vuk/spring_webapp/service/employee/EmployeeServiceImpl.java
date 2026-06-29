@@ -12,6 +12,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+/**
+ * Main implementation of {@link EmployeeService}.
+ *
+ * @author Vuk Perovic
+ */
 @Service
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
@@ -21,6 +26,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final CompanyRepository companyRepository;
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * @implNote For storing the password, Spring's {@link PasswordEncoder} is used to encode it first.
+     */
     @Override
     public void register(RegisterEmployeeRequest request) {
         if (request.getCompanyId() == null) {
