@@ -5,6 +5,13 @@ import lombok.Data;
 
 import java.time.LocalDate;
 
+/**
+ * Data transfer object representing {@link com.vuk.spring_webapp.domain.job_application.JobApplication}.
+ *
+ * <p>Intended for communication with an employee.</p>
+ *
+ * @author Vuk Perovic
+ */
 @Data
 public class JobApplicationEmployeeDto {
     private Long id;
