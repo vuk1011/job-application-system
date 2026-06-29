@@ -18,6 +18,11 @@ import java.util.List;
 
 import static com.vuk.spring_webapp.domain.job_application.JobApplicationStatus.INTERVIEW_SCHEDULED;
 
+/**
+ * Main implementation of {@link InterviewService}.
+ *
+ * @author Vuk Perovic
+ */
 @Service
 @RequiredArgsConstructor
 public class InterviewServiceImpl implements InterviewService {
@@ -61,6 +66,10 @@ public class InterviewServiceImpl implements InterviewService {
         return interviews;
     }
 
+    /**
+     * @implNote {@link JobApplicationStatusUtil} is used to check if the job application's status can be set to
+     * {@link com.vuk.spring_webapp.domain.job_application.JobApplicationStatus#INTERVIEW_SCHEDULED}.
+     */
     @Override
     public void createInterview(Long employeeId, CreateInterviewRequest request) {
         var application = jobApplicationRepository.findById(request.getJobApplicationId())
