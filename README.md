@@ -66,3 +66,11 @@ To generate Javadoc, go to terminal and run:
 ```shell
 mvn clean javadoc:javadoc -Dsubpackages="com.vuk.spring_webapp.domain:com.vuk.spring_webapp.service:com.vuk.spring_webapp.transfer"
 ```
+
+## Unit tests
+Domain classes and service implementation classes are covered by unit tests.
+
+To run tests with Maven, go to Terminal and run:
+```shell
+mvn test
+```
