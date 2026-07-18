@@ -3,8 +3,6 @@ package com.vuk.spring_webapp.domain.job_application;
 import com.vuk.spring_webapp.domain.job_posting.JobPosting;
 import com.vuk.spring_webapp.domain.user.Candidate;
 import com.vuk.spring_webapp.domain.user.Employee;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -21,14 +19,6 @@ class JobApplicationTest {
     private static final Candidate CANDIDATE = new Candidate();
     private static final Long ID_1 = 1L;
     private static final Long ID_2 = 2L;
-
-    @BeforeEach
-    void setUp() {
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
 
     @Test
     @DisplayName("No args constructor creates an empty instance")
