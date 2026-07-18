@@ -1,12 +1,26 @@
 package com.vuk.spring_webapp.domain.job_application;
 
+import com.vuk.spring_webapp.domain.job_posting.JobPosting;
+import com.vuk.spring_webapp.domain.user.Candidate;
+import com.vuk.spring_webapp.domain.user.Employee;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class JobApplicationTest {
+
+    private static final LocalDate DATE_OF_SUBMISSION = LocalDate.now();
+    private static final JobApplicationStatus STATUS = JobApplicationStatus.UNDER_REVIEW;
+    private static final JobPosting JOB_POSTING = new JobPosting();
+    private static final Employee EMPLOYEE = new Employee();
+    private static final Candidate CANDIDATE = new Candidate();
+    private static final Long ID_1 = 1L;
+    private static final Long ID_2 = 2L;
 
     @BeforeEach
     void setUp() {
@@ -17,82 +31,146 @@ class JobApplicationTest {
     }
 
     @Test
-    void isManaged() {
+    @DisplayName("No args constructor creates an empty instance")
+    void noArgsConstructorCreatesEmptyInstance() {
+        JobApplication jobApplication = new JobApplication();
+
+        assertNull(jobApplication.getId());
+        assertNull(jobApplication.getDateOfSubmission());
+        assertNull(jobApplication.getStatus());
+        assertNull(jobApplication.getJobPosting());
+        assertNull(jobApplication.getEmployee());
+        assertNull(jobApplication.getCandidate());
+        assertNull(jobApplication.getOffers());
+        assertNull(jobApplication.getInterviews());
     }
 
     @Test
-    void statusIsFinal() {
+    @DisplayName("Parameterized constructor sets fields correctly")
+    void argsConstructorSetsFields() {
+        JobApplication jobApplication = new JobApplication(DATE_OF_SUBMISSION, STATUS, JOB_POSTING, EMPLOYEE, CANDIDATE);
+
+        assertNull(jobApplication.getId());
+        assertNull(jobApplication.getOffers());
+        assertNull(jobApplication.getInterviews());
+
+        assertEquals(DATE_OF_SUBMISSION, jobApplication.getDateOfSubmission());
+        assertEquals(STATUS, jobApplication.getStatus());
+        assertEquals(JOB_POSTING, jobApplication.getJobPosting());
+        assertEquals(EMPLOYEE, jobApplication.getEmployee());
+        assertEquals(CANDIDATE, jobApplication.getCandidate());
     }
 
     @Test
-    void testEquals() {
+    @DisplayName("isManaged returns true when job application has an assigned employee")
+    void isManagedReturnsTrueWhenEmployeeIsNotNull() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setEmployee(EMPLOYEE);
+
+        assertTrue(jobApplication.isManaged());
     }
 
     @Test
-    void testHashCode() {
+    @DisplayName("isManaged returns false when job application has no assigned employee")
+    void isManagedReturnsFalseWhenEmployeeIsNull() {
+        JobApplication jobApplication = new JobApplication();
+
+        assertFalse(jobApplication.isManaged());
     }
 
     @Test
-    void getId() {
+    @DisplayName("statusIsFinal returns true when job application has status Accepted")
+    void statusIsFinalReturnsTrueWhenStatusAccepted() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setStatus(JobApplicationStatus.ACCEPTED);
+
+        assertTrue(jobApplication.statusIsFinal());
     }
 
     @Test
-    void getDateOfSubmission() {
+    @DisplayName("statusIsFinal returns false when job application has no status")
+    void statusIsFinalReturnsFalseWhenStatusNotSet() {
+        JobApplication jobApplication = new JobApplication();
+
+        assertFalse(jobApplication.statusIsFinal());
     }
 
     @Test
-    void getStatus() {
+    @DisplayName("statusIsFinal returns false when job application has status Submitted")
+    void statusIsFinalReturnsFalseWhenStatusSubmitted() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setStatus(JobApplicationStatus.SUBMITTED);
+
+        assertFalse(jobApplication.statusIsFinal());
     }
 
     @Test
-    void getJobPosting() {
+    @DisplayName("statusIsFinal returns false when job application has status Under Review")
+    void statusIsFinalReturnsFalseWhenStatusUnderReview() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setStatus(JobApplicationStatus.UNDER_REVIEW);
+
+        assertFalse(jobApplication.statusIsFinal());
     }
 
     @Test
-    void getEmployee() {
+    @DisplayName("statusIsFinal returns false when job application has status Interview Scheduled")
+    void statusIsFinalReturnsFalseWhenStatusInterviewScheduled() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setStatus(JobApplicationStatus.INTERVIEW_SCHEDULED);
+
+        assertFalse(jobApplication.statusIsFinal());
     }
 
     @Test
-    void getCandidate() {
+    @DisplayName("statusIsFinal returns false when job application has status Offered")
+    void statusIsFinalReturnsFalseWhenStatusOffered() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setStatus(JobApplicationStatus.OFFERED);
+
+        assertFalse(jobApplication.statusIsFinal());
     }
 
     @Test
-    void getOffers() {
+    @DisplayName("statusIsFinal returns false when job application has status Rejected")
+    void statusIsFinalReturnsFalseWhenStatusRejected() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setStatus(JobApplicationStatus.REJECTED);
+
+        assertFalse(jobApplication.statusIsFinal());
     }
 
     @Test
-    void getInterviews() {
+    @DisplayName("equals returns true when job applications have the same id")
+    void equalsReturnsTrueWhenSameId() {
+        JobApplication jobApplication1 = new JobApplication();
+        JobApplication jobApplication2 = new JobApplication();
+        jobApplication1.setId(ID_1);
+        jobApplication2.setId(ID_1);
+
+        assertEquals(jobApplication1, jobApplication2);
     }
 
     @Test
-    void setId() {
+    @DisplayName("equals returns false when job applications don't have the same id")
+    void equalsReturnsFalseWhenDifferentId() {
+        JobApplication jobApplication1 = new JobApplication();
+        JobApplication jobApplication2 = new JobApplication();
+        jobApplication1.setId(ID_1);
+        jobApplication2.setId(ID_2);
+
+        assertNotEquals(jobApplication1, jobApplication2);
     }
 
     @Test
-    void setDateOfSubmission() {
+    @DisplayName("hashCode computes value based on Id only")
+    void hashCodeComputesBasedOnId() {
+        JobApplication jobApplication1 = new JobApplication();
+        JobApplication jobApplication2 = new JobApplication();
+        jobApplication1.setId(ID_1);
+        jobApplication2.setId(ID_1);
+
+        assertEquals(jobApplication1.hashCode(), jobApplication2.hashCode());
     }
 
-    @Test
-    void setStatus() {
-    }
-
-    @Test
-    void setJobPosting() {
-    }
-
-    @Test
-    void setEmployee() {
-    }
-
-    @Test
-    void setCandidate() {
-    }
-
-    @Test
-    void setOffers() {
-    }
-
-    @Test
-    void setInterviews() {
-    }
 }
