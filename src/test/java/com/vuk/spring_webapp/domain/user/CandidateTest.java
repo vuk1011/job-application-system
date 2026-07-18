@@ -1,106 +1,56 @@
 package com.vuk.spring_webapp.domain.user;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class CandidateTest {
 
-    @BeforeEach
-    void setUp() {
-    }
+    private static final String FIRST_NAME = "Mans";
+    private static final String LAST_NAME = "Bjork";
+    private static final Sex SEX = Sex.MALE;
+    private static final String PHONE = "123456789";
+    private static final String ADDRESS = "Oak Street 1";
+    private static final String EMAIL = "mans@yahoo.com";
+    private static final String PASSWORD = "secret123";
 
-    @AfterEach
-    void tearDown() {
+    @Test
+    @DisplayName("No args constructor creates an empty instance")
+    void noArgsConstructorCreatesEmptyInstance() {
+        Candidate candidate = new Candidate();
+
+        assertNull(candidate.getId());
+        assertNull(candidate.getRole());
+        assertNull(candidate.getFirstName());
+        assertNull(candidate.getLastName());
+        assertNull(candidate.getSex());
+        assertNull(candidate.getPhone());
+        assertNull(candidate.getAddress());
+        assertNull(candidate.getEmail());
+        assertNull(candidate.getPassword());
+        assertNull(candidate.getResume());
+        assertNull(candidate.getJobApplications());
     }
 
     @Test
-    void getResume() {
+    @DisplayName("Parameterized constructor sets fields correctly")
+    void argsConstructorSetsFields() {
+        Candidate candidate = new Candidate(FIRST_NAME, LAST_NAME, SEX, PHONE, ADDRESS, EMAIL, PASSWORD);
+
+        assertNull(candidate.getId());
+        assertNull(candidate.getResume());
+        assertNull(candidate.getJobApplications());
+
+        assertEquals(Role.CANDIDATE, candidate.getRole());
+        assertEquals(FIRST_NAME, candidate.getFirstName());
+        assertEquals(LAST_NAME, candidate.getLastName());
+        assertEquals(SEX, candidate.getSex());
+        assertEquals(PHONE, candidate.getPhone());
+        assertEquals(ADDRESS, candidate.getAddress());
+        assertEquals(EMAIL, candidate.getEmail());
+        assertEquals(PASSWORD, candidate.getPassword());
     }
 
-    @Test
-    void getJobApplications() {
-    }
-
-    @Test
-    void setResume() {
-    }
-
-    @Test
-    void setJobApplications() {
-    }
-
-    @Test
-    void getId() {
-    }
-
-    @Test
-    void getRole() {
-    }
-
-    @Test
-    void getFirstName() {
-    }
-
-    @Test
-    void getLastName() {
-    }
-
-    @Test
-    void getSex() {
-    }
-
-    @Test
-    void getPhone() {
-    }
-
-    @Test
-    void getAddress() {
-    }
-
-    @Test
-    void getEmail() {
-    }
-
-    @Test
-    void getPassword() {
-    }
-
-    @Test
-    void setId() {
-    }
-
-    @Test
-    void setRole() {
-    }
-
-    @Test
-    void setFirstName() {
-    }
-
-    @Test
-    void setLastName() {
-    }
-
-    @Test
-    void setSex() {
-    }
-
-    @Test
-    void setPhone() {
-    }
-
-    @Test
-    void setAddress() {
-    }
-
-    @Test
-    void setEmail() {
-    }
-
-    @Test
-    void setPassword() {
-    }
 }
