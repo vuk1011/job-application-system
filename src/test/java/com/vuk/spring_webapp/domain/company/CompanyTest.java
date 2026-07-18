@@ -1,66 +1,42 @@
 package com.vuk.spring_webapp.domain.company;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class CompanyTest {
 
-    @BeforeEach
-    void setUp() {
-    }
+    private static final String NAME = "Robots 101";
+    private static final String ABOUT = "Company about robots.";
+    private static final String ADDRESS = "Palms Blvd 3";
 
-    @AfterEach
-    void tearDown() {
+    @Test
+    @DisplayName("No args constructor creates an empty instance")
+    void noArgsConstructorCreatesEmptyInstance() {
+        Company company = new Company();
+
+        assertNull(company.getId());
+        assertNull(company.getName());
+        assertNull(company.getAbout());
+        assertNull(company.getAddress());
+        assertNull(company.getEmployees());
+        assertNull(company.getJobPostings());
     }
 
     @Test
-    void getId() {
+    @DisplayName("Parameterized constructor sets fields correctly")
+    void argsConstructorSetsFields() {
+        Company company = new Company(NAME, ABOUT, ADDRESS);
+
+        assertNull(company.getId());
+        assertNull(company.getEmployees());
+        assertNull(company.getJobPostings());
+
+        assertEquals(NAME, company.getName());
+        assertEquals(ABOUT, company.getAbout());
+        assertEquals(ADDRESS, company.getAddress());
     }
 
-    @Test
-    void getName() {
-    }
-
-    @Test
-    void getAbout() {
-    }
-
-    @Test
-    void getAddress() {
-    }
-
-    @Test
-    void getEmployees() {
-    }
-
-    @Test
-    void getJobPostings() {
-    }
-
-    @Test
-    void setId() {
-    }
-
-    @Test
-    void setName() {
-    }
-
-    @Test
-    void setAbout() {
-    }
-
-    @Test
-    void setAddress() {
-    }
-
-    @Test
-    void setEmployees() {
-    }
-
-    @Test
-    void setJobPostings() {
-    }
 }
