@@ -11,6 +11,7 @@ import static com.vuk.spring_webapp.domain.job_posting.JobPostingStatus.PUBLISHE
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+@DisplayName("JobPosting Unit Tests")
 class JobPostingTest {
 
     private static final String TITLE = "Fullstack .NET developer";
