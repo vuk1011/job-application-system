@@ -6,39 +6,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @DisplayName("JobPostingServiceImpl Unit Tests")
 class JobPostingServiceImplTest {
 
-    @BeforeEach
-    void setUp() {
-    }
 
-    @AfterEach
-    void tearDown() {
-    }
-
-    @Test
-    void findById() {
-    }
-
-    @Test
-    void findAll() {
-    }
-
-    @Test
-    void findAllPublished() {
-    }
-
-    @Test
-    void create() {
-    }
-
-    @Test
-    void deleteById() {
-    }
-
-    @Test
-    void updateById() {
-    }
 }

@@ -6,23 +6,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @DisplayName("EmployeeServiceImpl Unit Tests")
 class EmployeeServiceImplTest {
 
-    @BeforeEach
-    void setUp() {
-    }
 
-    @AfterEach
-    void tearDown() {
-    }
-
-    @Test
-    void register() {
-    }
-
-    @Test
-    void getIdByEmail() {
-    }
 }

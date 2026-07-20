@@ -6,31 +6,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @DisplayName("InterviewServiceImpl Unit Tests")
 class InterviewServiceImplTest {
 
-    @BeforeEach
-    void setUp() {
-    }
 
-    @AfterEach
-    void tearDown() {
-    }
-
-    @Test
-    void findAllForEmployee() {
-    }
-
-    @Test
-    void findAllForCandidate() {
-    }
-
-    @Test
-    void createInterview() {
-    }
-
-    @Test
-    void deleteInterview() {
-    }
 }
