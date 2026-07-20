@@ -10,6 +10,7 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("JobApplication Unit Tests")
 class JobApplicationTest {
 
     private static final LocalDate DATE_OF_SUBMISSION = LocalDate.now();

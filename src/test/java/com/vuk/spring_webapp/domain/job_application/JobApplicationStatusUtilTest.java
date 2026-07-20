@@ -8,6 +8,7 @@ import static com.vuk.spring_webapp.domain.job_application.JobApplicationStatusU
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@DisplayName("JobApplicationStatusUtil Unit Tests")
 class JobApplicationStatusUtilTest {
 
     @Test

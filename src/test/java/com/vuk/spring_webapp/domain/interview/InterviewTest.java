@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+@DisplayName("Interview Unit Tests")
 class InterviewTest {
 
     private static final String TITLE = "Technical interview #1";

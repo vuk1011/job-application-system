@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+@DisplayName("Employee Unit Tests")
 class EmployeeTest {
 
     private static final String FIRST_NAME = "Mans";

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+@DisplayName("Company Unit Tests")
 class CompanyTest {
 
     private static final String NAME = "Robots 101";
