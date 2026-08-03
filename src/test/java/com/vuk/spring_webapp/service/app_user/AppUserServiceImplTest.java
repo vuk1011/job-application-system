@@ -6,6 +6,7 @@ import com.vuk.spring_webapp.exception.UnauthorizedException;
 import com.vuk.spring_webapp.repository.AppUserRepository;
 import com.vuk.spring_webapp.security.JwtUtil;
 import com.vuk.spring_webapp.transfer.response.LoginSuccessResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,16 +41,26 @@ class AppUserServiceImplTest {
     @InjectMocks
     private AppUserServiceImpl appUserService;
 
+    private String email;
+    private String password;
+    private Role role;
+    private Long userId;
+    private String firstName;
+    private String token;
+
+    @BeforeEach
+    void setUp() {
+        email = "aleksandar123@gmail.com";
+        password = "secret123";
+        role = Role.EMPLOYEE;
+        userId = 1L;
+        firstName = "Aleksandar";
+        token = "secret-token123";
+    }
+
     @Test
     @DisplayName("authenticateUser returns LoginSuccessResponse when credentials are valid")
     void authenticateUserWhenValidCredentialsReturnsLoginSuccessResponse() {
-        String email = "alex@yahoo.com";
-        String password = "secret123";
-        Role role = Role.EMPLOYEE;
-        Long userId = 1L;
-        String firstName = "Alex";
-        String token = "secret-token";
-
         when(userRepository.existsByEmailAndRole(email, role)).thenReturn(true);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);
@@ -74,10 +85,6 @@ class AppUserServiceImplTest {
     @Test
     @DisplayName("authenticateUser throws UnauthorizedException when user does not exist by email and role")
     void authenticateUserWhenUserDoesNotExistThrowsUnauthorizedException() {
-        String email = "nonexistent@example.com";
-        String password = "password123";
-        Role role = Role.CANDIDATE;
-
         when(userRepository.existsByEmailAndRole(email, role)).thenReturn(false);
 
         UnauthorizedException exception = assertThrows(UnauthorizedException.class,
@@ -92,10 +99,6 @@ class AppUserServiceImplTest {
     @Test
     @DisplayName("authenticateUser propagates exception thrown by AuthenticationManager on bad credentials")
     void authenticateUserWhenAuthenticationFailsPropagatesException() {
-        String email = "test@example.com";
-        String password = "wrongPassword";
-        Role role = Role.EMPLOYEE;
-
         when(userRepository.existsByEmailAndRole(email, role)).thenReturn(true);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenThrow(new org.springframework.security.authentication.BadCredentialsException("Bad credentials"));

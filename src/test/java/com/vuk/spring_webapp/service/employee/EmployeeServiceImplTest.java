@@ -43,10 +43,19 @@ class EmployeeServiceImplTest {
     @InjectMocks
     private EmployeeServiceImpl employeeService;
 
+    private Long companyId;
+    private Long employeeId;
+    private Company company;
     private RegisterEmployeeRequest request;
+    private String passwordEncoded;
 
     @BeforeEach
     void setUp() {
+        companyId = 1L;
+        employeeId = 3L;
+
+        company = new Company("Firma za kutije", "Tekst o nama...", "Višnjički drum 12");
+
         request = new RegisterEmployeeRequest();
         request.setFirstName("Maja");
         request.setLastName("Simic");
@@ -58,17 +67,17 @@ class EmployeeServiceImplTest {
         request.setNationalId("1010001123001");
         request.setDateOfBirth(LocalDate.of(1990, 5, 15));
         request.setDateOfHire(LocalDate.of(2020, 1, 10));
-        request.setCompanyId(1L);
+        request.setCompanyId(companyId);
+
+        passwordEncoded = "secret123-encoded";
     }
 
     @Test
     @DisplayName("register encodes password and saves employee when company exists and email is not in use")
     void registerSavesEmployeeWithEncodedPassword() {
-        Company company = new Company("Firma za konzerve", "...", "Trg Republike 11");
-
         when(userRepository.existsByEmail(request.getEmail())).thenReturn(false);
         when(companyRepository.findById(request.getCompanyId())).thenReturn(Optional.of(company));
-        when(passwordEncoder.encode(request.getPassword())).thenReturn("encodedPassword");
+        when(passwordEncoder.encode(request.getPassword())).thenReturn(passwordEncoded);
 
         employeeService.register(request);
 
@@ -76,21 +85,21 @@ class EmployeeServiceImplTest {
         verify(userRepository).save(captor.capture());
 
         Employee saved = captor.getValue();
-        assertEquals("Maja", saved.getFirstName());
-        assertEquals("Simic", saved.getLastName());
-        assertEquals(Sex.FEMALE, saved.getSex());
-        assertEquals("38163321321", saved.getPhone());
-        assertEquals("Ulica 3", saved.getAddress());
-        assertEquals("majas@gmail.com", saved.getEmail());
-        assertEquals("encodedPassword", saved.getPassword());
-        assertEquals("1010001123001", saved.getNationalId());
-        assertEquals(LocalDate.of(1990, 5, 15), saved.getDateOfBirth());
-        assertEquals(LocalDate.of(2020, 1, 10), saved.getDateOfHire());
+        assertEquals(request.getFirstName(), saved.getFirstName());
+        assertEquals(request.getLastName(), saved.getLastName());
+        assertEquals(request.getSex(), saved.getSex());
+        assertEquals(request.getPhone(), saved.getPhone());
+        assertEquals(request.getAddress(), saved.getAddress());
+        assertEquals(request.getEmail(), saved.getEmail());
+        assertEquals(passwordEncoded, saved.getPassword());
+        assertEquals(request.getNationalId(), saved.getNationalId());
+        assertEquals(request.getDateOfBirth(), saved.getDateOfBirth());
+        assertEquals(request.getDateOfHire(), saved.getDateOfHire());
         assertEquals(company, saved.getCompany());
 
-        verify(userRepository).existsByEmail("majas@gmail.com");
-        verify(companyRepository).findById(1L);
-        verify(passwordEncoder).encode("secret123");
+        verify(userRepository).existsByEmail(request.getEmail());
+        verify(companyRepository).findById(companyId);
+        verify(passwordEncoder).encode(request.getPassword());
         verifyNoMoreInteractions(userRepository, companyRepository, passwordEncoder);
         verifyNoInteractions(employeeRepository);
     }
@@ -120,7 +129,7 @@ class EmployeeServiceImplTest {
         );
         assertEquals("Email is already in use", exception.getMessage());
 
-        verify(userRepository).existsByEmail("majas@gmail.com");
+        verify(userRepository).existsByEmail(request.getEmail());
         verify(userRepository, never()).save(any());
         verifyNoInteractions(companyRepository, passwordEncoder, employeeRepository);
     }
@@ -137,8 +146,8 @@ class EmployeeServiceImplTest {
         );
         assertEquals("Company not found", exception.getMessage());
 
-        verify(userRepository).existsByEmail("majas@gmail.com");
-        verify(companyRepository).findById(1L);
+        verify(userRepository).existsByEmail(request.getEmail());
+        verify(companyRepository).findById(companyId);
         verify(userRepository, never()).save(any());
         verifyNoInteractions(passwordEncoder, employeeRepository);
     }
@@ -146,21 +155,19 @@ class EmployeeServiceImplTest {
     @Test
     @DisplayName("getIdByEmail returns employee ID when email exists")
     void getIdByEmailReturnsId() {
-        String email = "majas@gmail.com";
         Employee employee = new Employee(
-                "Maja", "Simic", Sex.FEMALE, "38163321321", "Ulica 3", email,
-                "encodedPassword", "1010001123001", LocalDate.of(1990, 5, 15),
-                LocalDate.of(2020, 1, 10), new Company("Firma za konzerve", "...", "Trg Republike 11")
+                "", "", Sex.FEMALE, "", "", request.getEmail(),
+                "", "", null, null, company
         );
-        ReflectionTestUtils.setField(employee, "id", 42L);
+        ReflectionTestUtils.setField(employee, "id", employeeId);
 
-        when(employeeRepository.findByEmail(email)).thenReturn(employee);
+        when(employeeRepository.findByEmail(request.getEmail())).thenReturn(employee);
 
-        Long id = employeeService.getIdByEmail(email);
+        Long id = employeeService.getIdByEmail(request.getEmail());
 
-        assertEquals(42L, id);
+        assertEquals(employeeId, id);
 
-        verify(employeeRepository).findByEmail(email);
+        verify(employeeRepository).findByEmail(request.getEmail());
         verifyNoMoreInteractions(employeeRepository);
         verifyNoInteractions(userRepository, companyRepository, passwordEncoder);
     }
@@ -168,7 +175,7 @@ class EmployeeServiceImplTest {
     @Test
     @DisplayName("getIdByEmail throws NullPointerException when email does not match any employee")
     void getIdByEmailThrowsNullPointerException() {
-        String email = "unknown@example.com";
+        String email = "unknown@yahoo.com";
         when(employeeRepository.findByEmail(email)).thenReturn(null);
 
         assertThrows(

@@ -12,6 +12,7 @@ import com.vuk.spring_webapp.repository.InterviewRepository;
 import com.vuk.spring_webapp.repository.JobApplicationRepository;
 import com.vuk.spring_webapp.transfer.dto.InterviewDto;
 import com.vuk.spring_webapp.transfer.request.CreateInterviewRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +21,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -46,33 +46,77 @@ class InterviewServiceImplTest {
     @InjectMocks
     private InterviewServiceImpl interviewService;
 
+    private Long employeeId;
+    private Long otherEmployeeId;
+    private Employee employee;
+    private Employee otherEmployee;
+    private Long candidateId;
+    private Long otherCandidateId;
+    private Candidate candidate;
+    private Candidate otherCandidate;
+    private Long jobApplicationId;
+    private JobApplication jobApplication;
+    private Long interviewId;
+    private Interview interview;
+    private CreateInterviewRequest request;
+
+    @BeforeEach
+    void setUp() {
+        employeeId = 1L;
+        otherEmployeeId = 2L;
+        employee = new Employee(
+                "Ana", "Antić", Sex.FEMALE, "381000000", "Ulica 1", "ana@gmail.com",
+                "secret123-encoded", "1010001100001", LocalDate.of(1990, 5, 15),
+                LocalDate.of(2020, 1, 10), null
+        );
+        employee.setId(employeeId);
+        otherEmployee = new Employee(
+                "Marko", "Marković", Sex.MALE, "38163000000", "Ulica 2", "markovic@yahoo.com",
+                "secret321-encoded", "2003000600001", LocalDate.of(2000, 3, 20),
+                LocalDate.of(2019, 6, 1), null
+        );
+        otherEmployee.setId(otherEmployeeId);
+
+        candidateId = 1L;
+        otherCandidateId = 2L;
+        candidate = new Candidate(
+                "Uroš", "Protić", Sex.MALE, "38165223344", "Bulevar 123", "proticu@gmail.com", "secret123-encoded"
+        );
+        candidate.setId(candidateId);
+        otherCandidate = new Candidate(
+                "Alisa", "Li", Sex.FEMALE, "38165010101", "Dunavska 13", "alisa@yahoo.com", "password-encoded"
+        );
+        otherCandidate.setId(otherCandidateId);
+
+        jobApplicationId = 1L;
+        jobApplication = new JobApplication(
+                LocalDate.now(), null, null, employee, null
+        );
+
+        interviewId = 1L;
+        interview = new Interview(
+                "Technical Interview", "First round", LocalDateTime.now().plusDays(1), jobApplication
+        );
+
+        request = new CreateInterviewRequest();
+        request.setJobApplicationId(jobApplicationId);
+        request.setTitle("Technical Interview");
+        request.setDescription("First round");
+        request.setTimeScheduled(LocalDateTime.now().plusDays(1));
+    }
+
     @Test
     @DisplayName("findAllForEmployee returns mapped interview list when employee manages the job application")
     void findAllForEmployeeReturnsInterviews() {
-        Long employeeId = 1L;
-        Long jobApplicationId = 10L;
+        jobApplication.setStatus(INTERVIEW_SCHEDULED);
 
-        Employee employee = new Employee(
-                "Ana", "Antic", Sex.FEMALE, "381000000", "Ulica 1", "ana@gmail.com",
-                "encodedPassword", "1010001100001", LocalDate.of(1990, 5, 15),
-                LocalDate.of(2020, 1, 10), null
-        );
-        ReflectionTestUtils.setField(employee, "id", employeeId);
-
-        JobApplication application = new JobApplication(
-                LocalDate.now(), INTERVIEW_SCHEDULED, null, employee, null
-        );
-
-        Interview interview = new Interview(
-                "Technical Interview", "First round", LocalDateTime.of(2026, 8, 10, 10, 0), application
-        );
         InterviewDto interviewDto = new InterviewDto();
-        interviewDto.setId(1L);
-        interviewDto.setTitle("Technical Interview");
-        interviewDto.setDescription("First round");
-        interviewDto.setTimeScheduled(LocalDateTime.of(2026, 8, 10, 10, 0));
+        interviewDto.setId(interview.getId());
+        interviewDto.setTitle(interview.getTitle());
+        interviewDto.setDescription(interview.getDescription());
+        interviewDto.setTimeScheduled(interview.getTimeScheduled());
 
-        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(jobApplication));
         when(interviewRepository.findByJobApplicationId(jobApplicationId)).thenReturn(List.of(interview));
         when(modelMapper.map(interview, InterviewDto.class)).thenReturn(interviewDto);
 
@@ -90,9 +134,6 @@ class InterviewServiceImplTest {
     @Test
     @DisplayName("findAllForEmployee throws ResourceNotFoundException when job application does not exist")
     void findAllForEmployeeThrowsResourceNotFoundException() {
-        Long employeeId = 1L;
-        Long jobApplicationId = 10L;
-
         when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(
@@ -109,14 +150,9 @@ class InterviewServiceImplTest {
     @Test
     @DisplayName("findAllForEmployee throws ConflictException when job application is not managed")
     void findAllForEmployeeThrowsConflictException() {
-        Long employeeId = 1L;
-        Long jobApplicationId = 10L;
+        jobApplication.setEmployee(null);
 
-        JobApplication application = new JobApplication(
-                LocalDate.now(), SUBMITTED, null, null, null
-        );
-
-        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(jobApplication));
 
         ConflictException exception = assertThrows(
                 ConflictException.class,
@@ -132,22 +168,9 @@ class InterviewServiceImplTest {
     @Test
     @DisplayName("findAllForEmployee throws UnauthorizedException when another employee manages the job application")
     void findAllForEmployeeThrowsUnauthorizedException() {
-        Long employeeId = 1L;
-        Long otherEmployeeId = 2L;
-        Long jobApplicationId = 10L;
+        jobApplication.setEmployee(otherEmployee);
 
-        Employee otherEmployee = new Employee(
-                "Marko", "Markovic", Sex.MALE, "38163000000", "Ulica 2", "markovic@yahoo.com",
-                "encodedPassword", "2003000600001", LocalDate.of(2000, 3, 20),
-                LocalDate.of(2019, 6, 1), null
-        );
-        ReflectionTestUtils.setField(otherEmployee, "id", otherEmployeeId);
-
-        JobApplication application = new JobApplication(
-                LocalDate.now(), INTERVIEW_SCHEDULED, null, otherEmployee, null
-        );
-
-        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(jobApplication));
 
         UnauthorizedException exception = assertThrows(
                 UnauthorizedException.class,
@@ -163,28 +186,15 @@ class InterviewServiceImplTest {
     @Test
     @DisplayName("findAllForCandidate returns mapped interview list when candidate is tied to the job application")
     void findAllForCandidateReturnsInterviews() {
-        Long candidateId = 1L;
-        Long jobApplicationId = 10L;
+        jobApplication.setCandidate(candidate);
 
-        Candidate candidate = new Candidate(
-                "Uros", "Protic", Sex.MALE, "38165223344", "Bulevar 123", "proticu@gmail.com", "encodedPassword"
-        );
-        ReflectionTestUtils.setField(candidate, "id", candidateId);
-
-        JobApplication application = new JobApplication(
-                LocalDate.now(), INTERVIEW_SCHEDULED, null, null, candidate
-        );
-
-        Interview interview = new Interview(
-                "Technical Interview", "First round", LocalDateTime.of(2026, 8, 10, 10, 0), application
-        );
         InterviewDto interviewDto = new InterviewDto();
-        interviewDto.setId(1L);
-        interviewDto.setTitle("Technical Interview");
-        interviewDto.setDescription("First round");
-        interviewDto.setTimeScheduled(LocalDateTime.of(2026, 8, 10, 10, 0));
+        interviewDto.setId(interview.getId());
+        interviewDto.setTitle(interview.getTitle());
+        interviewDto.setDescription(interview.getDescription());
+        interviewDto.setTimeScheduled(interview.getTimeScheduled());
 
-        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(jobApplication));
         when(interviewRepository.findByJobApplicationId(jobApplicationId)).thenReturn(List.of(interview));
         when(modelMapper.map(interview, InterviewDto.class)).thenReturn(interviewDto);
 
@@ -202,9 +212,6 @@ class InterviewServiceImplTest {
     @Test
     @DisplayName("findAllForCandidate throws ResourceNotFoundException when job application does not exist")
     void findAllForCandidateThrowsResourceNotFoundException() {
-        Long candidateId = 1L;
-        Long jobApplicationId = 10L;
-
         when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(
@@ -221,20 +228,9 @@ class InterviewServiceImplTest {
     @Test
     @DisplayName("findAllForCandidate throws UnauthorizedException when job application belongs to another candidate")
     void findAllForCandidateThrowsUnauthorizedException() {
-        Long candidateId = 1L;
-        Long otherCandidateId = 2L;
-        Long jobApplicationId = 10L;
+        jobApplication.setCandidate(otherCandidate);
 
-        Candidate otherCandidate = new Candidate(
-                "Alisa", "Li", Sex.FEMALE, "38165010101", "Dunavska 13", "alisa@yahoo.com", "encodedPassword"
-        );
-        ReflectionTestUtils.setField(otherCandidate, "id", otherCandidateId);
-
-        JobApplication application = new JobApplication(
-                LocalDate.now(), INTERVIEW_SCHEDULED, null, null, otherCandidate
-        );
-
-        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(jobApplication));
 
         UnauthorizedException exception = assertThrows(
                 UnauthorizedException.class,
@@ -250,43 +246,25 @@ class InterviewServiceImplTest {
     @Test
     @DisplayName("createInterview schedules interview and updates status when application is managed and status allows it")
     void createInterviewSchedulesInterview() {
-        Long employeeId = 1L;
-        Long jobApplicationId = 10L;
+        jobApplication.setStatus(UNDER_REVIEW);
 
-        Employee employee = new Employee(
-                "Olivera", "Stanic", Sex.FEMALE, "38166001122", "Savska 1", "olivera@gmail.com",
-                "encodedPassword", "1010980100000", LocalDate.of(1990, 10, 10),
-                LocalDate.of(2020, 1, 10), null
-        );
-        ReflectionTestUtils.setField(employee, "id", employeeId);
-
-        JobApplication application = new JobApplication(
-                LocalDate.now(), UNDER_REVIEW, null, employee, null
-        );
-
-        CreateInterviewRequest request = new CreateInterviewRequest();
-        request.setJobApplicationId(jobApplicationId);
-        request.setTitle("Technical Interview");
-        request.setDescription("First round");
-        request.setTimeScheduled(LocalDateTime.now().plusDays(3));
-
-        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(jobApplication));
 
         interviewService.createInterview(employeeId, request);
 
-        assertEquals(INTERVIEW_SCHEDULED, application.getStatus());
+        assertEquals(INTERVIEW_SCHEDULED, jobApplication.getStatus());
 
         verify(jobApplicationRepository).findById(jobApplicationId);
-        verify(jobApplicationRepository).save(application);
+        verify(jobApplicationRepository).save(jobApplication);
 
         ArgumentCaptor<Interview> interviewCaptor = ArgumentCaptor.forClass(Interview.class);
         verify(interviewRepository).save(interviewCaptor.capture());
 
         Interview savedInterview = interviewCaptor.getValue();
-        assertEquals("Technical Interview", savedInterview.getTitle());
-        assertEquals("First round", savedInterview.getDescription());
+        assertEquals(request.getTitle(), savedInterview.getTitle());
+        assertEquals(request.getDescription(), savedInterview.getDescription());
         assertEquals(request.getTimeScheduled(), savedInterview.getTimeScheduled());
-        assertEquals(application, savedInterview.getJobApplication());
+        assertEquals(jobApplication, savedInterview.getJobApplication());
 
         verifyNoMoreInteractions(jobApplicationRepository, interviewRepository);
         verifyNoInteractions(modelMapper);
@@ -295,11 +273,7 @@ class InterviewServiceImplTest {
     @Test
     @DisplayName("createInterview throws ResourceNotFoundException when job application does not exist")
     void createInterviewThrowsResourceNotFoundException() {
-        Long employeeId = 1L;
-        CreateInterviewRequest request = new CreateInterviewRequest();
-        request.setJobApplicationId(10L);
-
-        when(jobApplicationRepository.findById(10L)).thenReturn(Optional.empty());
+        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(
                 ResourceNotFoundException.class,
@@ -307,7 +281,7 @@ class InterviewServiceImplTest {
         );
         assertEquals("Job application not found", exception.getMessage());
 
-        verify(jobApplicationRepository).findById(10L);
+        verify(jobApplicationRepository).findById(jobApplicationId);
         verifyNoMoreInteractions(jobApplicationRepository);
         verifyNoInteractions(interviewRepository, modelMapper);
     }
@@ -315,17 +289,9 @@ class InterviewServiceImplTest {
     @Test
     @DisplayName("createInterview throws ConflictException when job application is not managed")
     void createInterviewThrowsConflictExceptionForUnmanagedApplication() {
-        Long employeeId = 1L;
-        Long jobApplicationId = 10L;
+        jobApplication.setEmployee(null);
 
-        JobApplication application = new JobApplication(
-                LocalDate.now(), UNDER_REVIEW, null, null, null
-        );
-
-        CreateInterviewRequest request = new CreateInterviewRequest();
-        request.setJobApplicationId(jobApplicationId);
-
-        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(jobApplication));
 
         ConflictException exception = assertThrows(
                 ConflictException.class,
@@ -341,25 +307,10 @@ class InterviewServiceImplTest {
     @Test
     @DisplayName("createInterview throws UnauthorizedException when another employee manages the job application")
     void createInterviewThrowsUnauthorizedException() {
-        Long employeeId = 1L;
-        Long otherEmployeeId = 2L;
-        Long jobApplicationId = 10L;
+        jobApplication.setStatus(UNDER_REVIEW);
+        jobApplication.setEmployee(otherEmployee);
 
-        Employee otherEmployee = new Employee(
-                "Vuk", "Perovic", Sex.MALE, "38162000333", "Ustanicka 22", "vukperovic@gmail.com",
-                "encodedPassword", "2010002700003", LocalDate.of(2002, 10, 20),
-                LocalDate.of(2019, 6, 1), null
-        );
-        ReflectionTestUtils.setField(otherEmployee, "id", otherEmployeeId);
-
-        JobApplication application = new JobApplication(
-                LocalDate.now(), UNDER_REVIEW, null, otherEmployee, null
-        );
-
-        CreateInterviewRequest request = new CreateInterviewRequest();
-        request.setJobApplicationId(jobApplicationId);
-
-        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(jobApplication));
 
         UnauthorizedException exception = assertThrows(
                 UnauthorizedException.class,
@@ -375,24 +326,9 @@ class InterviewServiceImplTest {
     @Test
     @DisplayName("createInterview throws ConflictException when status does not allow scheduling an interview")
     void createInterviewThrowsConflictExceptionForDisallowedStatus() {
-        Long employeeId = 1L;
-        Long jobApplicationId = 10L;
+        jobApplication.setStatus(OFFERED);
 
-        Employee employee = new Employee(
-                "Andjela", "Simic", Sex.FEMALE, "38163777888", "Kneza Milosa 10", "asimic@gmail.com",
-                "encodedPassword", "1505990200002", LocalDate.of(1990, 5, 15),
-                LocalDate.of(2020, 1, 10), null
-        );
-        ReflectionTestUtils.setField(employee, "id", employeeId);
-
-        JobApplication application = new JobApplication(
-                LocalDate.now(), OFFERED, null, employee, null
-        );
-
-        CreateInterviewRequest request = new CreateInterviewRequest();
-        request.setJobApplicationId(jobApplicationId);
-
-        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(jobApplication));
 
         ConflictException exception = assertThrows(
                 ConflictException.class,
@@ -408,25 +344,10 @@ class InterviewServiceImplTest {
     @Test
     @DisplayName("createInterview throws ConflictException when interview is scheduled in the past")
     void createInterviewThrowsConflictExceptionForPastSchedule() {
-        Long employeeId = 1L;
-        Long jobApplicationId = 10L;
-
-        Employee employee = new Employee(
-                "Milan", "Stojanovic", Sex.MALE, "38162123123", "Bulevar 123", "mstojanovic@gmail.com",
-                "encodedPassword", "1009999600200", LocalDate.of(1990, 5, 15),
-                LocalDate.of(2020, 1, 10), null
-        );
-        ReflectionTestUtils.setField(employee, "id", employeeId);
-
-        JobApplication application = new JobApplication(
-                LocalDate.now(), UNDER_REVIEW, null, employee, null
-        );
-
-        CreateInterviewRequest request = new CreateInterviewRequest();
-        request.setJobApplicationId(jobApplicationId);
+        jobApplication.setStatus(UNDER_REVIEW);
         request.setTimeScheduled(LocalDateTime.now().minusDays(1));
 
-        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(jobApplication));
 
         ConflictException exception = assertThrows(
                 ConflictException.class,
@@ -442,22 +363,7 @@ class InterviewServiceImplTest {
     @Test
     @DisplayName("deleteInterview deletes interview when employee manages it and it has not passed yet in time")
     void deleteInterviewDeletesInterview() {
-        Long employeeId = 1L;
-        Long interviewId = 5L;
-
-        Employee employee = new Employee(
-                "Marija", "Markovic", Sex.FEMALE, "38162321123", "Ulica 10", "maja@gmail.com",
-                "encodedPassword", "1010970", LocalDate.of(1990, 5, 15),
-                LocalDate.of(2020, 1, 10), null
-        );
-        ReflectionTestUtils.setField(employee, "id", employeeId);
-
-        JobApplication application = new JobApplication(
-                LocalDate.now(), INTERVIEW_SCHEDULED, null, employee, null
-        );
-        Interview interview = new Interview(
-                "Technical Interview", "First round", LocalDateTime.now().plusDays(1), application
-        );
+        jobApplication.setStatus(INTERVIEW_SCHEDULED);
 
         when(interviewRepository.findById(interviewId)).thenReturn(Optional.of(interview));
 
@@ -472,9 +378,6 @@ class InterviewServiceImplTest {
     @Test
     @DisplayName("deleteInterview throws ResourceNotFoundException when interview does not exist")
     void deleteInterviewThrowsResourceNotFoundException() {
-        Long employeeId = 1L;
-        Long interviewId = 5L;
-
         when(interviewRepository.findById(interviewId)).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(
@@ -492,23 +395,8 @@ class InterviewServiceImplTest {
     @Test
     @DisplayName("deleteInterview throws UnauthorizedException when another employee manages the associated job application")
     void deleteInterviewThrowsUnauthorizedException() {
-        Long employeeId = 1L;
-        Long otherEmployeeId = 2L;
-        Long interviewId = 5L;
-
-        Employee otherEmployee = new Employee(
-                "Nikola", "Nikolic", Sex.MALE, "381640001111", "Trg 23", "nikola@gmail.com",
-                "encodedPassword", "1010001800890", LocalDate.of(1985, 3, 20),
-                LocalDate.of(2019, 6, 1), null
-        );
-        ReflectionTestUtils.setField(otherEmployee, "id", otherEmployeeId);
-
-        JobApplication application = new JobApplication(
-                LocalDate.now(), INTERVIEW_SCHEDULED, null, otherEmployee, null
-        );
-        Interview interview = new Interview(
-                "Technical Interview", "First round", LocalDateTime.now().plusDays(1), application
-        );
+        jobApplication.setStatus(INTERVIEW_SCHEDULED);
+        jobApplication.setEmployee(otherEmployee);
 
         when(interviewRepository.findById(interviewId)).thenReturn(Optional.of(interview));
 
@@ -527,22 +415,8 @@ class InterviewServiceImplTest {
     @Test
     @DisplayName("deleteInterview throws ConflictException when interview's scheduled time has passed")
     void deleteInterviewThrowsConflictException() {
-        Long employeeId = 1L;
-        Long interviewId = 5L;
-
-        Employee employee = new Employee(
-                "Milos", "Peric", Sex.MALE, "38165444123", "Sarajevska 10", "milos@gmail.com",
-                "encodedPassword", "2002999780081", LocalDate.of(1990, 5, 15),
-                LocalDate.of(2020, 1, 10), null
-        );
-        ReflectionTestUtils.setField(employee, "id", employeeId);
-
-        JobApplication application = new JobApplication(
-                LocalDate.now(), INTERVIEW_SCHEDULED, null, employee, null
-        );
-        Interview interview = new Interview(
-                "Technical Interview", "First round", LocalDateTime.now().minusDays(1), application
-        );
+        jobApplication.setStatus(INTERVIEW_SCHEDULED);
+        interview.setTimeScheduled(LocalDateTime.now().minusDays(1));
 
         when(interviewRepository.findById(interviewId)).thenReturn(Optional.of(interview));
 

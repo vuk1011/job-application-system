@@ -47,24 +47,42 @@ class CandidateServiceImplTest {
     private CandidateServiceImpl candidateService;
 
     private RegisterCandidateRequest request;
+    private String passwordEncoded;
+    private Long candidateId;
+    private Candidate candidate;
+    private byte[] resumeData;
+    private byte[] resumeDataNew;
+    private String contentType;
+    private String contentTypeWrong;
 
     @BeforeEach
     void setUp() {
         request = new RegisterCandidateRequest();
         request.setFirstName("Aleksa");
-        request.setLastName("Peric");
+        request.setLastName("Aleksić");
         request.setSex(Sex.MALE);
         request.setPhone("38162000111");
         request.setAddress("Bulevar 23");
-        request.setEmail("aperic@example.com");
+        request.setEmail("aperic@gmail.com");
         request.setPassword("secret123");
+
+        passwordEncoded = "secret123-encoded";
+
+        candidateId = 1L;
+        candidate = new Candidate();
+
+        resumeData = "PDF content".getBytes();
+        resumeDataNew = "New PDF content".getBytes();
+
+        contentType = "application/pdf";
+        contentTypeWrong = "image/png";
     }
 
     @Test
     @DisplayName("register saves candidate with an encoded password when email's not in use")
     void registerEncodesPasswordAndSavesCandidateWhenEmailNotInUse() {
         when(userRepository.existsByEmail(request.getEmail())).thenReturn(false);
-        when(passwordEncoder.encode(request.getPassword())).thenReturn("encodedPassword");
+        when(passwordEncoder.encode(request.getPassword())).thenReturn(passwordEncoded);
 
         candidateService.register(request);
 
@@ -72,16 +90,16 @@ class CandidateServiceImplTest {
         verify(userRepository).save(captor.capture());
 
         Candidate saved = captor.getValue();
-        assertEquals("Aleksa", saved.getFirstName());
-        assertEquals("Peric", saved.getLastName());
-        assertEquals(Sex.MALE, saved.getSex());
-        assertEquals("38162000111", saved.getPhone());
-        assertEquals("Bulevar 23", saved.getAddress());
-        assertEquals("aperic@example.com", saved.getEmail());
-        assertEquals("encodedPassword", saved.getPassword());
+        assertEquals(request.getFirstName(), saved.getFirstName());
+        assertEquals(request.getLastName(), saved.getLastName());
+        assertEquals(request.getSex(), saved.getSex());
+        assertEquals(request.getPhone(), saved.getPhone());
+        assertEquals(request.getAddress(), saved.getAddress());
+        assertEquals(request.getEmail(), saved.getEmail());
+        assertEquals(passwordEncoded, saved.getPassword());
 
-        verify(passwordEncoder).encode("secret123");
-        verify(userRepository).existsByEmail("aperic@example.com");
+        verify(passwordEncoder).encode(request.getPassword());
+        verify(userRepository).existsByEmail(request.getEmail());
         verifyNoMoreInteractions(userRepository, passwordEncoder);
         verifyNoInteractions(candidateRepository, modelMapper);
     }
@@ -105,10 +123,6 @@ class CandidateServiceImplTest {
     @Test
     @DisplayName("loadResume returns ByteArrayResource when the resume exists")
     void loadResumeReturnsByteArrayResourceWhenResumeExists() {
-        Long candidateId = 1L;
-        byte[] resumeData = "PDF content".getBytes();
-
-        Candidate candidate = new Candidate();
         candidate.setResume(resumeData);
 
         when(candidateRepository.findById(candidateId)).thenReturn(Optional.of(candidate));
@@ -126,7 +140,6 @@ class CandidateServiceImplTest {
     @Test
     @DisplayName("loadResume throws ResourceNotFoundException when the candidate isn't found")
     void loadResumeThrowsResourceNotFoundExceptionWhenCandidateNotFound() {
-        Long candidateId = 1L;
         when(candidateRepository.findById(candidateId)).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(
@@ -143,9 +156,6 @@ class CandidateServiceImplTest {
     @Test
     @DisplayName("loadResume throws ResumeNotUploadedException when resume is null")
     void loadResumeThrowsResumeNotUploadedExceptionWhenResumeIsNull() {
-        Long candidateId = 1L;
-        Candidate candidate = new Candidate();
-
         when(candidateRepository.findById(candidateId)).thenReturn(Optional.of(candidate));
 
         ResumeNotUploadedException exception = assertThrows(
@@ -162,8 +172,6 @@ class CandidateServiceImplTest {
     @Test
     @DisplayName("loadResume throws ResumeNotUploadedException when resume is empty")
     void loadResumeThrowsResumeNotUploadedExceptionWhenResumeIsEmpty() {
-        Long candidateId = 1L;
-        Candidate candidate = new Candidate();
         candidate.setResume(new byte[0]);
 
         when(candidateRepository.findById(candidateId)).thenReturn(Optional.of(candidate));
@@ -182,19 +190,15 @@ class CandidateServiceImplTest {
     @Test
     @DisplayName("updateResume overwrites resume when file is a PDF and candidate exists")
     void updateResumeSavesNewResume() throws IOException {
-        Long candidateId = 1L;
-        byte[] newResumeData = "new PDF content".getBytes();
+        candidate.setResume(resumeData);
 
-        Candidate candidate = new Candidate();
-        candidate.setResume("old PDF content".getBytes());
-
-        when(file.getContentType()).thenReturn("application/pdf");
+        when(file.getContentType()).thenReturn(contentType);
         when(candidateRepository.findById(candidateId)).thenReturn(Optional.of(candidate));
-        when(file.getBytes()).thenReturn(newResumeData);
+        when(file.getBytes()).thenReturn(resumeDataNew);
 
         candidateService.updateResume(candidateId, file);
 
-        assertArrayEquals(newResumeData, candidate.getResume());
+        assertArrayEquals(resumeDataNew, candidate.getResume());
 
         verify(candidateRepository).findById(candidateId);
         verify(candidateRepository).save(candidate);
@@ -205,8 +209,7 @@ class CandidateServiceImplTest {
     @Test
     @DisplayName("updateResume throws IllegalArgumentException when file is not a PDF")
     void updateResumeThrowsIllegalArgumentExceptionForNonPdfFile() {
-        Long candidateId = 1L;
-        when(file.getContentType()).thenReturn("image/png");
+        when(file.getContentType()).thenReturn(contentTypeWrong);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -220,8 +223,7 @@ class CandidateServiceImplTest {
     @Test
     @DisplayName("updateResume throws ResourceNotFoundException when candidate does not exist")
     void updateResumeThrowsResourceNotFoundException() {
-        Long candidateId = 1L;
-        when(file.getContentType()).thenReturn("application/pdf");
+        when(file.getContentType()).thenReturn(contentType);
         when(candidateRepository.findById(candidateId)).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(
@@ -239,10 +241,7 @@ class CandidateServiceImplTest {
     @Test
     @DisplayName("updateResume propagates IOException when reading file bytes fails")
     void updateResumePropagatesIOException() throws IOException {
-        Long candidateId = 1L;
-        Candidate candidate = new Candidate();
-
-        when(file.getContentType()).thenReturn("application/pdf");
+        when(file.getContentType()).thenReturn(contentType);
         when(candidateRepository.findById(candidateId)).thenReturn(Optional.of(candidate));
         when(file.getBytes()).thenThrow(new IOException("Failed to read file"));
 
