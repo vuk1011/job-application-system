@@ -11,6 +11,7 @@ import com.vuk.spring_webapp.repository.JobPostingRepository;
 import com.vuk.spring_webapp.transfer.dto.JobPostingDto;
 import com.vuk.spring_webapp.transfer.request.CreateJobPostingRequest;
 import com.vuk.spring_webapp.transfer.request.UpdateJobPostingRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,26 +45,57 @@ class JobPostingServiceImplTest {
     @Mock
     private ModelMapper modelMapper;
     @Mock
-    private JobPosting jobPosting;
+    private JobPosting jobPostingPublished;
+    @Mock
+    private JobPosting jobPostingClosed;
 
     @InjectMocks
     private JobPostingServiceImpl jobPostingService;
 
+    private Long jobPostingId;
+    private JobPostingDto dto;
+    private CreateJobPostingRequest createJobPostingRequest;
+    private UpdateJobPostingRequest updateJobPostingRequest;
+    private Company company;
+    private String employeeEmail;
+    private Employee employee;
+
+    @BeforeEach
+    void setUp() {
+        jobPostingId = 1L;
+
+        dto = new JobPostingDto();
+
+        createJobPostingRequest = new CreateJobPostingRequest();
+        createJobPostingRequest.setTitle("Backend Java Engineer");
+        createJobPostingRequest.setDescription("Description...");
+
+        updateJobPostingRequest = new UpdateJobPostingRequest();
+        updateJobPostingRequest.setTitle("Backend Java Engineer - NEW");
+        updateJobPostingRequest.setDescription("Description... - NEW");
+
+        company = new Company("Krem sirevi", "Proizvodimo krem sireve", "Zrenjaninski put 104b");
+
+        employeeEmail = "vuk@company.com";
+        employee = new Employee(
+                "Vuk", "Perović", Sex.FEMALE, "381621233444", "Ulica 5", employeeEmail,
+                "encodedPassword", "0101999110333", LocalDate.of(1990, 5, 15),
+                LocalDate.of(2020, 1, 10), company
+        );
+    }
+
     @Test
     @DisplayName("findById returns mapped job posting when it exists")
     void findByIdReturnsJobPosting() {
-        Long id = 1L;
-        JobPostingDto dto = new JobPostingDto();
+        when(jobPostingRepository.findById(jobPostingId)).thenReturn(Optional.of(jobPostingPublished));
+        when(modelMapper.map(jobPostingPublished, JobPostingDto.class)).thenReturn(dto);
 
-        when(jobPostingRepository.findById(id)).thenReturn(Optional.of(jobPosting));
-        when(modelMapper.map(jobPosting, JobPostingDto.class)).thenReturn(dto);
-
-        JobPostingDto result = jobPostingService.findById(id);
+        JobPostingDto result = jobPostingService.findById(jobPostingId);
 
         assertEquals(dto, result);
 
-        verify(jobPostingRepository).findById(id);
-        verify(modelMapper).map(jobPosting, JobPostingDto.class);
+        verify(jobPostingRepository).findById(jobPostingId);
+        verify(modelMapper).map(jobPostingPublished, JobPostingDto.class);
         verifyNoMoreInteractions(jobPostingRepository, modelMapper);
         verifyNoInteractions(employeeRepository);
     }
@@ -71,17 +103,15 @@ class JobPostingServiceImplTest {
     @Test
     @DisplayName("findById throws ResourceNotFoundException when job posting does not exist")
     void findByIdThrowsResourceNotFoundException() {
-        Long id = 1L;
-
-        when(jobPostingRepository.findById(id)).thenReturn(Optional.empty());
+        when(jobPostingRepository.findById(jobPostingId)).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(
                 ResourceNotFoundException.class,
-                () -> jobPostingService.findById(id)
+                () -> jobPostingService.findById(jobPostingId)
         );
-        assertEquals("Job posting not found with id " + id, exception.getMessage());
+        assertEquals("Job posting not found with id " + jobPostingId, exception.getMessage());
 
-        verify(jobPostingRepository).findById(id);
+        verify(jobPostingRepository).findById(jobPostingId);
         verifyNoMoreInteractions(jobPostingRepository);
         verifyNoInteractions(employeeRepository, modelMapper);
     }
@@ -89,25 +119,14 @@ class JobPostingServiceImplTest {
     @Test
     @DisplayName("findAll returns mapped job postings for the authenticated employee's company")
     void findAllReturnsJobPostings() {
-        String email = "marko@gmail.com";
-        Company company = new Company("Firma ABC", "Informacije...", "Hrastova 22");
-
-        Employee employee = new Employee(
-                "Ana", "Anicic", Sex.FEMALE, "381621233444", "Ulica 5", "ana7@gmail.com",
-                "encodedPassword", "0101999110333", LocalDate.of(1990, 5, 15),
-                LocalDate.of(2020, 1, 10), company
-        );
-
-        JobPostingDto dto = new JobPostingDto();
-
         Authentication authentication = mock(Authentication.class);
         SecurityContext securityContext = mock(SecurityContext.class);
 
-        when(authentication.getName()).thenReturn(email);
+        when(authentication.getName()).thenReturn(employeeEmail);
         when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(employeeRepository.findByEmail(email)).thenReturn(employee);
-        when(jobPostingRepository.findAllByCompany(company)).thenReturn(List.of(jobPosting));
-        when(modelMapper.map(jobPosting, JobPostingDto.class)).thenReturn(dto);
+        when(employeeRepository.findByEmail(employeeEmail)).thenReturn(employee);
+        when(jobPostingRepository.findAllByCompany(company)).thenReturn(List.of(jobPostingPublished));
+        when(modelMapper.map(jobPostingPublished, JobPostingDto.class)).thenReturn(dto);
 
         List<JobPostingDto> result;
         try (MockedStatic<SecurityContextHolder> mockedStatic = mockStatic(SecurityContextHolder.class)) {
@@ -119,30 +138,21 @@ class JobPostingServiceImplTest {
         assertEquals(1, result.size());
         assertEquals(dto, result.getFirst());
 
-        verify(employeeRepository).findByEmail(email);
+        verify(employeeRepository).findByEmail(employeeEmail);
         verify(jobPostingRepository).findAllByCompany(company);
-        verify(modelMapper).map(jobPosting, JobPostingDto.class);
+        verify(modelMapper).map(jobPostingPublished, JobPostingDto.class);
         verifyNoMoreInteractions(employeeRepository, jobPostingRepository, modelMapper);
     }
 
     @Test
     @DisplayName("findAll returns empty list when company has no job postings")
     void findAllReturnsEmptyListWhenNoPostings() {
-        String email = "marko@gmail.com";
-        Company company = new Company("Firma ABC", "Informacije...", "Hrastova 22");
-
-        Employee employee = new Employee(
-                "Ana", "Anicic", Sex.FEMALE, "381621233444", "Ulica 5", "ana7@gmail.com",
-                "encodedPassword", "0101999110333", LocalDate.of(1990, 5, 15),
-                LocalDate.of(2020, 1, 10), company
-        );
-
         Authentication authentication = mock(Authentication.class);
         SecurityContext securityContext = mock(SecurityContext.class);
 
-        when(authentication.getName()).thenReturn(email);
+        when(authentication.getName()).thenReturn(employeeEmail);
         when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(employeeRepository.findByEmail(email)).thenReturn(employee);
+        when(employeeRepository.findByEmail(employeeEmail)).thenReturn(employee);
         when(jobPostingRepository.findAllByCompany(company)).thenReturn(List.of());
 
         List<JobPostingDto> result;
@@ -154,7 +164,7 @@ class JobPostingServiceImplTest {
 
         assertTrue(result.isEmpty());
 
-        verify(employeeRepository).findByEmail(email);
+        verify(employeeRepository).findByEmail(employeeEmail);
         verify(jobPostingRepository).findAllByCompany(company);
         verifyNoMoreInteractions(employeeRepository, jobPostingRepository);
         verifyNoInteractions(modelMapper);
@@ -163,15 +173,10 @@ class JobPostingServiceImplTest {
     @Test
     @DisplayName("findAllPublished returns only mapped published job postings")
     void findAllPublishedReturnsPublishedPostings() {
-        JobPosting publishedPosting = mock(JobPosting.class);
-        JobPosting closedPosting = mock(JobPosting.class);
-
-        JobPostingDto dto = new JobPostingDto();
-
-        when(publishedPosting.getStatus()).thenReturn(PUBLISHED);
-        when(closedPosting.getStatus()).thenReturn(CLOSED);
-        when(jobPostingRepository.findAll()).thenReturn(List.of(publishedPosting, closedPosting));
-        when(modelMapper.map(publishedPosting, JobPostingDto.class)).thenReturn(dto);
+        when(jobPostingPublished.getStatus()).thenReturn(PUBLISHED);
+        when(jobPostingClosed.getStatus()).thenReturn(CLOSED);
+        when(jobPostingRepository.findAll()).thenReturn(List.of(jobPostingPublished, jobPostingClosed));
+        when(modelMapper.map(jobPostingPublished, JobPostingDto.class)).thenReturn(dto);
 
         List<JobPostingDto> result = jobPostingService.findAllPublished();
 
@@ -179,7 +184,7 @@ class JobPostingServiceImplTest {
         assertEquals(dto, result.getFirst());
 
         verify(jobPostingRepository).findAll();
-        verify(modelMapper).map(publishedPosting, JobPostingDto.class);
+        verify(modelMapper).map(jobPostingPublished, JobPostingDto.class);
         verifyNoMoreInteractions(jobPostingRepository, modelMapper);
         verifyNoInteractions(employeeRepository);
     }
@@ -187,10 +192,8 @@ class JobPostingServiceImplTest {
     @Test
     @DisplayName("findAllPublished returns empty list when no job postings are published")
     void findAllPublishedReturnsEmptyListWhenNonePublished() {
-        JobPosting closedPosting = mock(JobPosting.class);
-
-        when(closedPosting.getStatus()).thenReturn(CLOSED);
-        when(jobPostingRepository.findAll()).thenReturn(List.of(closedPosting));
+        when(jobPostingClosed.getStatus()).thenReturn(CLOSED);
+        when(jobPostingRepository.findAll()).thenReturn(List.of(jobPostingClosed));
 
         List<JobPostingDto> result = jobPostingService.findAllPublished();
 
@@ -204,28 +207,14 @@ class JobPostingServiceImplTest {
     @Test
     @DisplayName("create creates and returns job posting when expiration date is valid")
     void createSavesJobPostingWhenExpirationIsValid() {
-        String email = "marko@gmail.com";
-        Company company = new Company("Firma ABC", "Informacije...", "Hrastova 22");
-
-        Employee employee = new Employee(
-                "Ana", "Anicic", Sex.FEMALE, "381621233444", "Ulica 5", "ana7@gmail.com",
-                "encodedPassword", "0101999110333", LocalDate.of(1990, 5, 15),
-                LocalDate.of(2020, 1, 10), company
-        );
-
-        CreateJobPostingRequest request = new CreateJobPostingRequest();
-        request.setTitle("Software Engineer");
-        request.setDescription("Job description here");
-        request.setDateOfExpiration(LocalDate.now().plusDays(30));
-
-        JobPostingDto dto = new JobPostingDto();
+        createJobPostingRequest.setDateOfExpiration(LocalDate.now().plusDays(30));
 
         Authentication authentication = mock(Authentication.class);
         SecurityContext securityContext = mock(SecurityContext.class);
 
-        when(authentication.getName()).thenReturn(email);
+        when(authentication.getName()).thenReturn(employeeEmail);
         when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(employeeRepository.findByEmail(email)).thenReturn(employee);
+        when(employeeRepository.findByEmail(employeeEmail)).thenReturn(employee);
         when(jobPostingRepository.save(any(JobPosting.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(modelMapper.map(any(JobPosting.class), eq(JobPostingDto.class))).thenReturn(dto);
 
@@ -233,7 +222,7 @@ class JobPostingServiceImplTest {
         try (MockedStatic<SecurityContextHolder> mockedStatic = mockStatic(SecurityContextHolder.class)) {
             mockedStatic.when(SecurityContextHolder::getContext).thenReturn(securityContext);
 
-            result = jobPostingService.create(request);
+            result = jobPostingService.create(createJobPostingRequest);
         }
 
         assertEquals(dto, result);
@@ -242,13 +231,13 @@ class JobPostingServiceImplTest {
         verify(jobPostingRepository).save(captor.capture());
 
         JobPosting saved = captor.getValue();
-        assertEquals("Software Engineer", saved.getTitle());
-        assertEquals("Job description here", saved.getDescription());
+        assertEquals(createJobPostingRequest.getTitle(), saved.getTitle());
+        assertEquals(createJobPostingRequest.getDescription(), saved.getDescription());
         assertEquals(LocalDate.now(), saved.getDateOfPublishing());
-        assertEquals(request.getDateOfExpiration(), saved.getDateOfExpiration());
+        assertEquals(createJobPostingRequest.getDateOfExpiration(), saved.getDateOfExpiration());
         assertEquals(company, saved.getCompany());
 
-        verify(employeeRepository).findByEmail(email);
+        verify(employeeRepository).findByEmail(employeeEmail);
         verify(modelMapper).map(any(JobPosting.class), eq(JobPostingDto.class));
         verifyNoMoreInteractions(employeeRepository, jobPostingRepository, modelMapper);
     }
@@ -256,14 +245,11 @@ class JobPostingServiceImplTest {
     @Test
     @DisplayName("create throws ConflictException when expiration date is in the past")
     void createThrowsConflictExceptionForPastExpirationDate() {
-        CreateJobPostingRequest request = new CreateJobPostingRequest();
-        request.setTitle("Software Engineer");
-        request.setDescription("Job description here");
-        request.setDateOfExpiration(LocalDate.now().minusDays(1));
+        createJobPostingRequest.setDateOfExpiration(LocalDate.now().minusDays(1));
 
         ConflictException exception = assertThrows(
                 ConflictException.class,
-                () -> jobPostingService.create(request)
+                () -> jobPostingService.create(createJobPostingRequest)
         );
         assertEquals("Invalid date of expiration", exception.getMessage());
 
@@ -273,14 +259,12 @@ class JobPostingServiceImplTest {
     @Test
     @DisplayName("deleteById deletes job posting when it exists")
     void deleteByIdDeletesJobPosting() {
-        Long id = 1L;
+        when(jobPostingRepository.findById(jobPostingId)).thenReturn(Optional.of(jobPostingPublished));
 
-        when(jobPostingRepository.findById(id)).thenReturn(Optional.of(jobPosting));
+        jobPostingService.deleteById(jobPostingId);
 
-        jobPostingService.deleteById(id);
-
-        verify(jobPostingRepository).findById(id);
-        verify(jobPostingRepository).delete(jobPosting);
+        verify(jobPostingRepository).findById(jobPostingId);
+        verify(jobPostingRepository).delete(jobPostingPublished);
         verifyNoMoreInteractions(jobPostingRepository);
         verifyNoInteractions(employeeRepository, modelMapper);
     }
@@ -288,17 +272,15 @@ class JobPostingServiceImplTest {
     @Test
     @DisplayName("deleteById throws ResourceNotFoundException when job posting does not exist")
     void deleteByIdThrowsResourceNotFoundException() {
-        Long id = 1L;
-
-        when(jobPostingRepository.findById(id)).thenReturn(Optional.empty());
+        when(jobPostingRepository.findById(jobPostingId)).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(
                 ResourceNotFoundException.class,
-                () -> jobPostingService.deleteById(id)
+                () -> jobPostingService.deleteById(jobPostingId)
         );
-        assertEquals("Job posting not found with id " + id, exception.getMessage());
+        assertEquals("Job posting not found with id " + jobPostingId, exception.getMessage());
 
-        verify(jobPostingRepository).findById(id);
+        verify(jobPostingRepository).findById(jobPostingId);
         verify(jobPostingRepository, never()).delete(any());
         verifyNoMoreInteractions(jobPostingRepository);
         verifyNoInteractions(employeeRepository, modelMapper);
@@ -307,32 +289,24 @@ class JobPostingServiceImplTest {
     @Test
     @DisplayName("updateById updates and saves job posting when expiration date is valid")
     void updateByIdUpdatesJobPosting() {
-        Long id = 1L;
-        Company company = new Company("Firma", "...", "Adresa");
-
         JobPosting existingPosting = new JobPosting(
                 "Stari naslov", "Stari opis", LocalDate.now().minusDays(10),
                 LocalDate.now().plusDays(5), company
         );
 
-        UpdateJobPostingRequest request = new UpdateJobPostingRequest();
-        request.setTitle("Novi naslov");
-        request.setDescription("Novi opis");
-        request.setDateOfExpiration(LocalDate.now().plusDays(60));
+        updateJobPostingRequest.setDateOfExpiration(LocalDate.now().plusDays(30));
 
-        JobPostingDto dto = new JobPostingDto();
-
-        when(jobPostingRepository.findById(id)).thenReturn(Optional.of(existingPosting));
+        when(jobPostingRepository.findById(jobPostingId)).thenReturn(Optional.of(existingPosting));
         when(jobPostingRepository.save(existingPosting)).thenReturn(existingPosting);
         when(modelMapper.map(existingPosting, JobPostingDto.class)).thenReturn(dto);
 
-        jobPostingService.updateById(id, request);
+        jobPostingService.updateById(jobPostingId, updateJobPostingRequest);
 
-        assertEquals("Novi naslov", existingPosting.getTitle());
-        assertEquals("Novi opis", existingPosting.getDescription());
-        assertEquals(request.getDateOfExpiration(), existingPosting.getDateOfExpiration());
+        assertEquals(updateJobPostingRequest.getTitle(), existingPosting.getTitle());
+        assertEquals(updateJobPostingRequest.getDescription(), existingPosting.getDescription());
+        assertEquals(updateJobPostingRequest.getDateOfExpiration(), existingPosting.getDateOfExpiration());
 
-        verify(jobPostingRepository).findById(id);
+        verify(jobPostingRepository).findById(jobPostingId);
         verify(jobPostingRepository).save(existingPosting);
         verify(modelMapper).map(existingPosting, JobPostingDto.class);
         verifyNoMoreInteractions(jobPostingRepository, modelMapper);
@@ -342,16 +316,11 @@ class JobPostingServiceImplTest {
     @Test
     @DisplayName("updateById throws ConflictException when expiration date is in the past")
     void updateByIdThrowsConflictExceptionForPastExpirationDate() {
-        Long id = 1L;
-
-        UpdateJobPostingRequest request = new UpdateJobPostingRequest();
-        request.setTitle("Novi naslov");
-        request.setDescription("Novi opis");
-        request.setDateOfExpiration(LocalDate.now().minusDays(1));
+        updateJobPostingRequest.setDateOfExpiration(LocalDate.now().minusDays(1));
 
         ConflictException exception = assertThrows(
                 ConflictException.class,
-                () -> jobPostingService.updateById(id, request)
+                () -> jobPostingService.updateById(jobPostingId, updateJobPostingRequest)
         );
         assertEquals("Expiration date cannot be set before current time", exception.getMessage());
 
@@ -361,22 +330,17 @@ class JobPostingServiceImplTest {
     @Test
     @DisplayName("updateById throws ResourceNotFoundException when job posting does not exist")
     void updateByIdThrowsResourceNotFoundException() {
-        Long id = 1L;
+        updateJobPostingRequest.setDateOfExpiration(LocalDate.now().plusDays(30));
 
-        UpdateJobPostingRequest request = new UpdateJobPostingRequest();
-        request.setTitle("Novi naslov");
-        request.setDescription("Novi opis");
-        request.setDateOfExpiration(LocalDate.now().plusDays(30));
-
-        when(jobPostingRepository.findById(id)).thenReturn(Optional.empty());
+        when(jobPostingRepository.findById(jobPostingId)).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(
                 ResourceNotFoundException.class,
-                () -> jobPostingService.updateById(id, request)
+                () -> jobPostingService.updateById(jobPostingId, updateJobPostingRequest)
         );
-        assertEquals("Job posting not found with id " + id, exception.getMessage());
+        assertEquals("Job posting not found with id " + jobPostingId, exception.getMessage());
 
-        verify(jobPostingRepository).findById(id);
+        verify(jobPostingRepository).findById(jobPostingId);
         verify(jobPostingRepository, never()).save(any());
         verifyNoMoreInteractions(jobPostingRepository);
         verifyNoInteractions(employeeRepository, modelMapper);

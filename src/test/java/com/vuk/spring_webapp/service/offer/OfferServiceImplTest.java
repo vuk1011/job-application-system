@@ -13,6 +13,7 @@ import com.vuk.spring_webapp.repository.OfferRepository;
 import com.vuk.spring_webapp.transfer.dto.OfferDto;
 import com.vuk.spring_webapp.transfer.request.CreateOfferRequest;
 import com.vuk.spring_webapp.transfer.request.UpdateOfferRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +22,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -46,19 +46,55 @@ class OfferServiceImplTest {
     @InjectMocks
     private OfferServiceImpl offerService;
 
-    @Test
-    @DisplayName("findAllForEmployee returns mapped offer list when employee manages the job application")
-    void findAllForEmployeeReturnsOffers() {
-        Long employeeId = 1L;
-        Long jobApplicationId = 10L;
+    private Long employeeId;
+    private Long otherEmployeeId;
+    private Employee employee;
+    private Employee otherEmployee;
+    private Long jobApplicationId;
+    private Long candidateId;
+    private Long otherCandidateId;
+    private Candidate candidate;
+    private Candidate otherCandidate;
+    private Long offerId;
 
-        Employee employee = new Employee(
-                "Jane", "Smith", Sex.FEMALE, "987654321", "456 Side St", "jane@example.com",
+    @BeforeEach
+    void setUp() {
+        employeeId = 1L;
+        otherEmployeeId = 2L;
+
+        employee = new Employee(
+                "Jana", "Simić", Sex.FEMALE, "38162001122", "Sarajevska 10", "jana@company.com",
                 "encodedPassword", "NID123456", LocalDate.of(1990, 5, 15),
                 LocalDate.of(2020, 1, 10), null
         );
-        ReflectionTestUtils.setField(employee, "id", employeeId);
+        employee.setId(employeeId);
+        otherEmployee = new Employee(
+                "Maja", "Simić", Sex.FEMALE, "38162001123", "Sarajevska 11", "maja@company.com",
+                "encodedPassword", "NID123400", LocalDate.of(1990, 5, 15),
+                LocalDate.of(2020, 1, 10), null
+        );
+        otherEmployee.setId(otherEmployeeId);
 
+        jobApplicationId = 1L;
+
+        candidateId = 1L;
+        otherCandidateId = 2L;
+
+        candidate = new Candidate(
+                "Jovan", "Šarić", Sex.MALE, "38164334001", "Savska 13", "jovan11@gmail.com", "encodedPassword"
+        );
+        candidate.setId(candidateId);
+        otherCandidate = new Candidate(
+                "Jovana", "Šarić", Sex.FEMALE, "38164334002", "Savska 13", "jovana11@gmail.com", "encodedPassword"
+        );
+        otherCandidate.setId(otherCandidateId);
+
+        offerId = 1L;
+    }
+
+    @Test
+    @DisplayName("findAllForEmployee returns mapped offer list when employee manages the job application")
+    void findAllForEmployeeReturnsOffers() {
         JobApplication application = new JobApplication(
                 LocalDate.now(), OFFERED, null, employee, null
         );
@@ -87,9 +123,6 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("findAllForEmployee throws ResourceNotFoundException when job application does not exist")
     void findAllForEmployeeThrowsResourceNotFoundException() {
-        Long employeeId = 1L;
-        Long jobApplicationId = 10L;
-
         when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(
@@ -106,9 +139,6 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("findAllForEmployee throws ConflictException when job application is not managed")
     void findAllForEmployeeThrowsConflictException() {
-        Long employeeId = 1L;
-        Long jobApplicationId = 10L;
-
         JobApplication application = new JobApplication(
                 LocalDate.now(), SUBMITTED, null, null, null
         );
@@ -129,17 +159,6 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("findAllForEmployee throws UnauthorizedException when another employee manages the job application")
     void findAllForEmployeeThrowsUnauthorizedException() {
-        Long employeeId = 1L;
-        Long otherEmployeeId = 2L;
-        Long jobApplicationId = 10L;
-
-        Employee otherEmployee = new Employee(
-                "John", "Doe", Sex.MALE, "111222333", "789 Other St", "john@example.com",
-                "encodedPassword", "NID987654", LocalDate.of(1985, 3, 20),
-                LocalDate.of(2019, 6, 1), null
-        );
-        ReflectionTestUtils.setField(otherEmployee, "id", otherEmployeeId);
-
         JobApplication application = new JobApplication(
                 LocalDate.now(), OFFERED, null, otherEmployee, null
         );
@@ -160,14 +179,6 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("findAllForCandidate returns mapped offer list when candidate owns the job application")
     void findAllForCandidateReturnsOffers() {
-        Long candidateId = 1L;
-        Long jobApplicationId = 10L;
-
-        Candidate candidate = new Candidate(
-                "John", "Doe", Sex.MALE, "123456789", "123 Main St", "john.doe@example.com", "encodedPassword"
-        );
-        ReflectionTestUtils.setField(candidate, "id", candidateId);
-
         JobApplication application = new JobApplication(
                 LocalDate.now(), OFFERED, null, null, candidate
         );
@@ -196,9 +207,6 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("findAllForCandidate throws ResourceNotFoundException when job application does not exist")
     void findAllForCandidateThrowsResourceNotFoundException() {
-        Long candidateId = 1L;
-        Long jobApplicationId = 10L;
-
         when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(
@@ -215,15 +223,6 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("findAllForCandidate throws UnauthorizedException when job application belongs to another candidate")
     void findAllForCandidateThrowsUnauthorizedException() {
-        Long candidateId = 1L;
-        Long otherCandidateId = 2L;
-        Long jobApplicationId = 10L;
-
-        Candidate otherCandidate = new Candidate(
-                "Alice", "Brown", Sex.FEMALE, "555666777", "789 Other Ave", "alice@example.com", "encodedPassword"
-        );
-        ReflectionTestUtils.setField(otherCandidate, "id", otherCandidateId);
-
         JobApplication application = new JobApplication(
                 LocalDate.now(), OFFERED, null, null, otherCandidate
         );
@@ -244,30 +243,21 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("createOffer creates offer and updates status when transition is allowed")
     void createOfferCreatesOfferAndUpdatesStatus() {
-        Long employeeId = 1L;
-
-        Employee employee = new Employee(
-                "Jane", "Smith", Sex.FEMALE, "987654321", "456 Side St", "jane@example.com",
-                "encodedPassword", "NID123456", LocalDate.of(1990, 5, 15),
-                LocalDate.of(2020, 1, 10), null
-        );
-        ReflectionTestUtils.setField(employee, "id", employeeId);
-
         JobApplication application = new JobApplication(
                 LocalDate.now(), INTERVIEW_SCHEDULED, null, employee, null
         );
 
         CreateOfferRequest request = new CreateOfferRequest();
         request.setName("Senior Developer Offer");
-        request.setJobApplicationId(10L);
+        request.setJobApplicationId(jobApplicationId);
 
-        when(jobApplicationRepository.findById(10L)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(application));
 
         offerService.createOffer(employeeId, request);
 
         assertEquals(OFFERED, application.getStatus());
 
-        verify(jobApplicationRepository).findById(10L);
+        verify(jobApplicationRepository).findById(jobApplicationId);
         verify(jobApplicationRepository).save(application);
 
         ArgumentCaptor<Offer> captor = ArgumentCaptor.forClass(Offer.class);
@@ -284,11 +274,10 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("createOffer throws ResourceNotFoundException when job application does not exist")
     void createOfferThrowsResourceNotFoundException() {
-        Long employeeId = 1L;
         CreateOfferRequest request = new CreateOfferRequest();
-        request.setJobApplicationId(10L);
+        request.setJobApplicationId(jobApplicationId);
 
-        when(jobApplicationRepository.findById(10L)).thenReturn(Optional.empty());
+        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(
                 ResourceNotFoundException.class,
@@ -296,7 +285,7 @@ class OfferServiceImplTest {
         );
         assertEquals("Job application not found", exception.getMessage());
 
-        verify(jobApplicationRepository).findById(10L);
+        verify(jobApplicationRepository).findById(jobApplicationId);
         verifyNoMoreInteractions(jobApplicationRepository);
         verifyNoInteractions(offerRepository, modelMapper);
     }
@@ -304,15 +293,14 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("createOffer throws ConflictException when job application is not managed")
     void createOfferThrowsConflictExceptionForUnmanagedApplication() {
-        Long employeeId = 1L;
         JobApplication application = new JobApplication(
                 LocalDate.now(), SUBMITTED, null, null, null
         );
 
         CreateOfferRequest request = new CreateOfferRequest();
-        request.setJobApplicationId(10L);
+        request.setJobApplicationId(jobApplicationId);
 
-        when(jobApplicationRepository.findById(10L)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(application));
 
         ConflictException exception = assertThrows(
                 ConflictException.class,
@@ -320,7 +308,7 @@ class OfferServiceImplTest {
         );
         assertEquals("This job application is not managed", exception.getMessage());
 
-        verify(jobApplicationRepository).findById(10L);
+        verify(jobApplicationRepository).findById(jobApplicationId);
         verifyNoMoreInteractions(jobApplicationRepository);
         verifyNoInteractions(offerRepository, modelMapper);
     }
@@ -328,24 +316,14 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("createOffer throws UnauthorizedException when another employee manages the job application")
     void createOfferThrowsUnauthorizedException() {
-        Long employeeId = 1L;
-        Long otherEmployeeId = 2L;
-
-        Employee otherEmployee = new Employee(
-                "John", "Doe", Sex.MALE, "111222333", "789 Other St", "john@example.com",
-                "encodedPassword", "NID987654", LocalDate.of(1985, 3, 20),
-                LocalDate.of(2019, 6, 1), null
-        );
-        ReflectionTestUtils.setField(otherEmployee, "id", otherEmployeeId);
-
         JobApplication application = new JobApplication(
                 LocalDate.now(), INTERVIEW_SCHEDULED, null, otherEmployee, null
         );
 
         CreateOfferRequest request = new CreateOfferRequest();
-        request.setJobApplicationId(10L);
+        request.setJobApplicationId(jobApplicationId);
 
-        when(jobApplicationRepository.findById(10L)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(application));
 
         UnauthorizedException exception = assertThrows(
                 UnauthorizedException.class,
@@ -353,7 +331,7 @@ class OfferServiceImplTest {
         );
         assertEquals("Another employee is managing this job application", exception.getMessage());
 
-        verify(jobApplicationRepository).findById(10L);
+        verify(jobApplicationRepository).findById(jobApplicationId);
         verifyNoMoreInteractions(jobApplicationRepository);
         verifyNoInteractions(offerRepository, modelMapper);
     }
@@ -361,23 +339,14 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("createOffer throws ConflictException when status change to OFFERED is not allowed")
     void createOfferThrowsConflictExceptionForInvalidStatusChange() {
-        Long employeeId = 1L;
-
-        Employee employee = new Employee(
-                "Jane", "Smith", Sex.FEMALE, "987654321", "456 Side St", "jane@example.com",
-                "encodedPassword", "NID123456", LocalDate.of(1990, 5, 15),
-                LocalDate.of(2020, 1, 10), null
-        );
-        ReflectionTestUtils.setField(employee, "id", employeeId);
-
         JobApplication application = new JobApplication(
                 LocalDate.now(), UNDER_REVIEW, null, employee, null
         );
 
         CreateOfferRequest request = new CreateOfferRequest();
-        request.setJobApplicationId(10L);
+        request.setJobApplicationId(jobApplicationId);
 
-        when(jobApplicationRepository.findById(10L)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.findById(jobApplicationId)).thenReturn(Optional.of(application));
 
         ConflictException exception = assertThrows(
                 ConflictException.class,
@@ -385,7 +354,7 @@ class OfferServiceImplTest {
         );
         assertEquals("Offer cannot be created in current status", exception.getMessage());
 
-        verify(jobApplicationRepository).findById(10L);
+        verify(jobApplicationRepository).findById(jobApplicationId);
         verifyNoMoreInteractions(jobApplicationRepository);
         verifyNoInteractions(offerRepository, modelMapper);
     }
@@ -393,16 +362,6 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("deleteOffer deletes offer when employee manages it and it is not yet accepted or rejected")
     void deleteOfferDeletesOffer() {
-        Long employeeId = 1L;
-        Long offerId = 5L;
-
-        Employee employee = new Employee(
-                "Jane", "Smith", Sex.FEMALE, "987654321", "456 Side St", "jane@example.com",
-                "encodedPassword", "NID123456", LocalDate.of(1990, 5, 15),
-                LocalDate.of(2020, 1, 10), null
-        );
-        ReflectionTestUtils.setField(employee, "id", employeeId);
-
         JobApplication application = new JobApplication(
                 LocalDate.now(), OFFERED, null, employee, null
         );
@@ -422,9 +381,6 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("deleteOffer throws ResourceNotFoundException when offer does not exist")
     void deleteOfferThrowsResourceNotFoundException() {
-        Long employeeId = 1L;
-        Long offerId = 5L;
-
         when(offerRepository.findById(offerId)).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(
@@ -442,17 +398,6 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("deleteOffer throws UnauthorizedException when another employee manages the associated job application")
     void deleteOfferThrowsUnauthorizedException() {
-        Long employeeId = 1L;
-        Long otherEmployeeId = 2L;
-        Long offerId = 5L;
-
-        Employee otherEmployee = new Employee(
-                "John", "Doe", Sex.MALE, "111222333", "789 Other St", "john@example.com",
-                "encodedPassword", "NID987654", LocalDate.of(1985, 3, 20),
-                LocalDate.of(2019, 6, 1), null
-        );
-        ReflectionTestUtils.setField(otherEmployee, "id", otherEmployeeId);
-
         JobApplication application = new JobApplication(
                 LocalDate.now(), OFFERED, null, otherEmployee, null
         );
@@ -476,16 +421,6 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("deleteOffer throws ConflictException when offer has already been accepted or rejected")
     void deleteOfferThrowsConflictException() {
-        Long employeeId = 1L;
-        Long offerId = 5L;
-
-        Employee employee = new Employee(
-                "Jane", "Smith", Sex.FEMALE, "987654321", "456 Side St", "jane@example.com",
-                "encodedPassword", "NID123456", LocalDate.of(1990, 5, 15),
-                LocalDate.of(2020, 1, 10), null
-        );
-        ReflectionTestUtils.setField(employee, "id", employeeId);
-
         JobApplication application = new JobApplication(
                 LocalDate.now(), OFFERED, null, employee, null
         );
@@ -509,14 +444,6 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("updateOffer accepts offer and updates application status to ACCEPTED when allowed")
     void updateOfferAcceptsOfferAndUpdatesStatus() {
-        Long candidateId = 1L;
-        Long offerId = 5L;
-
-        Candidate candidate = new Candidate(
-                "John", "Doe", Sex.MALE, "123456789", "123 Main St", "john.doe@example.com", "encodedPassword"
-        );
-        ReflectionTestUtils.setField(candidate, "id", candidateId);
-
         JobApplication application = new JobApplication(
                 LocalDate.now(), OFFERED, null, null, candidate
         );
@@ -543,14 +470,6 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("updateOffer rejects offer and updates application status to REJECTED when allowed")
     void updateOfferRejectsOfferAndUpdatesStatus() {
-        Long candidateId = 1L;
-        Long offerId = 5L;
-
-        Candidate candidate = new Candidate(
-                "John", "Doe", Sex.MALE, "123456789", "123 Main St", "john.doe@example.com", "encodedPassword"
-        );
-        ReflectionTestUtils.setField(candidate, "id", candidateId);
-
         JobApplication application = new JobApplication(
                 LocalDate.now(), OFFERED, null, null, candidate
         );
@@ -577,9 +496,6 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("updateOffer throws ResourceNotFoundException when offer does not exist")
     void updateOfferThrowsResourceNotFoundException() {
-        Long candidateId = 1L;
-        Long offerId = 5L;
-
         UpdateOfferRequest request = new UpdateOfferRequest();
         request.setAccepted(true);
 
@@ -599,15 +515,6 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("updateOffer throws UnauthorizedException when offer belongs to another candidate")
     void updateOfferThrowsUnauthorizedException() {
-        Long candidateId = 1L;
-        Long otherCandidateId = 2L;
-        Long offerId = 5L;
-
-        Candidate otherCandidate = new Candidate(
-                "Alice", "Brown", Sex.FEMALE, "555666777", "789 Other Ave", "alice@example.com", "encodedPassword"
-        );
-        ReflectionTestUtils.setField(otherCandidate, "id", otherCandidateId);
-
         JobApplication application = new JobApplication(
                 LocalDate.now(), OFFERED, null, null, otherCandidate
         );
@@ -633,14 +540,6 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("updateOffer throws ConflictException when application status is final")
     void updateOfferThrowsConflictExceptionForFinalApplicationStatus() {
-        Long candidateId = 1L;
-        Long offerId = 5L;
-
-        Candidate candidate = new Candidate(
-                "John", "Doe", Sex.MALE, "123456789", "123 Main St", "john.doe@example.com", "encodedPassword"
-        );
-        ReflectionTestUtils.setField(candidate, "id", candidateId);
-
         JobApplication application = new JobApplication(
                 LocalDate.now(), ACCEPTED, null, null, candidate
         );
@@ -666,14 +565,6 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("updateOffer throws ConflictException when offer has already been accepted or rejected")
     void updateOfferThrowsConflictExceptionForAlreadyDecidedOffer() {
-        Long candidateId = 1L;
-        Long offerId = 5L;
-
-        Candidate candidate = new Candidate(
-                "John", "Doe", Sex.MALE, "123456789", "123 Main St", "john.doe@example.com", "encodedPassword"
-        );
-        ReflectionTestUtils.setField(candidate, "id", candidateId);
-
         JobApplication application = new JobApplication(
                 LocalDate.now(), OFFERED, null, null, candidate
         );
@@ -699,14 +590,6 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("updateOffer throws ConflictException when status change to ACCEPTED is not allowed")
     void updateOfferThrowsConflictExceptionForInvalidAcceptTransition() {
-        Long candidateId = 1L;
-        Long offerId = 5L;
-
-        Candidate candidate = new Candidate(
-                "John", "Doe", Sex.MALE, "123456789", "123 Main St", "john.doe@example.com", "encodedPassword"
-        );
-        ReflectionTestUtils.setField(candidate, "id", candidateId);
-
         JobApplication application = new JobApplication(
                 LocalDate.now(), INTERVIEW_SCHEDULED, null, null, candidate
         );
@@ -732,14 +615,6 @@ class OfferServiceImplTest {
     @Test
     @DisplayName("updateOffer throws ConflictException when status change to REJECTED is not allowed")
     void updateOfferThrowsConflictExceptionForInvalidRejectTransition() {
-        Long candidateId = 1L;
-        Long offerId = 5L;
-
-        Candidate candidate = new Candidate(
-                "John", "Doe", Sex.MALE, "123456789", "123 Main St", "john.doe@example.com", "encodedPassword"
-        );
-        ReflectionTestUtils.setField(candidate, "id", candidateId);
-
         JobApplication application = new JobApplication(
                 LocalDate.now(), SUBMITTED, null, null, candidate
         );
