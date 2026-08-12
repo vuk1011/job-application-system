@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 /**
  * Represents a company's job posting candidates can apply for.
@@ -105,5 +106,28 @@ public class JobPosting {
                 ", dateOfExpiration=" + dateOfExpiration +
                 ", companyId=" + (company != null ? company.getId() : null) +
                 '}';
+    }
+
+    /**
+     * Checks equality between two JobPosting instances based on ID.
+     *
+     * @param o the reference object with which to compare.
+     * @return true if both job postings have the same ID, false otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        JobPosting that = (JobPosting) o;
+        return Objects.equals(id, that.id);
+    }
+
+    /**
+     * Calculates a hash code based on the job posting's ID.
+     *
+     * @return hash code of the ID
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Objects;
+
 /**
  * Represent's a general, abstract, user of the app.
  *
@@ -119,5 +121,28 @@ public abstract class AppUser {
                 ", address='" + address + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'';
+    }
+
+    /**
+     * Checks equality between two AppUser instances based on ID.
+     *
+     * @param o the reference object with which to compare.
+     * @return true if both app users have the same ID, false otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        AppUser appUser = (AppUser) o;
+        return Objects.equals(id, appUser.id);
+    }
+
+    /**
+     * Calculates a hash code based on the app user's ID.
+     *
+     * @return hash code of the ID
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

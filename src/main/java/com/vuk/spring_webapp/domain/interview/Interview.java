@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Represents an interview that is scheduled for a job application.
@@ -84,5 +85,28 @@ public class Interview {
                 ", timeScheduled=" + timeScheduled +
                 ", jobApplicationId=" + (jobApplication != null ? jobApplication.getId() : null) +
                 '}';
+    }
+
+    /**
+     * Checks equality between two Interview instances based on ID.
+     *
+     * @param o the reference object with which to compare.
+     * @return true if both interviews have the same ID, false otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Interview interview = (Interview) o;
+        return Objects.equals(id, interview.id);
+    }
+
+    /**
+     * Calculates a hash code based on the interview's ID.
+     *
+     * @return hash code of the ID
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a company registered in the system.
@@ -86,5 +87,28 @@ public class Company {
                 ", employeesCount=" + (employees != null ? employees.size() : 0) +
                 ", jobPostingsCount=" + (jobPostings != null ? jobPostings.size() : 0) +
                 '}';
+    }
+
+    /**
+     * Checks equality between two Company instances based on ID.
+     *
+     * @param o the reference object with which to compare.
+     * @return true if both companies have the same ID, false otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Company company = (Company) o;
+        return Objects.equals(id, company.id);
+    }
+
+    /**
+     * Calculates a hash code based on the company's ID.
+     *
+     * @return hash code of the ID
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

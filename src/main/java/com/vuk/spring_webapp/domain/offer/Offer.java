@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Objects;
+
 /**
  * Represents a job offer.
  *
@@ -75,5 +77,28 @@ public class Offer {
                 ", accepted=" + accepted +
                 ", jobApplicationId=" + (jobApplication != null ? jobApplication.getId() : null) +
                 '}';
+    }
+
+    /**
+     * Checks equality between two Offer instances based on ID.
+     *
+     * @param o the reference object with which to compare.
+     * @return true if both offers have the same ID, false otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Offer offer = (Offer) o;
+        return Objects.equals(id, offer.id);
+    }
+
+    /**
+     * Calculates a hash code based on the offer's ID.
+     *
+     * @return hash code of the ID
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
