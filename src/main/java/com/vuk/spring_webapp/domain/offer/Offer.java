@@ -63,4 +63,17 @@ public class Offer {
         this.name = name;
         this.jobApplication = jobApplication;
     }
+
+    /**
+     * @implNote jobApplication is represented by its ID only.
+     */
+    @Override
+    public String toString() {
+        return "Offer{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", accepted=" + accepted +
+                ", jobApplicationId=" + (jobApplication != null ? jobApplication.getId() : null) +
+                '}';
+    }
 }

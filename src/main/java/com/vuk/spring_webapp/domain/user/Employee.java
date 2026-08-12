@@ -87,4 +87,20 @@ public class Employee extends AppUser {
         this.dateOfHire = dateOfHire;
         this.company = company;
     }
+
+    /**
+     * @implNote managedJobApplications is represented by its element count only.
+     * company is represented by its ID only.
+     */
+    @Override
+    public String toString() {
+        return "Employee{" +
+                super.toString() +
+                ", nationalId='" + nationalId + '\'' +
+                ", dateOfBirth=" + dateOfBirth +
+                ", dateOfHire=" + dateOfHire +
+                ", managedJobApplicationsCount=" + (managedJobApplications != null ? managedJobApplications.size() : 0) +
+                ", companyId=" + (company != null ? company.getId() : "") +
+                '}';
+    }
 }

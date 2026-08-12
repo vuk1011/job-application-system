@@ -107,4 +107,17 @@ public abstract class AppUser {
         this.email = email;
         this.password = password;
     }
+
+    @Override
+    public String toString() {
+        return "id=" + id +
+                ", role=" + role +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", sex=" + sex +
+                ", phone='" + phone + '\'' +
+                ", address='" + address + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'';
+    }
 }

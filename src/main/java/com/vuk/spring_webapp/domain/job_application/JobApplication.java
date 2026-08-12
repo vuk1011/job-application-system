@@ -140,6 +140,24 @@ public class JobApplication {
     }
 
     /**
+     * @implNote jobPosting, employee and candidate are represented by their ID only.
+     * offers and interviews are represented by their element count only.
+     */
+    @Override
+    public String toString() {
+        return "JobApplication{" +
+                "id=" + id +
+                ", dateOfSubmission=" + dateOfSubmission +
+                ", status=" + status +
+                ", jobPostingId=" + (jobPosting != null ? jobPosting.getId() : null) +
+                ", employeeId=" + (employee != null ? employee.getId() : null) +
+                ", candidateId=" + (candidate != null ? candidate.getId() : null) +
+                ", offersCount=" + (offers != null ? offers.size() : 0) +
+                ", interviewsCount=" + (interviews != null ? interviews.size() : 0) +
+                '}';
+    }
+
+    /**
      * Checks equality between two JobApplication instances based on ID.
      *
      * @param o the reference object with which to compare.

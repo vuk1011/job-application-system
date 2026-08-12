@@ -71,4 +71,18 @@ public class Interview {
         this.timeScheduled = timeScheduled;
         this.jobApplication = jobApplication;
     }
+
+    /**
+     * @implNote jobApplication is represented by its ID only..
+     */
+    @Override
+    public String toString() {
+        return "Interview{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", timeScheduled=" + timeScheduled +
+                ", jobApplicationId=" + (jobApplication != null ? jobApplication.getId() : null) +
+                '}';
+    }
 }

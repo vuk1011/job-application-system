@@ -72,4 +72,19 @@ public class Company {
         this.about = about;
         this.address = address;
     }
+
+    /**
+     * @implNote employees and jobPostings are represented by their element count only.
+     */
+    @Override
+    public String toString() {
+        return "Company{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", about='" + about + '\'' +
+                ", address='" + address + '\'' +
+                ", employeesCount=" + (employees != null ? employees.size() : 0) +
+                ", jobPostingsCount=" + (jobPostings != null ? jobPostings.size() : 0) +
+                '}';
+    }
 }

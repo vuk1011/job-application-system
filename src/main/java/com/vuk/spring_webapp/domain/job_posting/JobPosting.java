@@ -91,4 +91,19 @@ public class JobPosting {
         this.dateOfExpiration = dateOfExpiration;
         this.company = company;
     }
+
+    /**
+     * @implNote company is represented by its ID only.
+     */
+    @Override
+    public String toString() {
+        return "JobPosting{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", dateOfPublishing=" + dateOfPublishing +
+                ", dateOfExpiration=" + dateOfExpiration +
+                ", companyId=" + (company != null ? company.getId() : null) +
+                '}';
+    }
 }
