@@ -8,12 +8,12 @@ import java.time.LocalDate;
 
 import static com.vuk.spring_webapp.domain.job_posting.JobPostingStatus.CLOSED;
 import static com.vuk.spring_webapp.domain.job_posting.JobPostingStatus.PUBLISHED;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("JobPosting Unit Tests")
 class JobPostingTest {
 
+    private static final Long ID = 1L;
     private static final String TITLE = "Fullstack .NET developer";
     private static final String DESCRIPTION = "Looking for a fullstack developer...";
     private static final LocalDate DATE_OF_PUBLISHING = LocalDate.now();
@@ -74,6 +74,45 @@ class JobPostingTest {
         jobPosting.setDateOfExpiration(DATE_OF_EXPIRATION);
 
         assertEquals(PUBLISHED, jobPosting.getStatus());
+    }
+
+    @Test
+    @DisplayName("toString includes all basic fields")
+    void toStringIncludesAllBasicFields() {
+        JobPosting jobPosting = new JobPosting(TITLE, DESCRIPTION, DATE_OF_PUBLISHING, DATE_OF_EXPIRATION, null);
+        jobPosting.setId(ID);
+
+        String result = jobPosting.toString();
+
+        assertTrue(result.contains("id=" + ID));
+        assertTrue(result.contains("title='" + TITLE + '\''));
+        assertTrue(result.contains("description='" + DESCRIPTION + '\''));
+        assertTrue(result.contains("dateOfPublishing=" + DATE_OF_PUBLISHING));
+        assertTrue(result.contains("dateOfExpiration=" + DATE_OF_EXPIRATION));
+    }
+
+    @Test
+    @DisplayName("toString includes ID for associated entities")
+    void toStringIncludesIdForAssociatedEntities() {
+        Company company = new Company();
+        company.setId(ID);
+        JobPosting jobPosting = new JobPosting(TITLE, DESCRIPTION, DATE_OF_PUBLISHING, DATE_OF_EXPIRATION, company);
+
+        String result = jobPosting.toString();
+
+        assertTrue(result.contains("companyId=" + ID));
+    }
+
+    @Test
+    @DisplayName("toString handles null associated entities without throwing an exception")
+    void toStringHandlesNullAssociatedEntities() {
+        JobPosting jobPosting = new JobPosting(TITLE, DESCRIPTION, DATE_OF_PUBLISHING, DATE_OF_EXPIRATION, null);
+
+        assertDoesNotThrow(jobPosting::toString);
+
+        String result = jobPosting.toString();
+
+        assertTrue(result.contains("companyId=null"));
     }
 
 }

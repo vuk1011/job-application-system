@@ -4,12 +4,12 @@ import com.vuk.spring_webapp.domain.job_application.JobApplication;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Offer Unit Tests")
 class OfferTest {
 
+    private static final Long ID = 1L;
     private static final String NAME = "Initial employment offer";
     private static final JobApplication JOB_APPLICATION = new JobApplication();
 
@@ -34,6 +34,43 @@ class OfferTest {
 
         assertEquals(NAME, offer.getName());
         assertEquals(JOB_APPLICATION, offer.getJobApplication());
+    }
+
+    @Test
+    @DisplayName("toString includes all basic fields")
+    void toStringIncludesAllBasicFields() {
+        Offer offer = new Offer(NAME, null);
+        offer.setId(ID);
+
+        String result = offer.toString();
+
+        assertTrue(result.contains("id=" + ID));
+        assertTrue(result.contains(", name='" + NAME + '\''));
+        assertTrue(result.contains(", accepted=null"));
+    }
+
+    @Test
+    @DisplayName("toString includes ID for associated entities")
+    void toStringIncludesIdForAssociatedEntities() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setId(ID);
+        Offer offer = new Offer(NAME, jobApplication);
+
+        String result = offer.toString();
+
+        assertTrue(result.contains("jobApplicationId=" + ID));
+    }
+
+    @Test
+    @DisplayName("toString handles null associated entities without throwing an exception")
+    void toStringHandlesNullAssociatedEntities() {
+        Offer offer = new Offer();
+
+        assertDoesNotThrow(offer::toString);
+
+        String result = offer.toString();
+
+        assertTrue(result.contains("jobApplicationId=null"));
     }
 
 }

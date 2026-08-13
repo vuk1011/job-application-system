@@ -1,12 +1,15 @@
 package com.vuk.spring_webapp.domain.job_application;
 
+import com.vuk.spring_webapp.domain.interview.Interview;
 import com.vuk.spring_webapp.domain.job_posting.JobPosting;
+import com.vuk.spring_webapp.domain.offer.Offer;
 import com.vuk.spring_webapp.domain.user.Candidate;
 import com.vuk.spring_webapp.domain.user.Employee;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -129,6 +132,90 @@ class JobApplicationTest {
         jobApplication.setStatus(JobApplicationStatus.REJECTED);
 
         assertFalse(jobApplication.statusIsFinal());
+    }
+
+    @Test
+    @DisplayName("toString includes all basic fields")
+    void toStringIncludesAllBasicFields() {
+        JobApplication jobApplication = new JobApplication(DATE_OF_SUBMISSION, STATUS, null, null, null);
+        jobApplication.setId(ID_1);
+
+        String result = jobApplication.toString();
+
+        assertTrue(result.contains("id=" + ID_1));
+        assertTrue(result.contains("dateOfSubmission=" + DATE_OF_SUBMISSION));
+        assertTrue(result.contains("status=" + STATUS));
+    }
+
+    @Test
+    @DisplayName("toString includes element count for collections")
+    void toStringIncludesElementCountForCollections() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setOffers(List.of(new Offer()));
+        jobApplication.setInterviews(List.of(new Interview(), new Interview()));
+
+        String result = jobApplication.toString();
+
+        assertTrue(result.contains("offersCount=1"));
+        assertTrue(result.contains("interviewsCount=2"));
+    }
+
+    @Test
+    @DisplayName("toString handles empty collections")
+    void toStringHandlesEmptyCollections() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setOffers(List.of());
+        jobApplication.setInterviews(List.of());
+
+        String result = jobApplication.toString();
+
+        assertTrue(result.contains("offersCount=0"));
+        assertTrue(result.contains("interviewsCount=0"));
+    }
+
+    @Test
+    @DisplayName("toString handles null collections without throwing an exception and treats them as empty")
+    void toStringHandlesNullCollections() {
+        JobApplication jobApplication = new JobApplication();
+
+        assertDoesNotThrow(jobApplication::toString);
+
+        String result = jobApplication.toString();
+
+        assertTrue(result.contains("offersCount=0"));
+        assertTrue(result.contains("interviewsCount=0"));
+    }
+
+    @Test
+    @DisplayName("toString includes ID for associated entities")
+    void toStringIncludesIdForAssociatedEntities() {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setId(ID_1);
+        Employee employee = new Employee();
+        employee.setId(ID_1);
+        Candidate candidate = new Candidate();
+        candidate.setId(ID_1);
+        JobApplication jobApplication = new JobApplication(DATE_OF_SUBMISSION, STATUS, jobPosting, employee, candidate);
+
+        String result = jobApplication.toString();
+
+        assertTrue(result.contains("jobPostingId=" + ID_1));
+        assertTrue(result.contains("employeeId=" + ID_1));
+        assertTrue(result.contains("candidateId=" + ID_1));
+    }
+
+    @Test
+    @DisplayName("toString handles null associated entities without throwing an exception")
+    void toStringHandlesNullAssociatedEntities() {
+        JobApplication jobApplication = new JobApplication();
+
+        assertDoesNotThrow(jobApplication::toString);
+
+        String result = jobApplication.toString();
+
+        assertTrue(result.contains("jobPostingId=null"));
+        assertTrue(result.contains("employeeId=null"));
+        assertTrue(result.contains("candidateId=null"));
     }
 
     @Test

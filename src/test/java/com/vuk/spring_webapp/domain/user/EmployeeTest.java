@@ -1,17 +1,19 @@
 package com.vuk.spring_webapp.domain.user;
 
 import com.vuk.spring_webapp.domain.company.Company;
+import com.vuk.spring_webapp.domain.job_application.JobApplication;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Employee Unit Tests")
 class EmployeeTest {
 
+    private static final Long ID = 1L;
     private static final String FIRST_NAME = "Mans";
     private static final String LAST_NAME = "Bjork";
     private static final Sex SEX = Sex.MALE;
@@ -66,6 +68,92 @@ class EmployeeTest {
         assertEquals(DATE_OF_BIRTH, employee.getDateOfBirth());
         assertEquals(DATE_OF_HIRE, employee.getDateOfHire());
         assertEquals(COMPANY, employee.getCompany());
+    }
+
+    @Test
+    @DisplayName("toString includes all basic fields")
+    void toStringIncludesAllBasicFields() {
+        Employee employee = new Employee(FIRST_NAME, LAST_NAME, SEX, PHONE, ADDRESS, EMAIL, PASSWORD,
+                NATIONAL_ID, DATE_OF_BIRTH, DATE_OF_HIRE, null);
+        employee.setId(ID);
+
+        String result = employee.toString();
+
+        assertTrue(result.contains("id=" + ID));
+        assertTrue(result.contains("role=" + Role.EMPLOYEE));
+        assertTrue(result.contains("firstName='" + FIRST_NAME + '\''));
+        assertTrue(result.contains("lastName='" + LAST_NAME + '\''));
+        assertTrue(result.contains("sex=" + SEX));
+        assertTrue(result.contains("phone='" + PHONE + '\''));
+        assertTrue(result.contains("address='" + ADDRESS + '\''));
+        assertTrue(result.contains("email='" + EMAIL + '\''));
+        assertTrue(result.contains("password='" + PASSWORD + '\''));
+        assertTrue(result.contains("nationalId='" + NATIONAL_ID + '\''));
+        assertTrue(result.contains("dateOfBirth=" + DATE_OF_BIRTH));
+        assertTrue(result.contains("dateOfHire=" + DATE_OF_HIRE));
+    }
+
+    @Test
+    @DisplayName("toString includes element count for collections")
+    void toStringIncludesElementCountForCollections() {
+        Employee employee = new Employee(FIRST_NAME, LAST_NAME, SEX, PHONE, ADDRESS, EMAIL, PASSWORD,
+                NATIONAL_ID, DATE_OF_BIRTH, DATE_OF_HIRE, null);
+        employee.setManagedJobApplications(List.of(new JobApplication(), new JobApplication()));
+
+        String result = employee.toString();
+
+        assertTrue(result.contains("managedJobApplicationsCount=2"));
+    }
+
+    @Test
+    @DisplayName("toString handles empty collections")
+    void toStringHandlesEmptyCollections() {
+        Employee employee = new Employee(FIRST_NAME, LAST_NAME, SEX, PHONE, ADDRESS, EMAIL, PASSWORD,
+                NATIONAL_ID, DATE_OF_BIRTH, DATE_OF_HIRE, null);
+        employee.setManagedJobApplications(List.of());
+
+        String result = employee.toString();
+
+        assertTrue(result.contains("managedJobApplicationsCount=0"));
+    }
+
+    @Test
+    @DisplayName("toString handles null collections without throwing an exception and treats them as empty")
+    void toStringHandlesNullCollections() {
+        Employee employee = new Employee(FIRST_NAME, LAST_NAME, SEX, PHONE, ADDRESS, EMAIL, PASSWORD,
+                NATIONAL_ID, DATE_OF_BIRTH, DATE_OF_HIRE, null);
+
+        assertDoesNotThrow(employee::toString);
+
+        String result = employee.toString();
+
+        assertTrue(result.contains("managedJobApplicationsCount=0"));
+    }
+
+    @Test
+    @DisplayName("toString includes ID for associated entities")
+    void toStringIncludesIdForAssociatedEntities() {
+        Company company = new Company();
+        company.setId(ID);
+        Employee employee = new Employee(FIRST_NAME, LAST_NAME, SEX, PHONE, ADDRESS, EMAIL, PASSWORD,
+                NATIONAL_ID, DATE_OF_BIRTH, DATE_OF_HIRE, company);
+
+        String result = employee.toString();
+
+        assertTrue(result.contains("companyId=" + ID));
+    }
+
+    @Test
+    @DisplayName("toString handles null associated entities without throwing an exception")
+    void toStringHandlesNullAssociatedEntities() {
+        Employee employee = new Employee(FIRST_NAME, LAST_NAME, SEX, PHONE, ADDRESS, EMAIL, PASSWORD,
+                NATIONAL_ID, DATE_OF_BIRTH, DATE_OF_HIRE, null);
+
+        assertDoesNotThrow(employee::toString);
+
+        String result = employee.toString();
+
+        assertTrue(result.contains("companyId=null"));
     }
 
 }

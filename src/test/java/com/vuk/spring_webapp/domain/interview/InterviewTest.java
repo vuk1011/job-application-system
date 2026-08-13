@@ -6,12 +6,12 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Interview Unit Tests")
 class InterviewTest {
 
+    private static final Long ID = 1L;
     private static final String TITLE = "Technical interview #1";
     private static final String DESCRIPTION = "First round of technical interview. You'll be joined by the team lead and HR.";
     private static final LocalDateTime TIME_SCHEDULED = LocalDateTime.now();
@@ -42,4 +42,41 @@ class InterviewTest {
         assertEquals(JOB_APPLICATION, interview.getJobApplication());
     }
 
+    @Test
+    @DisplayName("toString includes all basic fields")
+    void toStringIncludesAllBasicFields() {
+        Interview interview = new Interview(TITLE, DESCRIPTION, TIME_SCHEDULED, null);
+        interview.setId(ID);
+
+        String result = interview.toString();
+
+        assertTrue(result.contains("id=" + ID));
+        assertTrue(result.contains("title='" + TITLE + '\''));
+        assertTrue(result.contains("description='" + DESCRIPTION + '\''));
+        assertTrue(result.contains("timeScheduled=" + TIME_SCHEDULED));
+    }
+
+    @Test
+    @DisplayName("toString includes ID for associated entities")
+    void toStringIncludesIdForAssociatedEntities() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setId(ID);
+        Interview interview = new Interview(TITLE, DESCRIPTION, TIME_SCHEDULED, jobApplication);
+
+        String result = interview.toString();
+
+        assertTrue(result.contains("jobApplicationId=" + ID));
+    }
+
+    @Test
+    @DisplayName("toString handles null associated entities without throwing an exception")
+    void toStringHandlesNullAssociatedEntities() {
+        Interview interview = new Interview();
+
+        assertDoesNotThrow(interview::toString);
+
+        String result = interview.toString();
+
+        assertTrue(result.contains("jobApplicationId=null"));
+    }
 }

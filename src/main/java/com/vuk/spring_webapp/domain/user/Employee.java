@@ -100,7 +100,7 @@ public class Employee extends AppUser {
                 ", dateOfBirth=" + dateOfBirth +
                 ", dateOfHire=" + dateOfHire +
                 ", managedJobApplicationsCount=" + (managedJobApplications != null ? managedJobApplications.size() : 0) +
-                ", companyId=" + (company != null ? company.getId() : "") +
+                ", companyId=" + (company != null ? company.getId() : null) +
                 '}';
     }
 }
