@@ -134,4 +134,37 @@ class CandidateTest {
         assertTrue(result.contains("resumeSize=null"));
     }
 
+    @Test
+    @DisplayName("equals returns true when candidates have the same ID")
+    void equalsReturnsTrueWhenSameId() {
+        Candidate candidate1 = new Candidate();
+        Candidate candidate2 = new Candidate();
+        candidate1.setId(1L);
+        candidate2.setId(1L);
+
+        assertEquals(candidate1, candidate2);
+    }
+
+    @Test
+    @DisplayName("equals returns false when candidates don't have the same ID")
+    void equalsReturnsFalseWhenDifferentId() {
+        Candidate candidate1 = new Candidate();
+        Candidate candidate2 = new Candidate();
+        candidate1.setId(1L);
+        candidate2.setId(2L);
+
+        assertNotEquals(candidate1, candidate2);
+    }
+
+    @Test
+    @DisplayName("hashCode computes value based on ID only")
+    void hashCodeComputesBasedOnId() {
+        Candidate candidate1 = new Candidate();
+        Candidate candidate2 = new Candidate();
+        candidate1.setId(1L);
+        candidate2.setId(1L);
+
+        assertEquals(candidate1.hashCode(), candidate2.hashCode());
+    }
+
 }

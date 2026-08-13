@@ -156,4 +156,37 @@ class EmployeeTest {
         assertTrue(result.contains("companyId=null"));
     }
 
+    @Test
+    @DisplayName("equals returns true when employees have the same ID")
+    void equalsReturnsTrueWhenSameId() {
+        Employee employee1 = new Employee();
+        Employee employee2 = new Employee();
+        employee1.setId(1L);
+        employee2.setId(1L);
+
+        assertEquals(employee1, employee2);
+    }
+
+    @Test
+    @DisplayName("equals returns false when employees don't have the same ID")
+    void equalsReturnsFalseWhenDifferentId() {
+        Employee employee1 = new Employee();
+        Employee employee2 = new Employee();
+        employee1.setId(1L);
+        employee2.setId(2L);
+
+        assertNotEquals(employee1, employee2);
+    }
+
+    @Test
+    @DisplayName("hashCode computes value based on ID only")
+    void hashCodeComputesBasedOnId() {
+        Employee employee1 = new Employee();
+        Employee employee2 = new Employee();
+        employee1.setId(1L);
+        employee2.setId(1L);
+
+        assertEquals(employee1.hashCode(), employee2.hashCode());
+    }
+
 }

@@ -73,4 +73,36 @@ class OfferTest {
         assertTrue(result.contains("jobApplicationId=null"));
     }
 
+    @Test
+    @DisplayName("equals returns true when offers have the same ID")
+    void equalsReturnsTrueWhenSameId() {
+        Offer offer1 = new Offer();
+        Offer offer2 = new Offer();
+        offer1.setId(1L);
+        offer2.setId(1L);
+
+        assertEquals(offer1, offer2);
+    }
+
+    @Test
+    @DisplayName("equals returns false when offers don't have the same ID")
+    void equalsReturnsFalseWhenDifferentId() {
+        Offer offer1 = new Offer();
+        Offer offer2 = new Offer();
+        offer1.setId(1L);
+        offer2.setId(2L);
+
+        assertNotEquals(offer1, offer2);
+    }
+
+    @Test
+    @DisplayName("hashCode computes value based on ID only")
+    void hashCodeComputesBasedOnId() {
+        Offer offer1 = new Offer();
+        Offer offer2 = new Offer();
+        offer1.setId(1L);
+        offer2.setId(1L);
+
+        assertEquals(offer1.hashCode(), offer2.hashCode());
+    }
 }

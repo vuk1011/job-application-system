@@ -219,34 +219,34 @@ class JobApplicationTest {
     }
 
     @Test
-    @DisplayName("equals returns true when job applications have the same id")
+    @DisplayName("equals returns true when job applications have the same ID")
     void equalsReturnsTrueWhenSameId() {
         JobApplication jobApplication1 = new JobApplication();
         JobApplication jobApplication2 = new JobApplication();
-        jobApplication1.setId(ID_1);
-        jobApplication2.setId(ID_1);
+        jobApplication1.setId(1L);
+        jobApplication2.setId(1L);
 
         assertEquals(jobApplication1, jobApplication2);
     }
 
     @Test
-    @DisplayName("equals returns false when job applications don't have the same id")
+    @DisplayName("equals returns false when job applications don't have the same ID")
     void equalsReturnsFalseWhenDifferentId() {
         JobApplication jobApplication1 = new JobApplication();
         JobApplication jobApplication2 = new JobApplication();
-        jobApplication1.setId(ID_1);
-        jobApplication2.setId(ID_2);
+        jobApplication1.setId(1L);
+        jobApplication2.setId(2L);
 
         assertNotEquals(jobApplication1, jobApplication2);
     }
 
     @Test
-    @DisplayName("hashCode computes value based on Id only")
+    @DisplayName("hashCode computes value based on ID only")
     void hashCodeComputesBasedOnId() {
         JobApplication jobApplication1 = new JobApplication();
         JobApplication jobApplication2 = new JobApplication();
-        jobApplication1.setId(ID_1);
-        jobApplication2.setId(ID_1);
+        jobApplication1.setId(1L);
+        jobApplication2.setId(1L);
 
         assertEquals(jobApplication1.hashCode(), jobApplication2.hashCode());
     }

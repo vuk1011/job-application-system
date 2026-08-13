@@ -96,4 +96,38 @@ class CompanyTest {
         assertTrue(result.contains("employeesCount=0"));
         assertTrue(result.contains("jobPostingsCount=0"));
     }
+
+    @Test
+    @DisplayName("equals returns true when companies have the same ID")
+    void equalsReturnsTrueWhenSameId() {
+        Company company1 = new Company();
+        Company company2 = new Company();
+        company1.setId(1L);
+        company2.setId(1L);
+
+        assertEquals(company1, company2);
+    }
+
+    @Test
+    @DisplayName("equals returns false when companies don't have the same ID")
+    void equalsReturnsFalseWhenDifferentId() {
+        Company company1 = new Company();
+        Company company2 = new Company();
+        company1.setId(1L);
+        company2.setId(2L);
+
+        assertNotEquals(company1, company2);
+    }
+
+    @Test
+    @DisplayName("hashCode computes value based on ID only")
+    void hashCodeComputesBasedOnId() {
+        Company company1 = new Company();
+        Company company2 = new Company();
+        company1.setId(1L);
+        company2.setId(1L);
+
+        assertEquals(company1.hashCode(), company2.hashCode());
+    }
+
 }

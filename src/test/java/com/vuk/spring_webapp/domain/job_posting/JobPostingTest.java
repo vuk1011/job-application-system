@@ -115,4 +115,36 @@ class JobPostingTest {
         assertTrue(result.contains("companyId=null"));
     }
 
+    @Test
+    @DisplayName("equals returns true when job postings have the same ID")
+    void equalsReturnsTrueWhenSameId() {
+        JobPosting jobPosting1 = new JobPosting();
+        JobPosting jobPosting2 = new JobPosting();
+        jobPosting1.setId(1L);
+        jobPosting2.setId(1L);
+
+        assertEquals(jobPosting1, jobPosting2);
+    }
+
+    @Test
+    @DisplayName("equals returns false when job postings don't have the same ID")
+    void equalsReturnsFalseWhenDifferentId() {
+        JobPosting jobPosting1 = new JobPosting();
+        JobPosting jobPosting2 = new JobPosting();
+        jobPosting1.setId(1L);
+        jobPosting2.setId(2L);
+
+        assertNotEquals(jobPosting1, jobPosting2);
+    }
+
+    @Test
+    @DisplayName("hashCode computes value based on ID only")
+    void hashCodeComputesBasedOnId() {
+        JobPosting jobPosting1 = new JobPosting();
+        JobPosting jobPosting2 = new JobPosting();
+        jobPosting1.setId(1L);
+        jobPosting2.setId(1L);
+
+        assertEquals(jobPosting1.hashCode(), jobPosting2.hashCode());
+    }
 }

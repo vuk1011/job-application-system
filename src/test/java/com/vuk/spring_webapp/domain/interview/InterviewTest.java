@@ -79,4 +79,38 @@ class InterviewTest {
 
         assertTrue(result.contains("jobApplicationId=null"));
     }
+
+    @Test
+    @DisplayName("equals returns true when interviews have the same ID")
+    void equalsReturnsTrueWhenSameId() {
+        Interview interview1 = new Interview();
+        Interview interview2 = new Interview();
+        interview1.setId(1L);
+        interview2.setId(1L);
+
+        assertEquals(interview1, interview2);
+    }
+
+    @Test
+    @DisplayName("equals returns false when interviews don't have the same ID")
+    void equalsReturnsFalseWhenDifferentId() {
+        Interview interview1 = new Interview();
+        Interview interview2 = new Interview();
+        interview1.setId(1L);
+        interview2.setId(2L);
+
+        assertNotEquals(interview1, interview2);
+    }
+
+    @Test
+    @DisplayName("hashCode computes value based on ID only")
+    void hashCodeComputesBasedOnId() {
+        Interview interview1 = new Interview();
+        Interview interview2 = new Interview();
+        interview1.setId(1L);
+        interview2.setId(1L);
+
+        assertEquals(interview1.hashCode(), interview2.hashCode());
+    }
+
 }
