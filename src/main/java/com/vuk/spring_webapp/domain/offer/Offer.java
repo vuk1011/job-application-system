@@ -2,9 +2,14 @@ package com.vuk.spring_webapp.domain.offer;
 
 import com.vuk.spring_webapp.domain.job_application.JobApplication;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Objects;
 
 /**
  * Represents a job offer.
@@ -34,7 +39,10 @@ public class Offer {
 
     /**
      * Short name for the offer.
+     * Must not be blank and must not exceed 50 characters.
      */
+    @NotBlank(message = "Name is required")
+    @Size(max = 50, message = "Name must be at most 50 characters")
     @Column(length = 50, nullable = false)
     private String name;
 
@@ -45,9 +53,11 @@ public class Offer {
 
     /**
      * Corresponding job application.
+     * Must not be null.
      *
      * @see com.vuk.spring_webapp.domain.job_application.JobApplication
      */
+    @NotNull(message = "Job application is required")
     @ManyToOne
     @JoinColumn(name = "job_application_id", referencedColumnName = "id", nullable = false)
     private JobApplication jobApplication;
@@ -62,5 +72,41 @@ public class Offer {
     public Offer(String name, JobApplication jobApplication) {
         this.name = name;
         this.jobApplication = jobApplication;
+    }
+
+    /**
+     * @implNote jobApplication is represented by its ID only.
+     */
+    @Override
+    public String toString() {
+        return "Offer{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", accepted=" + accepted +
+                ", jobApplicationId=" + (jobApplication != null ? jobApplication.getId() : null) +
+                '}';
+    }
+
+    /**
+     * Checks equality between two Offer instances based on ID.
+     *
+     * @param o the reference object with which to compare.
+     * @return true if both offers have the same ID, false otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Offer offer = (Offer) o;
+        return Objects.equals(id, offer.id);
+    }
+
+    /**
+     * Calculates a hash code based on the offer's ID.
+     *
+     * @return hash code of the ID
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

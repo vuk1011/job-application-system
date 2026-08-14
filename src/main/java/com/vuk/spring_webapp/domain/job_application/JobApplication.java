@@ -6,6 +6,8 @@ import com.vuk.spring_webapp.domain.offer.Offer;
 import com.vuk.spring_webapp.domain.user.Candidate;
 import com.vuk.spring_webapp.domain.user.Employee;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -45,23 +47,30 @@ public class JobApplication {
 
     /**
      * Date when the candidate applied for the job posting.
+     * Must not be null and must be in the past or present.
      */
+    @NotNull(message = "Date of submission is required")
+    @PastOrPresent(message = "Date of submission must be in the past or present")
     @Column(name = "date_of_submission", nullable = false)
     private LocalDate dateOfSubmission;
 
     /**
      * Job application status, affecting allowed actions.
+     * Must not be null.
      *
      * @see com.vuk.spring_webapp.domain.job_application.JobApplicationStatus
      */
+    @NotNull(message = "Status is required")
     @Enumerated(EnumType.STRING)
     private JobApplicationStatus status;
 
     /**
      * Corresponding job posting to which the candidate applied for.
+     * Must not be null.
      *
      * @see com.vuk.spring_webapp.domain.job_posting.JobPosting
      */
+    @NotNull(message = "Job posting is required")
     @ManyToOne
     @JoinColumn(name = "job_posting_id", referencedColumnName = "id", nullable = false)
     private JobPosting jobPosting;
@@ -77,9 +86,11 @@ public class JobApplication {
 
     /**
      * Corresponding candidate that created the job application.
+     * Must not be null.
      *
      * @see com.vuk.spring_webapp.domain.user.Candidate
      */
+    @NotNull(message = "Candidate is required")
     @ManyToOne
     @JoinColumn(name = "candidate_id", referencedColumnName = "id", nullable = false)
     private Candidate candidate;
@@ -137,6 +148,24 @@ public class JobApplication {
      */
     public boolean statusIsFinal() {
         return status == ACCEPTED;
+    }
+
+    /**
+     * @implNote jobPosting, employee and candidate are represented by their ID only.
+     * offers and interviews are represented by their element count only.
+     */
+    @Override
+    public String toString() {
+        return "JobApplication{" +
+                "id=" + id +
+                ", dateOfSubmission=" + dateOfSubmission +
+                ", status=" + status +
+                ", jobPostingId=" + (jobPosting != null ? jobPosting.getId() : null) +
+                ", employeeId=" + (employee != null ? employee.getId() : null) +
+                ", candidateId=" + (candidate != null ? candidate.getId() : null) +
+                ", offersCount=" + (offers != null ? offers.size() : 0) +
+                ", interviewsCount=" + (interviews != null ? interviews.size() : 0) +
+                '}';
     }
 
     /**

@@ -1,19 +1,25 @@
 package com.vuk.spring_webapp.domain.job_posting;
 
 import com.vuk.spring_webapp.domain.company.Company;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import static com.vuk.spring_webapp.domain.job_posting.JobPostingStatus.CLOSED;
 import static com.vuk.spring_webapp.domain.job_posting.JobPostingStatus.PUBLISHED;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("JobPosting Unit Tests")
 class JobPostingTest {
 
+    private static final Long ID = 1L;
     private static final String TITLE = "Fullstack .NET developer";
     private static final String DESCRIPTION = "Looking for a fullstack developer...";
     private static final LocalDate DATE_OF_PUBLISHING = LocalDate.now();
@@ -21,6 +27,212 @@ class JobPostingTest {
     private static final LocalDate DATE_OF_EXPIRATION_IN_PAST = LocalDate.now().minusDays(1);
     private static final LocalDate DATE_OF_EXPIRATION_IN_FUTURE = LocalDate.now().plusDays(1);
     private static final Company COMPANY = new Company();
+
+    private static Validator validator;
+
+    @BeforeAll
+    static void setUp() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+    }
+
+    @Test
+    @DisplayName("Title must not be blank")
+    void titleMustNotBeBlank() {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setTitle(" ");
+
+        Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "title");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Title must not exceed 50 characters")
+    void titleMustNotExceed50Characters() {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setTitle("x".repeat(51));
+
+        Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "title");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Title can have 50 characters")
+    void titleCanHave50Characters() {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setTitle("x".repeat(50));
+
+        Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "title");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Valid title produces no violations")
+    void validTitleProducesNoViolations() {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setTitle(TITLE);
+
+        Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "title");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Description must not be blank")
+    void descriptionMustNotBeBlank() {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setDescription(" ");
+
+        Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "description");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Description must not exceed 3000 characters")
+    void descriptionMustNotExceed3000Characters() {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setDescription("x".repeat(3001));
+
+        Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "description");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Description can have 3000 characters")
+    void descriptionCanHave3000Characters() {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setDescription("x".repeat(3000));
+
+        Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "description");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Valid description produces no violations")
+    void validDescriptionProducesNoViolations() {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setDescription(DESCRIPTION);
+
+        Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "description");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Date of publishing must not be null")
+    void dateOfPublishingMustNotBeNull() {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setDateOfPublishing(null);
+
+        Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "dateOfPublishing");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Date of publishing must not be in the future")
+    void dateOfPublishingMustNotBeInFuture() {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setDateOfPublishing(LocalDate.now().plusDays(1));
+
+        Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "dateOfPublishing");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Date of publishing can be in the present")
+    void dateOfPublishingCanBeInPresent() {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setDateOfPublishing(LocalDate.now());
+
+        Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "dateOfPublishing");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Valid date of publishing produces no violations")
+    void validDateOfPublishingProducesNoViolations() {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setDateOfPublishing(LocalDate.now().minusDays(1));
+
+        Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "dateOfPublishing");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Date of expiration must not be null")
+    void dateOfExpirationMustNotBeNull() {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setDateOfExpiration(null);
+
+        Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "dateOfExpiration");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Date of expiration must not be in the past")
+    void dateOfExpirationMustNotBeInPast() {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setDateOfExpiration(LocalDate.now().minusDays(1));
+
+        Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "dateOfExpiration");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Date of expiration can be in the present")
+    void dateOfExpirationCanBeInPresent() {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setDateOfExpiration(LocalDate.now());
+
+        Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "dateOfExpiration");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Valid date of expiration produces no violations")
+    void validDateOfExpirationProducesNoViolations() {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setDateOfExpiration(LocalDate.now().plusDays(1));
+
+        Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "dateOfExpiration");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Company must not be null")
+    void companyMustNotBeNull() {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setCompany(null);
+
+        Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "company");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Valid company produces no violations")
+    void validCompanyProducesNoViolations() {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setCompany(new Company());
+
+        Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "company");
+
+        assertTrue(violations.isEmpty());
+    }
 
     @Test
     @DisplayName("No args constructor creates an empty instance")
@@ -76,4 +288,75 @@ class JobPostingTest {
         assertEquals(PUBLISHED, jobPosting.getStatus());
     }
 
+    @Test
+    @DisplayName("toString includes all basic fields")
+    void toStringIncludesAllBasicFields() {
+        JobPosting jobPosting = new JobPosting(TITLE, DESCRIPTION, DATE_OF_PUBLISHING, DATE_OF_EXPIRATION, null);
+        jobPosting.setId(ID);
+
+        String result = jobPosting.toString();
+
+        assertTrue(result.contains("id=" + ID));
+        assertTrue(result.contains("title='" + TITLE + '\''));
+        assertTrue(result.contains("description='" + DESCRIPTION + '\''));
+        assertTrue(result.contains("dateOfPublishing=" + DATE_OF_PUBLISHING));
+        assertTrue(result.contains("dateOfExpiration=" + DATE_OF_EXPIRATION));
+    }
+
+    @Test
+    @DisplayName("toString includes ID for associated entities")
+    void toStringIncludesIdForAssociatedEntities() {
+        Company company = new Company();
+        company.setId(ID);
+        JobPosting jobPosting = new JobPosting(TITLE, DESCRIPTION, DATE_OF_PUBLISHING, DATE_OF_EXPIRATION, company);
+
+        String result = jobPosting.toString();
+
+        assertTrue(result.contains("companyId=" + ID));
+    }
+
+    @Test
+    @DisplayName("toString handles null associated entities without throwing an exception")
+    void toStringHandlesNullAssociatedEntities() {
+        JobPosting jobPosting = new JobPosting(TITLE, DESCRIPTION, DATE_OF_PUBLISHING, DATE_OF_EXPIRATION, null);
+
+        assertDoesNotThrow(jobPosting::toString);
+
+        String result = jobPosting.toString();
+
+        assertTrue(result.contains("companyId=null"));
+    }
+
+    @Test
+    @DisplayName("equals returns true when job postings have the same ID")
+    void equalsReturnsTrueWhenSameId() {
+        JobPosting jobPosting1 = new JobPosting();
+        JobPosting jobPosting2 = new JobPosting();
+        jobPosting1.setId(1L);
+        jobPosting2.setId(1L);
+
+        assertEquals(jobPosting1, jobPosting2);
+    }
+
+    @Test
+    @DisplayName("equals returns false when job postings don't have the same ID")
+    void equalsReturnsFalseWhenDifferentId() {
+        JobPosting jobPosting1 = new JobPosting();
+        JobPosting jobPosting2 = new JobPosting();
+        jobPosting1.setId(1L);
+        jobPosting2.setId(2L);
+
+        assertNotEquals(jobPosting1, jobPosting2);
+    }
+
+    @Test
+    @DisplayName("hashCode computes value based on ID only")
+    void hashCodeComputesBasedOnId() {
+        JobPosting jobPosting1 = new JobPosting();
+        JobPosting jobPosting2 = new JobPosting();
+        jobPosting1.setId(1L);
+        jobPosting2.setId(1L);
+
+        assertEquals(jobPosting1.hashCode(), jobPosting2.hashCode());
+    }
 }

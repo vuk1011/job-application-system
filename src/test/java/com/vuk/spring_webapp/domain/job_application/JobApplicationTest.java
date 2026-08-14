@@ -1,12 +1,23 @@
 package com.vuk.spring_webapp.domain.job_application;
 
+import com.vuk.spring_webapp.domain.interview.Interview;
 import com.vuk.spring_webapp.domain.job_posting.JobPosting;
+import com.vuk.spring_webapp.domain.offer.Offer;
 import com.vuk.spring_webapp.domain.user.Candidate;
 import com.vuk.spring_webapp.domain.user.Employee;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,6 +31,125 @@ class JobApplicationTest {
     private static final Candidate CANDIDATE = new Candidate();
     private static final Long ID_1 = 1L;
     private static final Long ID_2 = 2L;
+
+    private static Validator validator;
+
+    @BeforeAll
+    static void setUp() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+    }
+
+    @Test
+    @DisplayName("Date of submission must not be null")
+    void dateOfSubmissionMustNotBeNull() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setDateOfSubmission(null);
+
+        Set<ConstraintViolation<JobApplication>> violations = validator.validateProperty(jobApplication, "dateOfSubmission");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Date of submission must not be in the future")
+    void dateOfSubmissionMustNotBeInFuture() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setDateOfSubmission(LocalDate.now().plusDays(1));
+
+        Set<ConstraintViolation<JobApplication>> violations = validator.validateProperty(jobApplication, "dateOfSubmission");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Date of submission can be in the present")
+    void dateOfSubmissionCanBeInPresent() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setDateOfSubmission(LocalDate.now());
+
+        Set<ConstraintViolation<JobApplication>> violations = validator.validateProperty(jobApplication, "dateOfSubmission");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Valid date of submission produces no violations")
+    void validDateOfSubmissionProducesNoViolations() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setDateOfSubmission(LocalDate.now().minusDays(1));
+
+        Set<ConstraintViolation<JobApplication>> violations = validator.validateProperty(jobApplication, "dateOfSubmission");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Status must not be null")
+    void statusMustNotBeNull() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setStatus(null);
+
+        Set<ConstraintViolation<JobApplication>> violations = validator.validateProperty(jobApplication, "status");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @ParameterizedTest
+    @EnumSource(JobApplicationStatus.class)
+    @DisplayName("Valid status produces no violations")
+    void validStatusProducesNoViolations(JobApplicationStatus status) {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setStatus(status);
+
+        Set<ConstraintViolation<JobApplication>> violations = validator.validateProperty(jobApplication, "status");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Job posting must not be null")
+    void jobPostingMustNotBeNull() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setJobPosting(null);
+
+        Set<ConstraintViolation<JobApplication>> violations = validator.validateProperty(jobApplication, "jobPosting");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Valid job posting produces no violations")
+    void validJobPostingProducesNoViolations() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setJobPosting(new JobPosting());
+
+        Set<ConstraintViolation<JobApplication>> violations = validator.validateProperty(jobApplication, "jobPosting");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Candidate must not be null")
+    void candidateMustNotBeNull() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setCandidate(null);
+
+        Set<ConstraintViolation<JobApplication>> violations = validator.validateProperty(jobApplication, "candidate");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Valid candidate produces no violations")
+    void validCandidateProducesNoViolations() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setCandidate(new Candidate());
+
+        Set<ConstraintViolation<JobApplication>> violations = validator.validateProperty(jobApplication, "candidate");
+
+        assertTrue(violations.isEmpty());
+    }
 
     @Test
     @DisplayName("No args constructor creates an empty instance")
@@ -132,34 +262,118 @@ class JobApplicationTest {
     }
 
     @Test
-    @DisplayName("equals returns true when job applications have the same id")
+    @DisplayName("toString includes all basic fields")
+    void toStringIncludesAllBasicFields() {
+        JobApplication jobApplication = new JobApplication(DATE_OF_SUBMISSION, STATUS, null, null, null);
+        jobApplication.setId(ID_1);
+
+        String result = jobApplication.toString();
+
+        assertTrue(result.contains("id=" + ID_1));
+        assertTrue(result.contains("dateOfSubmission=" + DATE_OF_SUBMISSION));
+        assertTrue(result.contains("status=" + STATUS));
+    }
+
+    @Test
+    @DisplayName("toString includes element count for collections")
+    void toStringIncludesElementCountForCollections() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setOffers(List.of(new Offer()));
+        jobApplication.setInterviews(List.of(new Interview(), new Interview()));
+
+        String result = jobApplication.toString();
+
+        assertTrue(result.contains("offersCount=1"));
+        assertTrue(result.contains("interviewsCount=2"));
+    }
+
+    @Test
+    @DisplayName("toString handles empty collections")
+    void toStringHandlesEmptyCollections() {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setOffers(List.of());
+        jobApplication.setInterviews(List.of());
+
+        String result = jobApplication.toString();
+
+        assertTrue(result.contains("offersCount=0"));
+        assertTrue(result.contains("interviewsCount=0"));
+    }
+
+    @Test
+    @DisplayName("toString handles null collections without throwing an exception and treats them as empty")
+    void toStringHandlesNullCollections() {
+        JobApplication jobApplication = new JobApplication();
+
+        assertDoesNotThrow(jobApplication::toString);
+
+        String result = jobApplication.toString();
+
+        assertTrue(result.contains("offersCount=0"));
+        assertTrue(result.contains("interviewsCount=0"));
+    }
+
+    @Test
+    @DisplayName("toString includes ID for associated entities")
+    void toStringIncludesIdForAssociatedEntities() {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setId(ID_1);
+        Employee employee = new Employee();
+        employee.setId(ID_1);
+        Candidate candidate = new Candidate();
+        candidate.setId(ID_1);
+        JobApplication jobApplication = new JobApplication(DATE_OF_SUBMISSION, STATUS, jobPosting, employee, candidate);
+
+        String result = jobApplication.toString();
+
+        assertTrue(result.contains("jobPostingId=" + ID_1));
+        assertTrue(result.contains("employeeId=" + ID_1));
+        assertTrue(result.contains("candidateId=" + ID_1));
+    }
+
+    @Test
+    @DisplayName("toString handles null associated entities without throwing an exception")
+    void toStringHandlesNullAssociatedEntities() {
+        JobApplication jobApplication = new JobApplication();
+
+        assertDoesNotThrow(jobApplication::toString);
+
+        String result = jobApplication.toString();
+
+        assertTrue(result.contains("jobPostingId=null"));
+        assertTrue(result.contains("employeeId=null"));
+        assertTrue(result.contains("candidateId=null"));
+    }
+
+    @Test
+    @DisplayName("equals returns true when job applications have the same ID")
     void equalsReturnsTrueWhenSameId() {
         JobApplication jobApplication1 = new JobApplication();
         JobApplication jobApplication2 = new JobApplication();
-        jobApplication1.setId(ID_1);
-        jobApplication2.setId(ID_1);
+        jobApplication1.setId(1L);
+        jobApplication2.setId(1L);
 
         assertEquals(jobApplication1, jobApplication2);
     }
 
     @Test
-    @DisplayName("equals returns false when job applications don't have the same id")
+    @DisplayName("equals returns false when job applications don't have the same ID")
     void equalsReturnsFalseWhenDifferentId() {
         JobApplication jobApplication1 = new JobApplication();
         JobApplication jobApplication2 = new JobApplication();
-        jobApplication1.setId(ID_1);
-        jobApplication2.setId(ID_2);
+        jobApplication1.setId(1L);
+        jobApplication2.setId(2L);
 
         assertNotEquals(jobApplication1, jobApplication2);
     }
 
     @Test
-    @DisplayName("hashCode computes value based on Id only")
+    @DisplayName("hashCode computes value based on ID only")
     void hashCodeComputesBasedOnId() {
         JobApplication jobApplication1 = new JobApplication();
         JobApplication jobApplication2 = new JobApplication();
-        jobApplication1.setId(ID_1);
-        jobApplication2.setId(ID_1);
+        jobApplication1.setId(1L);
+        jobApplication2.setId(1L);
 
         assertEquals(jobApplication1.hashCode(), jobApplication2.hashCode());
     }

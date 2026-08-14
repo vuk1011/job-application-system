@@ -63,4 +63,17 @@ public class Candidate extends AppUser {
     public Candidate(String firstName, String lastName, Sex sex, String phone, String address, String email, String password) {
         super(Role.CANDIDATE, firstName, lastName, sex, phone, address, email, password);
     }
+
+    /**
+     * @implNote resume is represented by its byte length only.
+     * jobApplications is represented by its element count only.
+     */
+    @Override
+    public String toString() {
+        return "Candidate{" +
+                super.toString() +
+                ", resumeSize=" + (resume != null ? resume.length + " bytes" : null) +
+                ", jobApplicationsCount=" + (jobApplications != null ? jobApplications.size() : 0) +
+                '}';
+    }
 }
