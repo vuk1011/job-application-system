@@ -2,7 +2,10 @@ package com.vuk.spring_webapp.domain.interview;
 
 import com.vuk.spring_webapp.domain.job_application.JobApplication;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -47,7 +50,7 @@ public class Interview {
      * Must not be blank and must not exceed 200 characters.
      */
     @NotBlank(message = "Description is required")
-    @Size(max = 50, message = "Description must be at most 200 characters")
+    @Size(max = 200, message = "Description must be at most 200 characters")
     @Column(length = 200, nullable = false)
     private String description;
 
@@ -62,7 +65,9 @@ public class Interview {
 
     /**
      * Corresponding job application.
+     * Must not be null.
      */
+    @NotNull(message = "Job application is required")
     @ManyToOne
     @JoinColumn(name = "job_application_id", referencedColumnName = "id", nullable = false)
     private JobApplication jobApplication;

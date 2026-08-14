@@ -1,10 +1,16 @@
 package com.vuk.spring_webapp.domain.interview;
 
 import com.vuk.spring_webapp.domain.job_application.JobApplication;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,6 +22,168 @@ class InterviewTest {
     private static final String DESCRIPTION = "First round of technical interview. You'll be joined by the team lead and HR.";
     private static final LocalDateTime TIME_SCHEDULED = LocalDateTime.now();
     private static final JobApplication JOB_APPLICATION = new JobApplication();
+
+    private static Validator validator;
+
+    @BeforeAll
+    static void setUp() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+    }
+
+    @Test
+    @DisplayName("Title must not be blank")
+    void titleMustNotBeBlank() {
+        Interview interview = new Interview();
+        interview.setTitle(" ");
+
+        Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "title");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Title must not exceed 50 characters")
+    void titleMustNotExceed50Characters() {
+        Interview interview = new Interview();
+        interview.setTitle("x".repeat(51));
+
+        Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "title");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Title can have 50 characters")
+    void titleCanHave50Characters() {
+        Interview interview = new Interview();
+        interview.setTitle("x".repeat(50));
+
+        Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "title");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Valid title produces no violations")
+    void validTitleProducesNoViolations() {
+        Interview interview = new Interview();
+        interview.setTitle(TITLE);
+
+        Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "title");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Description must not be blank")
+    void descriptionMustNotBeBlank() {
+        Interview interview = new Interview();
+        interview.setDescription(" ");
+
+        Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "description");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Description must not exceed 200 characters")
+    void descriptionMustNotExceed50Characters() {
+        Interview interview = new Interview();
+        interview.setDescription("x".repeat(201));
+
+        Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "description");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Description can have 200 characters")
+    void descriptionCanHave50Characters() {
+        Interview interview = new Interview();
+        interview.setDescription("x".repeat(200));
+
+        Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "description");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Valid description produces no violations")
+    void validDescriptionProducesNoViolations() {
+        Interview interview = new Interview();
+        interview.setDescription(DESCRIPTION);
+
+        Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "description");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Time scheduled must not be null")
+    void timeScheduledMustNotBeNull() {
+        Interview interview = new Interview();
+        interview.setTimeScheduled(null);
+
+        Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "timeScheduled");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Time scheduled must not be in the past")
+    void timeScheduledMustNotBeInPast() {
+        Interview interview = new Interview();
+        interview.setTimeScheduled(LocalDateTime.now().minusDays(1));
+
+        Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "timeScheduled");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Time scheduled must not be in the present")
+    void timeScheduledMustNotBeInPresent() {
+        Interview interview = new Interview();
+        interview.setTimeScheduled(LocalDateTime.now());
+
+        Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "timeScheduled");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Valid time scheduled produces no violations")
+    void validTimeScheduledProducesNoViolations() {
+        Interview interview = new Interview();
+        interview.setTimeScheduled(LocalDateTime.now().plusDays(1));
+
+        Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "timeScheduled");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Job application must not be null")
+    void jobApplicationMustNotBeNull() {
+        Interview interview = new Interview();
+        interview.setJobApplication(null);
+
+        Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "jobApplication");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Valid job application produces no violations")
+    void validJobApplicationProducesNoViolations() {
+        Interview interview = new Interview();
+        interview.setJobApplication(new JobApplication());
+
+        Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "jobApplication");
+
+        assertTrue(violations.isEmpty());
+    }
 
     @Test
     @DisplayName("No args constructor creates an empty instance")

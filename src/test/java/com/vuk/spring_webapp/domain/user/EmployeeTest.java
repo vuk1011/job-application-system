@@ -2,11 +2,17 @@ package com.vuk.spring_webapp.domain.user;
 
 import com.vuk.spring_webapp.domain.company.Company;
 import com.vuk.spring_webapp.domain.job_application.JobApplication;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,10 +27,194 @@ class EmployeeTest {
     private static final String ADDRESS = "Oak Street 1";
     private static final String EMAIL = "mans@yahoo.com";
     private static final String PASSWORD = "secret123";
-    private static final String NATIONAL_ID = "0000000000000";
-    private static final LocalDate DATE_OF_BIRTH = LocalDate.now();
-    private static final LocalDate DATE_OF_HIRE = LocalDate.now();
+    private static final String NATIONAL_ID = "0101999100200";
+    private static final LocalDate DATE_OF_BIRTH = LocalDate.now().minusYears(20);
+    private static final LocalDate DATE_OF_HIRE = LocalDate.now().minusYears(1);
     private static final Company COMPANY = new Company();
+
+    private static Validator validator;
+
+    @BeforeAll
+    static void setUp() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+    }
+
+    @Test
+    @DisplayName("National ID must not be blank")
+    void nationalIdMustNotBeBlank() {
+        Employee employee = new Employee();
+        employee.setNationalId(" ");
+
+        Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "nationalId");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("National ID must not have less than 10 characters")
+    void nationalIdMustNotBeShorterThan8Digits() {
+        Employee employee = new Employee();
+        employee.setNationalId("0".repeat(9));
+
+        Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "nationalId");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("National ID can have 10 digits")
+    void nationalIdCanHave10Digits() {
+        Employee employee = new Employee();
+        employee.setNationalId("0".repeat(10));
+
+        Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "nationalId");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Phone must not have more than 20 characters")
+    void nationalIdMustNotBeLongerThan20Digits() {
+        Employee employee = new Employee();
+        employee.setNationalId("0".repeat(21));
+
+        Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "nationalId");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("National ID can have 20 digits")
+    void nationalIdCanHave20Digits() {
+        Employee employee = new Employee();
+        employee.setNationalId("0".repeat(20));
+
+        Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "nationalId");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Valid nationalId produces no violations")
+    void validNationalIdProducesNoViolations() {
+        Employee employee = new Employee();
+        employee.setNationalId(NATIONAL_ID);
+
+        Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "nationalId");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Date of birth must not be null")
+    void dateOfBirthMustNotBeNull() {
+        Employee employee = new Employee();
+        employee.setDateOfBirth(null);
+
+        Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "dateOfBirth");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Date of birth must not be in the future")
+    void dateOfBirthMustNotBeInFuture() {
+        Employee employee = new Employee();
+        employee.setDateOfBirth(LocalDate.now().plusDays(1));
+
+        Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "dateOfBirth");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Date of birth can be in the present")
+    void dateOfBirthMustNotBeInPresent() {
+        Employee employee = new Employee();
+        employee.setDateOfBirth(LocalDate.now());
+
+        Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "dateOfBirth");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Valid date of birth produces no violations")
+    void validDateOfBirthProducesNoViolations() {
+        Employee employee = new Employee();
+        employee.setDateOfBirth(DATE_OF_BIRTH);
+
+        Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "dateOfBirth");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Date of hire must not be null")
+    void dateOfHireMustNotBeNull() {
+        Employee employee = new Employee();
+        employee.setDateOfHire(null);
+
+        Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "dateOfHire");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Date of hire must not be in the future")
+    void dateOfHireMustNotBeInFuture() {
+        Employee employee = new Employee();
+        employee.setDateOfHire(LocalDate.now().plusDays(1));
+
+        Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "dateOfHire");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Date of hire can be in the present")
+    void dateOfHireMustNotBeInPresent() {
+        Employee employee = new Employee();
+        employee.setDateOfHire(LocalDate.now());
+
+        Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "dateOfHire");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Valid date of hire produces no violations")
+    void validDateOfHireProducesNoViolations() {
+        Employee employee = new Employee();
+        employee.setDateOfHire(DATE_OF_BIRTH);
+
+        Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "dateOfHire");
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Company must not be null")
+    void companyMustNotBeNull() {
+        Employee employee = new Employee();
+        employee.setCompany(null);
+
+        Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "company");
+
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Valid company produces no violations")
+    void validCompanyProducesNoViolations() {
+        Employee employee = new Employee();
+        employee.setCompany(COMPANY);
+
+        Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "company");
+
+        assertTrue(violations.isEmpty());
+    }
 
     @Test
     @DisplayName("No args constructor creates an empty instance")
