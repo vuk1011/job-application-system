@@ -1,6 +1,7 @@
 package com.vuk.spring_webapp.domain.user;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,47 +36,72 @@ public abstract class AppUser {
 
     /**
      * Represents the type of user.
+     * Must not be null.
      *
      * @see com.vuk.spring_webapp.domain.user.Role
      */
+    @NotNull(message = "Role is required")
     @Enumerated(EnumType.STRING)
     private Role role;
 
     /**
      * User's first name.
+     * Must not be blank and must not exceed 30 characters.
      */
+    @NotBlank(message = "First name is required")
+    @Size(max = 30, message = "First name must be at most 30 characters")
     @Column(name = "first_name", length = 30, nullable = false)
     private String firstName;
 
     /**
      * User's last name.
+     * Must not be blank and must not exceed 30 characters.
      */
+    @NotBlank(message = "Last name is required")
+    @Size(max = 30, message = "Last name must be at most 30 characters")
     @Column(name = "last_name", length = 30, nullable = false)
     private String lastName;
 
     /**
      * User's sex.
+     * Must not be null.
      *
      * @see com.vuk.spring_webapp.domain.user.Sex
      */
+    @NotNull(message = "Sex is required")
     @Enumerated(EnumType.STRING)
     private Sex sex;
 
     /**
      * User's phone number.
+     * Must not be blank and must be between 8 and 16 digits.
      */
+    @NotBlank(message = "Phone number is required")
+    @Size(min = 8, max = 16, message = "Phone number must be between 8 and 16 characters")
+    @Pattern(
+            regexp = "^[0-9]+$",
+            message = "Phone number must contain only digits"
+    )
     @Column(length = 16, nullable = false)
     private String phone;
 
     /**
      * User's address.
+     * Must not be blank and must not exceed 50 characters.
      */
+    @NotBlank(message = "Address is required")
+    @Size(max = 50, message = "Address must be at most 50 characters")
     @Column(length = 50, nullable = false)
     private String address;
 
     /**
      * User's email address.
+     * Must be formatted correctly.
+     *
+     * @implNote Validation based on Jakarta Bean Validation providers.
      */
+    @Email(message = "Email must be well formatted")
+    @Size(max = 50, message = "Email must be at most 50 characters")
     @Column(length = 50, nullable = false, unique = true)
     private String email;
 

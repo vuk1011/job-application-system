@@ -2,6 +2,7 @@ package com.vuk.spring_webapp.domain.interview;
 
 import com.vuk.spring_webapp.domain.job_application.JobApplication;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,19 +35,28 @@ public class Interview {
 
     /**
      * Short name of the interview.
+     * Must not be blank and must not exceed 50 characters.
      */
+    @NotBlank(message = "Title is required")
+    @Size(max = 50, message = "Title must be at most 50 characters")
     @Column(length = 50, nullable = false)
     private String title;
 
     /**
      * Detailed description of the interview.
+     * Must not be blank and must not exceed 200 characters.
      */
+    @NotBlank(message = "Description is required")
+    @Size(max = 50, message = "Description must be at most 200 characters")
     @Column(length = 200, nullable = false)
     private String description;
 
     /**
      * Date and time the interview's scheduled for.
+     * Must not be null and must be in the future.
      */
+    @NotNull(message = "Time scheduled is required")
+    @Future(message = "Time scheduled must be in the future")
     @Column(name = "time_scheduled", nullable = false)
     private LocalDateTime timeScheduled;
 

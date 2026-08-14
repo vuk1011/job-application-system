@@ -3,6 +3,10 @@ package com.vuk.spring_webapp.domain.user;
 import com.vuk.spring_webapp.domain.company.Company;
 import com.vuk.spring_webapp.domain.job_application.JobApplication;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,13 +38,28 @@ public class Employee extends AppUser {
 
     /**
      * Government issued unique identifier.
+     * Must not be blank and must be between 10 and 20 characters.
      */
+    @NotBlank(message = "National ID is required")
+    @Size(min = 10, max = 20, message = "National ID must be between 10 and 20 characters")
     @Column(name = "national_id", length = 20)
     private String nationalId;
 
+    /**
+     * Date of birth.
+     * Must not be null and must be in the past.
+     */
+    @NotNull(message = "Date of birth is required")
+    @Past(message = "Date of birth must be in the past")
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
+    /**
+     * Date of hiring.
+     * Must not be null and must be in the past or present.
+     */
+    @NotNull(message = "Date of hiring is required")
+    @Past(message = "Date of hiring must be in the past or present")
     @Column(name = "date_of_hire")
     private LocalDate dateOfHire;
 
@@ -54,9 +73,11 @@ public class Employee extends AppUser {
 
     /**
      * Corresponding company the employee works in.
+     * Must not be null.
      *
      * @see com.vuk.spring_webapp.domain.company.Company
      */
+    @NotNull(message = "Company is required")
     @ManyToOne
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     private Company company;

@@ -3,6 +3,8 @@ package com.vuk.spring_webapp.domain.company;
 import com.vuk.spring_webapp.domain.job_posting.JobPosting;
 import com.vuk.spring_webapp.domain.user.Employee;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,19 +35,28 @@ public class Company {
 
     /**
      * Name of the company, has to be unique.
+     * Must not be blank and must not exceed 50 characters.
      */
+    @NotBlank(message = "Name is required")
+    @Size(max = 50, message = "Name must be at most 50 characters")
     @Column(length = 50, nullable = false, unique = true)
     private String name;
 
     /**
      * Text with details about the company.
+     * Must not be blank and must not exceed 200 characters.
      */
+    @NotBlank(message = "About is required")
+    @Size(max = 200, message = "About must be at most 200 characters")
     @Column(length = 200, nullable = false)
     private String about;
 
     /**
      * Company's address.
+     * Must not be blank and must not exceed 50 characters.
      */
+    @NotBlank(message = "Address is required")
+    @Size(max = 50, message = "Address must be at most 50 characters")
     @Column(length = 50, nullable = false)
     private String address;
 

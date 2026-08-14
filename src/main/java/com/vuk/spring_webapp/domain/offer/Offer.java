@@ -2,6 +2,9 @@ package com.vuk.spring_webapp.domain.offer;
 
 import com.vuk.spring_webapp.domain.job_application.JobApplication;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,7 +39,10 @@ public class Offer {
 
     /**
      * Short name for the offer.
+     * Must not be blank and must not exceed 50 characters.
      */
+    @NotBlank(message = "Name is required")
+    @Size(max = 50, message = "Name must be at most 50 characters")
     @Column(length = 50, nullable = false)
     private String name;
 
@@ -47,9 +53,11 @@ public class Offer {
 
     /**
      * Corresponding job application.
+     * Must not be null.
      *
      * @see com.vuk.spring_webapp.domain.job_application.JobApplication
      */
+    @NotNull(message = "Job application is required")
     @ManyToOne
     @JoinColumn(name = "job_application_id", referencedColumnName = "id", nullable = false)
     private JobApplication jobApplication;
