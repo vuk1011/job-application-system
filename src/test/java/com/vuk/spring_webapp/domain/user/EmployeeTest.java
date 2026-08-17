@@ -6,6 +6,10 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,11 +48,16 @@ class EmployeeTest {
     @DisplayName("National ID must not be blank")
     void nationalIdMustNotBeBlank() {
         Employee employee = new Employee();
-        employee.setNationalId(" ");
+        employee.setNationalId(" ".repeat(10));
 
         Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "nationalId");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Employee> violation = violations.iterator().next();
+
+        assertEquals(NotBlank.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("National ID is required", violation.getMessage());
     }
 
     @Test
@@ -59,7 +68,12 @@ class EmployeeTest {
 
         Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "nationalId");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Employee> violation = violations.iterator().next();
+
+        assertEquals(Size.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("National ID must be between 10 and 20 characters", violation.getMessage());
     }
 
     @Test
@@ -81,7 +95,12 @@ class EmployeeTest {
 
         Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "nationalId");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Employee> violation = violations.iterator().next();
+
+        assertEquals(Size.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("National ID must be between 10 and 20 characters", violation.getMessage());
     }
 
     @Test
@@ -114,7 +133,12 @@ class EmployeeTest {
 
         Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "dateOfBirth");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Employee> violation = violations.iterator().next();
+
+        assertEquals(NotNull.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Date of birth is required", violation.getMessage());
     }
 
     @Test
@@ -125,7 +149,12 @@ class EmployeeTest {
 
         Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "dateOfBirth");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Employee> violation = violations.iterator().next();
+
+        assertEquals(Past.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Date of birth must be in the past", violation.getMessage());
     }
 
     @Test
@@ -158,7 +187,12 @@ class EmployeeTest {
 
         Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "dateOfHire");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Employee> violation = violations.iterator().next();
+
+        assertEquals(NotNull.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Date of hiring is required", violation.getMessage());
     }
 
     @Test
@@ -169,7 +203,12 @@ class EmployeeTest {
 
         Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "dateOfHire");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Employee> violation = violations.iterator().next();
+
+        assertEquals(Past.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Date of hiring must be in the past or present", violation.getMessage());
     }
 
     @Test
@@ -202,7 +241,12 @@ class EmployeeTest {
 
         Set<ConstraintViolation<Employee>> violations = validator.validateProperty(employee, "company");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Employee> violation = violations.iterator().next();
+
+        assertEquals(NotNull.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Company is required", violation.getMessage());
     }
 
     @Test

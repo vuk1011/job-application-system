@@ -9,6 +9,8 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,8 +31,7 @@ class JobApplicationTest {
     private static final JobPosting JOB_POSTING = new JobPosting();
     private static final Employee EMPLOYEE = new Employee();
     private static final Candidate CANDIDATE = new Candidate();
-    private static final Long ID_1 = 1L;
-    private static final Long ID_2 = 2L;
+    private static final Long ID = 1L;
 
     private static Validator validator;
 
@@ -48,7 +49,12 @@ class JobApplicationTest {
 
         Set<ConstraintViolation<JobApplication>> violations = validator.validateProperty(jobApplication, "dateOfSubmission");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<JobApplication> violation = violations.iterator().next();
+
+        assertEquals(NotNull.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Date of submission is required", violation.getMessage());
     }
 
     @Test
@@ -59,7 +65,12 @@ class JobApplicationTest {
 
         Set<ConstraintViolation<JobApplication>> violations = validator.validateProperty(jobApplication, "dateOfSubmission");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<JobApplication> violation = violations.iterator().next();
+
+        assertEquals(PastOrPresent.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Date of submission must be in the past or present", violation.getMessage());
     }
 
     @Test
@@ -92,7 +103,12 @@ class JobApplicationTest {
 
         Set<ConstraintViolation<JobApplication>> violations = validator.validateProperty(jobApplication, "status");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<JobApplication> violation = violations.iterator().next();
+
+        assertEquals(NotNull.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Status is required", violation.getMessage());
     }
 
     @ParameterizedTest
@@ -115,7 +131,12 @@ class JobApplicationTest {
 
         Set<ConstraintViolation<JobApplication>> violations = validator.validateProperty(jobApplication, "jobPosting");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<JobApplication> violation = violations.iterator().next();
+
+        assertEquals(NotNull.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Job posting is required", violation.getMessage());
     }
 
     @Test
@@ -137,7 +158,12 @@ class JobApplicationTest {
 
         Set<ConstraintViolation<JobApplication>> violations = validator.validateProperty(jobApplication, "candidate");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<JobApplication> violation = violations.iterator().next();
+
+        assertEquals(NotNull.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Candidate is required", violation.getMessage());
     }
 
     @Test
@@ -265,11 +291,11 @@ class JobApplicationTest {
     @DisplayName("toString includes all basic fields")
     void toStringIncludesAllBasicFields() {
         JobApplication jobApplication = new JobApplication(DATE_OF_SUBMISSION, STATUS, null, null, null);
-        jobApplication.setId(ID_1);
+        jobApplication.setId(ID);
 
         String result = jobApplication.toString();
 
-        assertTrue(result.contains("id=" + ID_1));
+        assertTrue(result.contains("id=" + ID));
         assertTrue(result.contains("dateOfSubmission=" + DATE_OF_SUBMISSION));
         assertTrue(result.contains("status=" + STATUS));
     }
@@ -317,18 +343,18 @@ class JobApplicationTest {
     @DisplayName("toString includes ID for associated entities")
     void toStringIncludesIdForAssociatedEntities() {
         JobPosting jobPosting = new JobPosting();
-        jobPosting.setId(ID_1);
+        jobPosting.setId(ID);
         Employee employee = new Employee();
-        employee.setId(ID_1);
+        employee.setId(ID);
         Candidate candidate = new Candidate();
-        candidate.setId(ID_1);
+        candidate.setId(ID);
         JobApplication jobApplication = new JobApplication(DATE_OF_SUBMISSION, STATUS, jobPosting, employee, candidate);
 
         String result = jobApplication.toString();
 
-        assertTrue(result.contains("jobPostingId=" + ID_1));
-        assertTrue(result.contains("employeeId=" + ID_1));
-        assertTrue(result.contains("candidateId=" + ID_1));
+        assertTrue(result.contains("jobPostingId=" + ID));
+        assertTrue(result.contains("employeeId=" + ID));
+        assertTrue(result.contains("candidateId=" + ID));
     }
 
     @Test
