@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import jakarta.validation.constraints.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,12 @@ class JobPostingTest {
 
         Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "title");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<JobPosting> violation = violations.iterator().next();
+
+        assertEquals(NotBlank.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Title is required", violation.getMessage());
     }
 
     @Test
@@ -55,7 +61,12 @@ class JobPostingTest {
 
         Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "title");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<JobPosting> violation = violations.iterator().next();
+
+        assertEquals(Size.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Title must be at most 50 characters", violation.getMessage());
     }
 
     @Test
@@ -88,7 +99,12 @@ class JobPostingTest {
 
         Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "description");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<JobPosting> violation = violations.iterator().next();
+
+        assertEquals(NotBlank.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Description is required", violation.getMessage());
     }
 
     @Test
@@ -99,7 +115,12 @@ class JobPostingTest {
 
         Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "description");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<JobPosting> violation = violations.iterator().next();
+
+        assertEquals(Size.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Description must be at most 3000 characters", violation.getMessage());
     }
 
     @Test
@@ -132,7 +153,12 @@ class JobPostingTest {
 
         Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "dateOfPublishing");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<JobPosting> violation = violations.iterator().next();
+
+        assertEquals(NotNull.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Date of publishing is required", violation.getMessage());
     }
 
     @Test
@@ -143,7 +169,12 @@ class JobPostingTest {
 
         Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "dateOfPublishing");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<JobPosting> violation = violations.iterator().next();
+
+        assertEquals(PastOrPresent.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Date of publishing must be in the past or present", violation.getMessage());
     }
 
     @Test
@@ -176,7 +207,12 @@ class JobPostingTest {
 
         Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "dateOfExpiration");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<JobPosting> violation = violations.iterator().next();
+
+        assertEquals(NotNull.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Date of expiration is required", violation.getMessage());
     }
 
     @Test
@@ -187,7 +223,12 @@ class JobPostingTest {
 
         Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "dateOfExpiration");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<JobPosting> violation = violations.iterator().next();
+
+        assertEquals(FutureOrPresent.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Date of expiration must be in the present or future", violation.getMessage());
     }
 
     @Test
@@ -220,7 +261,12 @@ class JobPostingTest {
 
         Set<ConstraintViolation<JobPosting>> violations = validator.validateProperty(jobPosting, "company");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<JobPosting> violation = violations.iterator().next();
+
+        assertEquals(NotNull.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Company is required", violation.getMessage());
     }
 
     @Test

@@ -5,6 +5,9 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,7 +39,12 @@ class OfferTest {
 
         Set<ConstraintViolation<Offer>> violations = validator.validateProperty(offer, "name");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Offer> violation = violations.iterator().next();
+
+        assertEquals(NotBlank.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Name is required", violation.getMessage());
     }
 
     @Test
@@ -47,7 +55,12 @@ class OfferTest {
 
         Set<ConstraintViolation<Offer>> violations = validator.validateProperty(offer, "name");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Offer> violation = violations.iterator().next();
+
+        assertEquals(Size.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Name must be at most 50 characters", violation.getMessage());
     }
 
     @Test
@@ -80,7 +93,12 @@ class OfferTest {
 
         Set<ConstraintViolation<Offer>> violations = validator.validateProperty(offer, "jobApplication");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Offer> violation = violations.iterator().next();
+
+        assertEquals(NotNull.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Job application is required", violation.getMessage());
     }
 
     @Test

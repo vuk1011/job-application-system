@@ -6,6 +6,8 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,7 +41,12 @@ class CompanyTest {
 
         Set<ConstraintViolation<Company>> violations = validator.validateProperty(company, "name");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Company> violation = violations.iterator().next();
+
+        assertEquals(NotBlank.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Name is required", violation.getMessage());
     }
 
     @Test
@@ -50,7 +57,12 @@ class CompanyTest {
 
         Set<ConstraintViolation<Company>> violations = validator.validateProperty(company, "name");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Company> violation = violations.iterator().next();
+
+        assertEquals(Size.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Name must be at most 50 characters", violation.getMessage());
     }
 
     @Test
@@ -83,7 +95,12 @@ class CompanyTest {
 
         Set<ConstraintViolation<Company>> violations = validator.validateProperty(company, "about");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Company> violation = violations.iterator().next();
+
+        assertEquals(NotBlank.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("About is required", violation.getMessage());
     }
 
     @Test
@@ -94,7 +111,12 @@ class CompanyTest {
 
         Set<ConstraintViolation<Company>> violations = validator.validateProperty(company, "about");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Company> violation = violations.iterator().next();
+
+        assertEquals(Size.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("About must be at most 200 characters", violation.getMessage());
     }
 
     @Test
@@ -127,7 +149,12 @@ class CompanyTest {
 
         Set<ConstraintViolation<Company>> violations = validator.validateProperty(company, "address");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Company> violation = violations.iterator().next();
+
+        assertEquals(NotBlank.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Address is required", violation.getMessage());
     }
 
     @Test
@@ -138,7 +165,12 @@ class CompanyTest {
 
         Set<ConstraintViolation<Company>> violations = validator.validateProperty(company, "address");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Company> violation = violations.iterator().next();
+
+        assertEquals(Size.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Address must be at most 50 characters", violation.getMessage());
     }
 
     @Test

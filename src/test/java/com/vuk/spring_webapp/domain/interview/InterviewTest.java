@@ -5,6 +5,10 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,7 +43,12 @@ class InterviewTest {
 
         Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "title");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Interview> violation = violations.iterator().next();
+
+        assertEquals(NotBlank.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Title is required", violation.getMessage());
     }
 
     @Test
@@ -50,7 +59,12 @@ class InterviewTest {
 
         Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "title");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Interview> violation = violations.iterator().next();
+
+        assertEquals(Size.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Title must be at most 50 characters", violation.getMessage());
     }
 
     @Test
@@ -83,7 +97,12 @@ class InterviewTest {
 
         Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "description");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Interview> violation = violations.iterator().next();
+
+        assertEquals(NotBlank.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Description is required", violation.getMessage());
     }
 
     @Test
@@ -94,7 +113,12 @@ class InterviewTest {
 
         Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "description");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Interview> violation = violations.iterator().next();
+
+        assertEquals(Size.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Description must be at most 200 characters", violation.getMessage());
     }
 
     @Test
@@ -127,7 +151,12 @@ class InterviewTest {
 
         Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "timeScheduled");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Interview> violation = violations.iterator().next();
+
+        assertEquals(NotNull.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Time scheduled is required", violation.getMessage());
     }
 
     @Test
@@ -138,7 +167,12 @@ class InterviewTest {
 
         Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "timeScheduled");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Interview> violation = violations.iterator().next();
+
+        assertEquals(Future.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Time scheduled must be in the future", violation.getMessage());
     }
 
     @Test
@@ -149,7 +183,12 @@ class InterviewTest {
 
         Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "timeScheduled");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Interview> violation = violations.iterator().next();
+
+        assertEquals(Future.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Time scheduled must be in the future", violation.getMessage());
     }
 
     @Test
@@ -171,7 +210,12 @@ class InterviewTest {
 
         Set<ConstraintViolation<Interview>> violations = validator.validateProperty(interview, "jobApplication");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<Interview> violation = violations.iterator().next();
+
+        assertEquals(NotNull.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Job application is required", violation.getMessage());
     }
 
     @Test

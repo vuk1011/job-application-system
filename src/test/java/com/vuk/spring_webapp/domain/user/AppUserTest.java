@@ -4,6 +4,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import jakarta.validation.constraints.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("AppUser Unit Tests")
@@ -21,11 +22,9 @@ class AppUserTest {
 
     private static final String FIRST_NAME = "Mans";
     private static final String LAST_NAME = "Bjork";
-    private static final Sex SEX = Sex.MALE;
     private static final String PHONE = "38165000333";
     private static final String ADDRESS = "Oak Street 1";
     private static final String EMAIL = "mans@yahoo.com";
-    private static final String PASSWORD = "secret123";
 
     private static Validator validator;
 
@@ -43,7 +42,12 @@ class AppUserTest {
 
         Set<ConstraintViolation<TestableAppUser>> violations = validator.validateProperty(appUser, "role");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<TestableAppUser> violation = violations.iterator().next();
+
+        assertEquals(NotNull.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Role is required", violation.getMessage());
     }
 
     @ParameterizedTest
@@ -66,7 +70,12 @@ class AppUserTest {
 
         Set<ConstraintViolation<TestableAppUser>> violations = validator.validateProperty(appUser, "firstName");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<TestableAppUser> violation = violations.iterator().next();
+
+        assertEquals(NotBlank.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("First name is required", violation.getMessage());
     }
 
     @Test
@@ -77,7 +86,12 @@ class AppUserTest {
 
         Set<ConstraintViolation<TestableAppUser>> violations = validator.validateProperty(appUser, "firstName");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<TestableAppUser> violation = violations.iterator().next();
+
+        assertEquals(Size.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("First name must be at most 30 characters", violation.getMessage());
     }
 
     @Test
@@ -110,7 +124,12 @@ class AppUserTest {
 
         Set<ConstraintViolation<TestableAppUser>> violations = validator.validateProperty(appUser, "lastName");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<TestableAppUser> violation = violations.iterator().next();
+
+        assertEquals(NotBlank.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Last name is required", violation.getMessage());
     }
 
     @Test
@@ -121,7 +140,12 @@ class AppUserTest {
 
         Set<ConstraintViolation<TestableAppUser>> violations = validator.validateProperty(appUser, "lastName");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<TestableAppUser> violation = violations.iterator().next();
+
+        assertEquals(Size.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Last name must be at most 30 characters", violation.getMessage());
     }
 
     @Test
@@ -154,7 +178,12 @@ class AppUserTest {
 
         Set<ConstraintViolation<TestableAppUser>> violations = validator.validateProperty(appUser, "sex");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<TestableAppUser> violation = violations.iterator().next();
+
+        assertEquals(NotNull.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Sex is required", violation.getMessage());
     }
 
     @ParameterizedTest
@@ -177,7 +206,10 @@ class AppUserTest {
 
         Set<ConstraintViolation<TestableAppUser>> violations = validator.validateProperty(appUser, "phone");
 
-        assertFalse(violations.isEmpty());
+        assertTrue(violations.stream().anyMatch(v ->
+                v.getConstraintDescriptor().getAnnotation().annotationType().equals(NotBlank.class)
+                        && v.getMessage().equals("Phone number is required")
+        ));
     }
 
     @Test
@@ -188,7 +220,12 @@ class AppUserTest {
 
         Set<ConstraintViolation<TestableAppUser>> violations = validator.validateProperty(appUser, "phone");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<TestableAppUser> violation = violations.iterator().next();
+
+        assertEquals(Size.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Phone number must be between 8 and 16 characters", violation.getMessage());
     }
 
     @Test
@@ -210,7 +247,12 @@ class AppUserTest {
 
         Set<ConstraintViolation<TestableAppUser>> violations = validator.validateProperty(appUser, "phone");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<TestableAppUser> violation = violations.iterator().next();
+
+        assertEquals(Size.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Phone number must be between 8 and 16 characters", violation.getMessage());
     }
 
     @Test
@@ -232,7 +274,12 @@ class AppUserTest {
 
         Set<ConstraintViolation<TestableAppUser>> violations = validator.validateProperty(appUser, "phone");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<TestableAppUser> violation = violations.iterator().next();
+
+        assertEquals(Pattern.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Phone number must contain only digits", violation.getMessage());
     }
 
     @Test
@@ -254,7 +301,12 @@ class AppUserTest {
 
         Set<ConstraintViolation<TestableAppUser>> violations = validator.validateProperty(appUser, "address");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<TestableAppUser> violation = violations.iterator().next();
+
+        assertEquals(NotBlank.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Address is required", violation.getMessage());
     }
 
     @Test
@@ -265,7 +317,12 @@ class AppUserTest {
 
         Set<ConstraintViolation<TestableAppUser>> violations = validator.validateProperty(appUser, "address");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<TestableAppUser> violation = violations.iterator().next();
+
+        assertEquals(Size.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Address must be at most 50 characters", violation.getMessage());
     }
 
     @Test
@@ -298,7 +355,12 @@ class AppUserTest {
 
         Set<ConstraintViolation<TestableAppUser>> violations = validator.validateProperty(appUser, "email");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<TestableAppUser> violation = violations.iterator().next();
+
+        assertEquals(Email.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Email must be well formatted", violation.getMessage());
     }
 
     @Test
@@ -309,7 +371,12 @@ class AppUserTest {
 
         Set<ConstraintViolation<TestableAppUser>> violations = validator.validateProperty(appUser, "email");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<TestableAppUser> violation = violations.iterator().next();
+
+        assertEquals(Size.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Email must be at most 50 characters", violation.getMessage());
     }
 
     @ParameterizedTest
@@ -327,7 +394,12 @@ class AppUserTest {
 
         Set<ConstraintViolation<TestableAppUser>> violations = validator.validateProperty(appUser, "email");
 
-        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+
+        ConstraintViolation<TestableAppUser> violation = violations.iterator().next();
+
+        assertEquals(Email.class, violation.getConstraintDescriptor().getAnnotation().annotationType());
+        assertEquals("Email must be well formatted", violation.getMessage());
     }
 
     @Test
