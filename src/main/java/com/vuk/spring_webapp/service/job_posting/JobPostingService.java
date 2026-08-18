@@ -66,4 +66,21 @@ public interface JobPostingService {
      * @throws com.vuk.spring_webapp.exception.ResourceNotFoundException if there's no job posting with specified ID
      */
     void updateById(Long id, UpdateJobPostingRequest request);
+
+    /**
+     * Exports all job postings associated with employee's company as a JSON array.
+     *
+     * @return JSON string representing a list of {@link JobPostingDto}
+     */
+    String exportAsJson();
+
+    /**
+     * Imports job postings from a JSON array and creates them for employee's company.
+     *
+     * @param json JSON array of job posting entries (title, description, dateOfExpiration)
+     * @return list of created {@link JobPostingDto}
+     * @throws com.vuk.spring_webapp.exception.ConflictException if any entry has an expiration date in the past
+     * @throws com.google.gson.JsonSyntaxException                if the JSON is malformed
+     */
+    List<JobPostingDto> importFromJson(String json);
 }

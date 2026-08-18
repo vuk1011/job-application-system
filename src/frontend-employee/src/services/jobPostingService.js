@@ -25,3 +25,20 @@ export const deleteJobPosting = (id) =>
   axios.delete(`/job-postings/${id}`, {
     headers: { Authorization: `Bearer ${getJwt()}` },
   });
+
+export const exportJobPostings = () =>
+  axios.get("/job-postings/export", {
+    headers: { Authorization: `Bearer ${getJwt()}` },
+    responseType: "blob",
+  });
+
+export const importJobPostings = (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  return axios.post("/job-postings/import", formData, {
+    headers: {
+      Authorization: `Bearer ${getJwt()}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};

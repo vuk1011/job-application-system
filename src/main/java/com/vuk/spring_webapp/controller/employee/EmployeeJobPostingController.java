@@ -1,5 +1,6 @@
 package com.vuk.spring_webapp.controller.employee;
 
+import com.google.gson.JsonSyntaxException;
 import com.vuk.spring_webapp.exception.ConflictException;
 import com.vuk.spring_webapp.exception.ResourceNotFoundException;
 import com.vuk.spring_webapp.service.job_posting.JobPostingService;
@@ -7,8 +8,13 @@ import com.vuk.spring_webapp.transfer.request.CreateJobPostingRequest;
 import com.vuk.spring_webapp.transfer.request.UpdateJobPostingRequest;
 import com.vuk.spring_webapp.transfer.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.nio.charset.StandardCharsets;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -74,6 +80,37 @@ public class EmployeeJobPostingController {
             return ResponseEntity.ok(new ApiResponse("Job posting deleted", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> export() {
+        try {
+            byte[] body = jobPostingService.exportAsJson().getBytes(StandardCharsets.UTF_8);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"job-postings.json\"")
+                    .body(body);
+        } catch (Exception e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/import")
+    public ResponseEntity<ApiResponse> importJobPostings(@RequestParam("file") MultipartFile file) {
+        try {
+            if (file.isEmpty()) {
+                return ResponseEntity.status(BAD_REQUEST).body(new ApiResponse("File is empty", null));
+            }
+            String json = new String(file.getBytes(), StandardCharsets.UTF_8);
+            var imported = jobPostingService.importFromJson(json);
+            return ResponseEntity.ok(new ApiResponse(imported.size() + " job posting(s) imported", imported));
+        } catch (JsonSyntaxException e) {
+            return ResponseEntity.status(BAD_REQUEST).body(new ApiResponse("Invalid JSON file", null));
+        } catch (ConflictException e) {
+            return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
         } catch (Exception e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
         }

@@ -11,6 +11,7 @@ import com.vuk.spring_webapp.repository.JobPostingRepository;
 import com.vuk.spring_webapp.transfer.dto.JobPostingDto;
 import com.vuk.spring_webapp.transfer.request.CreateJobPostingRequest;
 import com.vuk.spring_webapp.transfer.request.UpdateJobPostingRequest;
+import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
@@ -18,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -32,6 +34,7 @@ public class JobPostingServiceImpl implements JobPostingService {
     private final JobPostingRepository jobPostingRepository;
     private final EmployeeRepository employeeRepository;
     private final ModelMapper modelMapper;
+    private final Gson gson;
 
     private Company getCompany() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -104,5 +107,21 @@ public class JobPostingServiceImpl implements JobPostingService {
             JobPosting updatedJobPosting = jobPostingRepository.save(jobPosting);
             return modelMapper.map(updatedJobPosting, JobPostingDto.class);
         }).orElseThrow(() -> new ResourceNotFoundException("Job posting not found with id " + id));
+    }
+
+    @Override
+    public String exportAsJson() {
+        return gson.toJson(findAll());
+    }
+
+    @Override
+    public List<JobPostingDto> importFromJson(String json) {
+        CreateJobPostingRequest[] requests = gson.fromJson(json, CreateJobPostingRequest[].class);
+        if (requests == null) {
+            return List.of();
+        }
+        return Arrays.stream(requests)
+                .map(this::create)
+                .toList();
     }
 }

@@ -1,7 +1,7 @@
 <script setup>
 import JobPosting from '@/components/JobPosting.vue';
 import router from '@/router';
-import { getJobPostings } from '@/services/jobPostingService';
+import { exportJobPostings, getJobPostings, importJobPostings } from '@/services/jobPostingService';
 import { computed, onMounted, ref } from 'vue';
 
 const statusFilterOptions = ['ALL', 'PUBLISHED', 'CLOSED']
@@ -9,6 +9,8 @@ const statusFilterOptions = ['ALL', 'PUBLISHED', 'CLOSED']
 const jobs = ref([])
 const statusFilterSelection = ref('ALL')
 const errorMessage = ref('')
+const infoMessage = ref('')
+const importInput = ref(null)
 
 const filteredJobs = computed(() =>
   statusFilterSelection.value === 'ALL'
@@ -16,7 +18,7 @@ const filteredJobs = computed(() =>
     : jobs.value.filter(job => job.status === statusFilterSelection.value)
 )
 
-onMounted(async () => {
+const loadJobs = async () => {
   try {
     const response = await getJobPostings()
     jobs.value = response.data.data.map(dto => ({
@@ -28,7 +30,9 @@ onMounted(async () => {
   } catch (_) {
     setErrorMessage('Failed updating application\'s status')
   }
-})
+}
+
+onMounted(loadJobs)
 
 const openJobPosting = (id) => {
   router.push(`/job-postings/${id}`)
@@ -36,6 +40,44 @@ const openJobPosting = (id) => {
 
 const setErrorMessage = (message) => {
   errorMessage.value = message
+  infoMessage.value = ''
+}
+
+const setInfoMessage = (message) => {
+  infoMessage.value = message
+  errorMessage.value = ''
+}
+
+const handleExport = async () => {
+  try {
+    const response = await exportJobPostings()
+    const url = URL.createObjectURL(new Blob([response.data], { type: 'application/json' }))
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'job-postings.json'
+    link.click()
+    URL.revokeObjectURL(url)
+  } catch (_) {
+    setErrorMessage('Failed exporting job postings')
+  }
+}
+
+const triggerImport = () => {
+  importInput.value.click()
+}
+
+const handleImport = async (event) => {
+  const file = event.target.files[0]
+  event.target.value = ''
+  if (!file) return
+
+  try {
+    const response = await importJobPostings(file)
+    setInfoMessage(response.data.message)
+    await loadJobs()
+  } catch (err) {
+    setErrorMessage(err.response?.data?.message || 'Failed importing job postings')
+  }
 }
 </script>
 
@@ -44,9 +86,13 @@ const setErrorMessage = (message) => {
     <div class="list-header">
       <h1>Job Postings in Your company</h1>
       <button type="button" @click="router.push('/job-postings/create')">Create New</button>
+      <button type="button" @click="handleExport">Export</button>
+      <button type="button" @click="triggerImport">Import</button>
+      <input ref="importInput" type="file" accept="application/json" style="display: none" @change="handleImport" />
     </div>
 
     <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+    <p v-if="infoMessage" class="info-message">{{ infoMessage }}</p>
 
     <div>
       <label for="status-filter">Filter by status: </label>
@@ -71,6 +117,11 @@ const setErrorMessage = (message) => {
 
 .error-message {
   color: red;
+  font-weight: bold;
+}
+
+.info-message {
+  color: #4FB180;
   font-weight: bold;
 }
 
