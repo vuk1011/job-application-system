@@ -28,7 +28,7 @@ const loadJobs = async () => {
       status: dto.status,
     }))
   } catch (_) {
-    setErrorMessage('Failed updating application\'s status')
+    setErrorMessage('Failed loading job postings')
   }
 }
 
